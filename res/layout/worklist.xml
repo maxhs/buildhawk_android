@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0000"
+    android:id="@+id/rellay">
+    
+    <LinearLayout 
+	    android:id="@+id/topBtn"
+	    android:layout_width="match_parent"
+	    android:layout_height="80px"
+	    android:layout_marginTop="135px"
+	    android:layout_marginLeft="10px"
+	    android:layout_marginRight="10px"
+	    android:gravity="center_vertical"
+	    android:background="@drawable/black_background">
+	    
+	    <TextView 
+	        android:id="@+id/active"
+	        android:layout_width="0dp"
+	        android:layout_height="76px"
+	        android:layout_weight="1"
+	        android:layout_marginLeft="2px"
+	        android:text="Active"
+	        android:textSize="30px"
+	        android:textColor="@color/black"
+	        
+	       android:background="@drawable/all_white_background"
+	        android:gravity="center"/>
+	    
+	    <TextView 
+	        android:id="@+id/location"
+	        android:layout_width="0dp"
+	        android:layout_height="76px"
+	        android:layout_weight="1"
+	        android:text="Location"
+	        android:layout_marginLeft="2px"
+	        android:textSize="30px"
+	        android:textColor="@color/black"
+	        android:background="@color/white"
+	        android:gravity="center"/>
+	    
+	    <TextView 
+	        android:id="@+id/assignee"
+	        android:layout_width="0dp"
+	        android:layout_height="76px"
+	        android:layout_weight="1"
+	        android:text="Assignee"
+	        android:textSize="30px"
+	        android:textColor="@color/black"
+	        android:layout_marginLeft="2px"
+	        android:layout_marginRight="2px"
+	        android:background="@color/white"
+	        android:gravity="center"/>
+	    
+	    <TextView 
+	        android:id="@+id/completed"
+	        android:layout_width="0dp"
+	        android:layout_height="76px"
+	        android:layout_weight="1"
+	        android:layout_marginRight="2px"
+	        android:textSize="30px"
+	        android:text="Complete"
+	        android:textColor="@color/black"
+	        android:background="@drawable/complete_white_background"
+	        android:gravity="center"/>
+	</LinearLayout>
+
+     <com.handmark.pulltorefresh.library.PullToRefreshListView
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+           android:id="@+id/workList"
+        android:layout_width="match_parent"
+        android:layout_height="940px"
+        android:divider="@color/grey"
+        android:dividerHeight="2px"
+        android:layout_below="@+id/topBtn"
+        android:layout_marginTop="20px" >
+        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+        
+<!--     <ListView  -->
+<!--         android:id="@+id/workList" -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="940px" -->
+<!--         android:divider="@color/grey" -->
+<!--         android:dividerHeight="2px" -->
+<!--         android:layout_below="@+id/topBtn" -->
+<!--         android:layout_marginTop="20px"/> -->
+
+    
+
+</RelativeLayout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linear2"
+    android:layout_width="720px"
+    android:layout_height="1184px"
+    android:orientation="horizontal" >
+
+    <RelativeLayout
+        android:id="@+id/lin4"
+        android:layout_width="720px"
+        android:layout_height="200px"
+        android:background="@drawable/background_draw"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/comUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:textColor="@color/black"
+            android:padding="15px"
+            android:textSize="20px"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/comDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:padding="15px"
+            android:textColor="@color/black"
+            android:text="TextView" 
+            android:textSize="20px"/>
+
+        <TextView
+            android:id="@+id/comBody"
+            android:layout_width="720px"
+            android:layout_height="150px"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:singleLine="false"
+            android:scrollbars="vertical"
+            
+            android:padding="20px"
+            android:textColor="@color/black"
+            android:text="TextView"
+            android:textSize="30px" />
+
+        
+
+    </RelativeLayout>
+
+    <!-- <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/divider" /> -->
+
+</LinearLayout>

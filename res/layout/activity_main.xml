@@ -1,0 +1,81 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rellay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/rellay1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white" >
+			
+			<Button
+        android:id="@+id/login"
+        android:layout_width="200px"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="64px"
+        android:background="@drawable/login_btn"
+        android:text="Login"
+        android:textColor="@color/black"
+        android:textSize="36px" />
+
+    <ImageView
+        android:id="@+id/tv101"
+        android:layout_width="520px"
+        android:layout_height="150px"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="152px"
+        android:src="@drawable/logotype"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="500px"
+        android:layout_height="75px"
+        android:layout_below="@+id/tv101"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="114px"
+        android:background="@drawable/edittext_background"
+        android:ems="10"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:paddingLeft="10px"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textCursorDrawable="@null"
+        android:textSize="36px" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="500px"
+        android:layout_height="75px"
+        android:layout_below="@+id/email"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="44px"
+        android:background="@drawable/edittext_background"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:paddingLeft="10px"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textCursorDrawable="@null"
+        android:textSize="36px" />
+            
+        </RelativeLayout>
+    </ScrollView>
+
+    
+
+</RelativeLayout>

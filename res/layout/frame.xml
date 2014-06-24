@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="560px"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="#000"
+    android:id="@+id/rellay1">
+    
+    <Button
+        android:id="@+id/username"
+        android:layout_width="405px"
+        android:layout_height="200px"
+        android:gravity="center"
+        android:textSize="28px"
+        android:layout_marginLeft="175px"
+        android:background="#0000" />
+    
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="560px"
+        android:layout_height="800px"
+        android:layout_below="@+id/username"
+        android:layout_marginLeft="20px" />
+
+    <Button
+        android:id="@+id/logout"
+        android:layout_width="580px"
+        android:layout_height="150px"
+        android:textSize="28px"
+        android:layout_alignRight="@+id/list"
+        android:layout_below="@+id/list"
+        android:background="#0000"
+        android:text="Logout" />
+
+    <ImageView
+        android:id="@+id/user_pic"
+        android:layout_width="150px"
+        android:layout_height="150px"
+        android:layout_marginLeft="20px"
+        android:layout_marginTop="25px"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        
+        android:src="@drawable/default_200" />
+
+</RelativeLayout>

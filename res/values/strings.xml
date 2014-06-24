@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BuildHawk</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_image">ImageActivity</string>
+    <string name="title_activity_check_item_click">CheckItemClick</string>
+    <string name="title_activity_users_list">UsersList</string>
+    <string name="title_activity_email__send">Email_Send</string>
+    <string name="title_activity_send_email">SendEmail</string>
+    <string name="title_activity_synopsis">Synopsis</string>
+    <string name="title_activity_full_image">FullImageActivity</string>
+    <string name="title_activity_work_item_click">WorkItemClick</string>
+    <string name="title_activity_report_item_click">ReportItemClick</string>
+    <string name="title_activity_report_item_create">ReportItemCreate</string>
+    <string name="title_activity_company_list">CompanyList</string>
+    <string name="title_activity_subs_list">SubsList</string>
+
+</resources>

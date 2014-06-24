@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:id="@+id/root">
+
+    <LinearLayout
+        android:id="@+id/LinearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="230px"
+        android:gravity="center_vertical" 
+        android:background="#fff"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv101"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="15px"
+            android:paddingLeft="15px"
+            android:textColor="#000"
+            android:text="TextView"
+            android:textSize="56px" />
+
+        <TextView
+            android:id="@+id/subcat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" 
+            android:paddingRight="15px"
+            android:paddingLeft="15px"
+            android:textColor="#000"
+            android:textSize="40px"/>
+    </LinearLayout>
+    
+    <ImageView
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/divider" 
+        android:layout_below="@+id/LinearLayout1"/>
+
+</RelativeLayout>

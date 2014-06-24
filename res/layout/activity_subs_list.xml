@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayoutuserlist"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black"
+    
+    tools:context=".SubsList" >
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="115px"
+        android:background="@color/black"
+        android:gravity="center_vertical"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="90px"
+            android:gravity="center_vertical"
+            android:text=" Back"
+            	android:textStyle="bold"
+            android:textSize="34px" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white" >
+
+        
+        
+<!--         <EditText -->
+<!--             android:id="@+id/checksearch" -->
+<!--             android:layout_width="match_parent" -->
+<!--             android:layout_height="80px" -->
+<!--             android:layout_marginLeft="15px" -->
+<!--             android:layout_marginRight="15px" -->
+<!--             android:layout_marginTop="10px" -->
+<!--             android:background="@drawable/edittext_background" -->
+<!--             android:ems="10" -->
+<!--             android:focusable="false" -->
+<!--             android:gravity="center" -->
+<!--             android:hint="Search" /> -->
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+            android:textSize="40px"
+            android:layout_marginTop="10px"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:text="Subcontractors" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2px"
+            android:orientation="vertical" >
+
+            <ListView
+                android:id="@+id/subslist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </ListView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
+

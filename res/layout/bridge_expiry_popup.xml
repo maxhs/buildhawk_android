@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_outside"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/transparent_image" >
+
+    <LinearLayout
+        android:id="@+id/expiry_lay"
+        android:layout_width="520px"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@color/dialog_color"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+           android:layout_marginLeft="10px"
+           android:layout_marginRight="10px"
+            android:layout_marginTop="8px"
+            
+            android:splitMotionEvents="false" >
+
+            <TextView
+                android:id="@+id/alert_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="20px"
+                android:text="Contact"
+                android:textColor="@color/white"
+                android:textSize="30px" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/Email"
+             android:layout_width="match_parent"
+            android:layout_height="80px"
+           android:layout_marginBottom="2px"
+           android:layout_marginLeft="10px"
+           android:layout_marginRight="10px"
+            android:background="@drawable/edittext_background_click"
+            android:clickable="true"
+            android:textColor="@color/black"
+            android:textSize="36px"
+            android:text="Email" />
+
+        <Button
+            android:id="@+id/Call"
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+            android:layout_marginBottom="2px"
+            android:layout_marginLeft="10px"
+           android:layout_marginRight="10px"
+           android:textColor="@color/black"
+            android:background="@drawable/edittext_background_click"
+            android:clickable="true"
+            android:textSize="36px"
+            android:text="Call" />
+
+        <Button
+            android:id="@+id/Text"
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+            android:layout_marginBottom="2px"
+            android:layout_marginLeft="10px"
+           android:layout_marginRight="10px"
+           android:textColor="@color/black"
+            android:background="@drawable/edittext_background_click"
+            android:clickable="true"
+            android:textSize="36px"
+            android:text="Text" />
+
+        <Button
+            android:id="@+id/Cancel"
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+           android:textColor="@color/black"
+           android:layout_marginLeft="10px"
+           android:layout_marginRight="10px"
+            android:background="@drawable/edittext_background_click"
+            android:clickable="true"
+            android:textSize="36px"
+            android:layout_marginTop="10px"
+            android:layout_marginBottom="50px"
+            android:text="Cancel" />
+
+    </LinearLayout>
+
+</RelativeLayout>

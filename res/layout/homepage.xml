@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:id="@+id/rellay">
+
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="115px"
+        android:layout_alignParentTop="true"
+        android:background="#000" >
+
+        <Button
+            android:id="@+id/sliding"
+            android:layout_width="104px"
+            android:layout_height="104px"
+            android:textSize="30px"
+            android:layout_centerVertical="true"
+            android:background="@drawable/slider_btn"
+            android:tag="mwar"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/currTime"
+            android:layout_width="300px"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+           	android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:text="Medium Text"
+            android:textSize="36px" />
+    </RelativeLayout>
+    
+    <ListView 
+        android:id="@+id/projectList"
+        android:layout_width="match_parent"
+        android:layout_height="827px"
+        android:divider="@color/grey"
+        android:dividerHeight="2px"
+        android:layout_below="@+id/topBar"/>
+
+    <ListView
+        android:id="@+id/lvsearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="115px" >
+    </ListView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="192px"
+        android:layout_alignParentBottom="true"
+        android:background="#000" >
+
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+            android:textColor="#000"
+            android:textSize="36px"
+            android:cursorVisible="true"
+            android:textCursorDrawable="@drawable/color_cursor"
+            android:singleLine="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20px"
+            android:layout_marginRight="20px"
+            android:background="@drawable/edittext_background"
+            android:gravity="center_vertical|center_horizontal"
+            android:hint="Search For Projects..." >
+
+            <requestFocus />
+        </EditText>
+
+    </RelativeLayout>
+
+</RelativeLayout>

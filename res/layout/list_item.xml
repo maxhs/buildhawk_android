@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#000"
+    android:layout_height="200px"
+    android:id="@+id/rv" >
+
+    <TextView
+        android:id="@+id/co_name"
+        android:layout_width="580px"
+        android:layout_height="wrap_content"
+        android:textSize="36px"
+        android:singleLine="true"
+        android:padding="5px"
+        android:text="Medium Text"
+        />
+
+    <TextView
+        android:id="@+id/co_phone"
+        android:layout_width="580px"
+        android:layout_height="wrap_content"
+        android:textSize="28px"
+        android:singleLine="true"
+        android:padding="5px"
+        android:layout_below="@+id/co_name"
+        android:text="Medium Text" />
+
+    <TextView
+        android:id="@+id/co_email"
+        android:layout_width="580px"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/co_phone"
+        android:singleLine="true"
+        android:textSize="28px"
+        android:padding="5px"
+        android:text="Medium Text" />
+
+</RelativeLayout>

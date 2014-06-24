@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0000"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80px"
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px"
+        android:layout_marginTop="135px"
+        android:background="@drawable/black_border"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/daily"
+            android:layout_width="226px"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="2px"
+            android:layout_marginLeft="2px"
+            android:layout_marginTop="2px"
+            android:gravity="center"
+            android:text="Daily"
+            android:textColor="@color/black"
+            android:textSize="30px" />
+
+        <TextView
+            android:id="@+id/divider"
+            android:layout_width="2px"
+            android:layout_height="80px"
+            android:background="@color/black" />
+
+        <TextView
+            android:id="@+id/safety"
+            android:layout_width="226px"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="2px"
+            android:layout_marginTop="2px"
+            android:gravity="center"
+            android:text="Safety"
+            android:textColor="@color/black"
+            android:textSize="30px" />
+
+        <TextView
+            android:id="@+id/divider"
+            android:layout_width="2px"
+            android:layout_height="80px"
+            android:background="@color/black" />
+
+        <TextView
+            android:id="@+id/weekly"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="2px"
+            android:layout_marginRight="2px"
+            android:layout_marginTop="2px"
+            android:gravity="center"
+            android:text="Weekly"
+            android:textColor="@color/black"
+            android:textSize="30px" />
+    </LinearLayout>
+
+     <com.handmark.pulltorefresh.library.PullToRefreshListView
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+           android:id="@+id/reportlist"
+        android:layout_width="match_parent"
+        android:layout_height="800px"
+        android:background="#fff"
+        android:divider="@color/grey"
+        android:dividerHeight="2px"  >
+        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+    
+<!--     <ListView -->
+<!--         android:id="@+id/reportlist" -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="800px" -->
+<!--         android:background="#fff" -->
+<!--         android:divider="@color/grey" -->
+<!--         android:dividerHeight="2px" /> -->
+
+</LinearLayout>

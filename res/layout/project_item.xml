@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rv"
+    android:layout_width="match_parent"
+    android:layout_height="230px"
+    android:background="#fff"
+    android:orientation="horizontal" >
+    
+    <LinearLayout 
+        android:layout_width="480px"
+        android:layout_height="230px"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:id="@+id/selected_proj"> 
+        
+        <TextView 
+            android:id="@+id/proj_name"
+            android:layout_width="440px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20px"
+            android:singleLine="true"
+            android:textColor="#000"
+            android:text="Sample one"
+            android:textSize="48px"/>
+        
+        <TextView 
+            android:id="@+id/proj_add"
+            android:layout_width="440px"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="address"
+            android:layout_marginLeft="20px"
+            android:textColor="@color/grey"
+            android:textSize="36px"/>
+        </LinearLayout>
+    
+    <ImageView 
+        android:layout_width="2px"
+        android:layout_height="match_parent"
+        android:layout_marginTop="7px"
+        android:layout_marginBottom="7px"
+        android:background="@color/grey"/>
+    <TextView 
+        android:id="@+id/proj_perc"
+        android:layout_width="240px"
+        android:layout_height="230px"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="@color/grey"
+        android:text="12.7%   >"
+        android:textSize="48px"/>
+
+   
+</LinearLayout>

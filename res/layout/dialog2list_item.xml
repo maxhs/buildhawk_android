@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical" 
+    android:id="@+id/dialoglinear">
+
+    <TextView
+        android:id="@+id/array"
+        android:layout_width="500px"
+        android:layout_height="80px"
+        android:background="@drawable/edittext_background_click"
+		android:gravity="center"
+        android:textColor="#000"
+        android:textSize="30px"
+        android:padding="10px"
+        android:text="TextView" />
+
+</LinearLayout>

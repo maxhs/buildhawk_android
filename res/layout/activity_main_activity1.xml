@@ -1,0 +1,100 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity1"
+    android:layout_gravity="center"
+    >
+
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="115px"
+        android:background="#000"
+        android:gravity="center_vertical" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" >
+
+            <TextView
+                android:id="@+id/num"
+               android:textColor="@color/white"
+                android:layout_width="150px"
+                android:layout_height="90px"
+                android:gravity="center"
+                android:textSize="30px"
+                android:text="num"
+                	android:textStyle="bold"
+                android:visibility="visible" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@drawable/all_btn_click" >
+
+            <ImageView
+                android:id="@+id/back_img"
+                android:layout_width="58px"
+                android:layout_height="58px"
+                android:layout_centerVertical="true"
+                android:clickable="false"
+                android:duplicateParentState="false"
+                android:src="@drawable/backoff" />
+
+            <TextView
+                android:id="@+id/clickedOn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                   android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/back_img"
+                android:text="Back"
+                	android:textStyle="bold"
+                android:textSize="36px" />
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/deletepic"
+            android:layout_width="64px"
+            android:layout_height="64px"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10px"
+            android:src="@drawable/delete_icon"
+            android:tag="mwar"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+    <ViewFlipper
+        android:id="@+id/flipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        
+        android:layout_below="@+id/topBar"
+       android:layout_above="@+id/textView1"
+       android:layout_marginBottom="150px"
+         >
+
+    </ViewFlipper>
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="150px"
+       	android:layout_alignParentBottom="true"
+       	android:singleLine="false"
+       	android:scrollbars="vertical"
+       	android:background="@color/light_black"
+       	android:textSize="36px"
+       	android:padding="20px"
+       	android:maxLines="4"
+        android:text="" />
+
+</RelativeLayout>

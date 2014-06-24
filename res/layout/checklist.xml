@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rellay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent" >
+
+    <RelativeLayout
+        android:id="@+id/workLay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="0px"
+        android:layout_marginTop="115px"
+        android:background="@color/white" >
+
+        <EditText
+            android:id="@+id/checksearch"
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+            android:background="@drawable/edittext_background"
+            android:cursorVisible="true"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="Search"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textCursorDrawable="@drawable/color_cursor"
+            android:textSize="36px" />
+
+      
+
+        <LinearLayout
+            android:id="@+id/topBtn"
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+            android:layout_below="@+id/checksearch"
+            android:layout_marginLeft="10px"
+            android:layout_marginRight="10px"
+            android:layout_marginTop="10px"
+            android:background="@drawable/black_background"
+            android:gravity="center_vertical" >
+
+            <TextView
+                android:id="@+id/all"
+                android:layout_width="0dp"
+                android:layout_height="76px"
+                android:layout_marginLeft="2px"
+                android:layout_weight="1"
+                android:background="@drawable/all_black_background"
+                android:gravity="center"
+                android:text="All"
+                android:textColor="@color/white"
+                android:textSize="30px" />
+
+            <TextView
+                android:id="@+id/active"
+                android:layout_width="0dp"
+                android:layout_height="76px"
+                android:layout_marginLeft="2px"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="Active"
+                android:textColor="@color/black"
+                android:textSize="30px" />
+
+            <TextView
+                android:id="@+id/progress"
+                android:layout_width="0dp"
+                android:layout_height="76px"
+                android:layout_marginLeft="2px"
+                android:layout_marginRight="2px"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center"
+                android:text="In Progress"
+                android:textColor="@color/black"
+                android:textSize="30px" />
+
+            <TextView
+                android:id="@+id/completed"
+                android:layout_width="0dp"
+                android:layout_height="76px"
+                android:layout_marginRight="2px"
+                android:layout_weight="1"
+                android:background="@drawable/complete_white_background"
+                android:gravity="center"
+                android:text="Completed"
+                android:textColor="@color/black"
+                android:textSize="30px" />
+        </LinearLayout>
+
+          <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/expandList"
+            android:layout_width="match_parent"
+            android:layout_height="940px"
+            android:layout_below="@+id/topBtn"
+            android:background="@color/white"
+            android:transcriptMode="disabled"  >
+        </com.handmark.pulltorefresh.library.PullToRefreshExpandableListView>
+<!--         <ExpandableListView -->
+<!--             android:id="@+id/expandList" -->
+<!--             android:layout_width="match_parent" -->
+<!--             android:layout_height="940px" -->
+<!--             android:layout_below="@+id/topBtn" -->
+<!--             android:background="@color/white" -->
+<!--             android:transcriptMode="disabled" > -->
+<!--         </ExpandableListView> -->
+
+
+<com.handmark.pulltorefresh.library.PullToRefreshListView
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/progressList"
+            android:layout_width="match_parent"
+            android:layout_height="940px"
+            android:layout_below="@+id/topBtn"
+            android:background="@color/white"
+            android:transcriptMode="disabled"
+            android:visibility="visible"  >
+        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+<!--         <ListView -->
+<!--             android:id="@+id/progressList" -->
+<!--             android:layout_width="match_parent" -->
+<!--             android:layout_height="940px" -->
+<!--             android:layout_below="@+id/topBtn" -->
+<!--             android:background="@color/white" -->
+<!--             android:transcriptMode="disabled" -->
+<!--             android:visibility="visible" > -->
+<!--         </ListView> -->
+
+        <ListView
+            android:id="@+id/checksearchlist"
+            android:layout_width="match_parent"
+            android:layout_height="940px"
+            android:layout_below="@+id/checksearch"
+            android:background="@color/white"
+            android:transcriptMode="disabled" >
+        </ListView>
+
+    </RelativeLayout>
+
+</RelativeLayout>

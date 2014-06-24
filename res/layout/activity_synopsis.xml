@@ -1,0 +1,204 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayoutSynopsis"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".Synopsis" >
+
+ <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="115px"
+        android:layout_alignParentTop="true"
+        android:background="@color/black"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/proName"
+            android:layout_width="300px"
+            android:layout_height="90px"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            	android:textStyle="bold"
+            android:text="Medium Text"
+            android:textSize="36px" />
+
+        <RelativeLayout
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@drawable/all_btn_click" >
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="58px"
+                android:layout_height="58px"
+                android:layout_marginTop="16px"
+                android:layout_marginBottom="16px"
+                android:clickable="false"
+                android:duplicateParentState="false"
+                android:src="@drawable/backoff" />
+
+            
+        </RelativeLayout>
+    </RelativeLayout>
+    
+         <com.handmark.pulltorefresh.library.PullToRefreshScrollView
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/scrollView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:divider="@null"
+            android:dividerHeight="0px"
+            android:visibility="visible" >
+        
+
+<!--     <ScrollView -->
+<!--         android:id="@+id/scrollView1" -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="match_parent" -->
+<!--         android:scrollbars="none" > -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="70px"
+                    android:layout_gravity="center"
+                    android:background="@color/shaded_gray"
+                    android:gravity="center"
+                    android:text="Project Synopsis"
+                    android:textSize="36px"
+                    android:focusableInTouchMode="true" 
+                    
+                    />
+
+                <TextView
+                    android:id="@+id/addres"
+                    android:layout_width="match_parent"
+                    android:layout_height="140px"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:text="TextView"
+                    android:textSize="39px" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="70px"
+                    android:background="@color/shaded_gray"
+                    android:gravity="center"
+                    android:text="Progress"
+                    android:textSize="36px" />
+
+                <ListView
+                    android:id="@+id/syncatlist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@color/grey"
+        			android:dividerHeight="2px"
+                     >
+                </ListView>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="70px"
+                android:background="@color/shaded_gray"
+                android:gravity="center"
+                android:text="Recent Documents"
+                android:textSize="36px" />
+
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView1"
+                android:layout_width="wrap_content"
+                android:layout_height="200px" >
+
+                <LinearLayout
+                    android:id="@+id/scrolllayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal" >
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="70px"
+                    android:background="@color/shaded_gray"
+                    android:gravity="center"
+                    android:text="Upcoming Critical Items"
+                    android:textSize="36px" />
+
+                <ListView
+                    android:id="@+id/synupitems"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" 
+                    android:divider="@color/grey"
+        			android:dividerHeight="2px">
+                </ListView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="70px"
+                    android:background="@color/shaded_gray"
+                    android:gravity="center"
+                    android:text="Recent Checklist Item"
+                    android:textSize="36px" />
+
+                <ListView
+                    android:id="@+id/syncomplist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@color/grey"
+        			android:dividerHeight="2px" >
+                </ListView>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/GotoProject"
+                android:layout_width="720px"
+                android:layout_height="150px"
+                android:textSize="36px"
+                android:text="Go to Project"
+                android:background="@color/black" />
+
+        </LinearLayout>
+<!--     </ScrollView> -->
+    </com.handmark.pulltorefresh.library.PullToRefreshScrollView>
+
+</LinearLayout>
