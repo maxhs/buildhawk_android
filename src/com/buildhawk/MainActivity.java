@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,15 +33,16 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class MainActivity extends Activity {
-	Button login;
+	Button btn_login;
 	private String regId;
 	SharedPreferences pref;
-	EditText email, pass;
+	EditText txt_email, txt_pass;
 	ConnectionDetector connDect;
 	Boolean isInternetPresent = false;
 	RelativeLayout relLay;
 	ScrollView scroll;
-	ImageView img;
+	ImageView imageview;
+	SharedPreferences sharedpref;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,18 +51,20 @@ public class MainActivity extends Activity {
 		relLay = (RelativeLayout) findViewById(R.id.rellay);
 		new ASSL(this, relLay, 1134, 720, false);
 
-		email = (EditText) findViewById(R.id.email);
-		pass = (EditText) findViewById(R.id.password);
+		txt_email = (EditText) findViewById(R.id.email);
+		txt_pass = (EditText) findViewById(R.id.password);
 
-		login = (Button) findViewById(R.id.login);
+		btn_login = (Button) findViewById(R.id.login);
 		scroll = (ScrollView) findViewById(R.id.scrollView1);
-		img = (ImageView) findViewById(R.id.imageView1);
+		imageview = (ImageView) findViewById(R.id.imageView1);
 
-		email.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		pass.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		txt_email.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		txt_pass.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
 
 		connDect = new ConnectionDetector(getApplicationContext());
 		isInternetPresent = connDect.isConnectingToInternet();
+		sharedpref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+		
 
 		try {
 			registerWithGCM();
@@ -68,7 +72,7 @@ public class MainActivity extends Activity {
 			Log.e("error", "" + e.toString());
 		}
 
-		pass.setOnTouchListener(new OnTouchListener() {
+		txt_pass.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -80,7 +84,7 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		email.setOnTouchListener(new OnTouchListener() {
+		txt_email.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -92,7 +96,7 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		login.setOnClickListener(new OnClickListener() {
+		btn_login.setOnClickListener(new OnClickListener() {
 			@SuppressLint("ShowToast")
 			@Override
 			public void onClick(View v) {
@@ -144,15 +148,15 @@ public class MainActivity extends Activity {
 
 		RequestParams params = new RequestParams();
 
-		params.put("email", email.getText().toString());
-		params.put("password", pass.getText().toString());
+		params.put("email", txt_email.getText().toString());
+		params.put("password", txt_pass.getText().toString());
 		params.put("device_token", regId);
 
 		AsyncHttpClient client = new AsyncHttpClient();
 
 		client.addHeader("Content-type", "application/json");
 		client.addHeader("Accept", "application/json");
-		client.setTimeout(100000);
+		client.setTimeout(1000000);
 		client.post(Prefrences.url + "/sessions", params,
 				new AsyncHttpResponseHandler() {
 
@@ -162,6 +166,10 @@ public class MainActivity extends Activity {
 
 						JSONObject res;
 						try {
+							Editor editor =  sharedpref.edit();
+							editor.putString("userData", response);
+							editor.putString("lat", ""+Prefrences.currentLatitude);
+							editor.putString("longi", ""+Prefrences.currentLongitude);
 							res = new JSONObject(response);
 							JSONObject user = res.getJSONObject("user");
 							Prefrences.userId = user.getString("id");
@@ -173,6 +181,9 @@ public class MainActivity extends Activity {
 									.getString("formatted_phone");
 							Prefrences.authToken = user
 									.getString("authentication_token");
+							
+							editor.putString("authentication_token", Prefrences.authToken);
+							editor.commit();
 							Log.i("Response", "," + Prefrences.userId + ", "
 									+ Prefrences.firstName + ", "
 									+ Prefrences.lastName + ", "
@@ -220,7 +231,7 @@ public class MainActivity extends Activity {
 						}
 						Prefrences.dismissLoadingDialog();
 						Prefrences.saveAccessToken(Prefrences.userId,
-								"test@ristrettolabs.com", "password",
+								txt_email.getText().toString(), txt_pass.getText().toString(),
 								getApplicationContext());
 
 						startActivity(new Intent(MainActivity.this,

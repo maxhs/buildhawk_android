@@ -44,8 +44,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -64,9 +67,14 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.buildhawk.CheckItemClick.ViewHolder;
 import com.buildhawk.ReportItemClick.LongOperation;
+import com.buildhawk.WorklistFragment.adapter;
+import com.buildhawk.utils.PunchListsItem;
+import com.buildhawk.utils.SafetyTopics;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 
 public class ReportItemCreate extends Activity {
@@ -76,23 +84,27 @@ public class ReportItemCreate extends Activity {
 	private static int PICK_CONTACT = 1;
 	public String reportId;
 	String winds, tempsHigh, precips, humiditys, tempsLow, icons, summarys;
-	TextView wind, temp, precip, humidity, weather;
-	TextView texttype, textdate;
-	ImageView weatherIcon;
-	Button type, date, personnel, safetytopic;
-	Button save, back;
+	TextView tv_wind, tv_temp, tv_precip, tv_humidity, tv_weather;
+	TextView tv_texttype, tv_textdate;
+	ImageView img_weatherIcon;
+	Button btn_type, btn_date, btn_personnel, btn_safetytopic;
+	Button btn_save, btn_back;
 	RelativeLayout ral;
 	int year, month, day;
 	Dialog popup;
-	Button Email, Text, Call, Cancel;
-	TextView expiry_alert;
+	Button btn_Email, btn_Text, btn_Call, btn_Cancel;
+	TextView tv_expiry_alert;
 	RelativeLayout list_outside;
 	private Uri imageUri;
 	LinearLayout lin2;
 	String picturePath = "";
 	Boolean isInternetPresent = false;
 	ConnectionDetector connDect;
-	EditText notes;
+	EditText txt_notes;
+	ListView safetyListView;
+	
+	public ArrayList<SafetyTopics>arraysafety= new ArrayList<SafetyTopics>();
+	public ArrayList<SafetyTopics>safetyArray;
 	public static ArrayList<String> personelnamesArray = new ArrayList<String>();
 	public static ArrayList<String> personelIdArrayList = new ArrayList<String>();
 	public static ArrayList<String> personelHoursArray = new ArrayList<String>();
@@ -100,6 +112,7 @@ public class ReportItemCreate extends Activity {
 	public static ArrayList<String> OnsiteArray = new ArrayList<String>();
 	public static ArrayList<String> CompanyIdArrayList = new ArrayList<String>();
 
+	Dialog dialog;
 	ListView personnellist, companylist;
 	Activity activity;
 	String currentDateandTime;
@@ -123,93 +136,94 @@ public class ReportItemCreate extends Activity {
 		onsitelayout = (LinearLayout) findViewById(R.id.onsite);
 		safetytopiclayout = (LinearLayout) findViewById(R.id.safetyTopicslayout);
 		weatherlayout = (LinearLayout) findViewById(R.id.weatherlayout);
-		back = (Button) findViewById(R.id.back);
-		save = (Button) findViewById(R.id.save);
-		ImageView camera = (ImageView) findViewById(R.id.camera);
-		ImageView gallery = (ImageView) findViewById(R.id.photogallery);
+		btn_back = (Button) findViewById(R.id.back);
+		btn_save = (Button) findViewById(R.id.save);
+		ImageView img_camera = (ImageView) findViewById(R.id.camera);
+		ImageView img_gallery = (ImageView) findViewById(R.id.photogallery);
 		lin2 = (LinearLayout) findViewById(R.id.scrolllayout2);
-		date = (Button) findViewById(R.id.button2);
-		type = (Button) findViewById(R.id.button1);
-		personnel = (Button) findViewById(R.id.button3);
-		safetytopic = (Button) findViewById(R.id.addtopics);
-		wind = (TextView) findViewById(R.id.wind);
-		temp = (TextView) findViewById(R.id.temp);
-		precip = (TextView) findViewById(R.id.precip);
-		humidity = (TextView) findViewById(R.id.humidity);
-		weather = (TextView) findViewById(R.id.body);
-		weatherIcon = (ImageView) findViewById(R.id.imgview);
-		notes = (EditText) findViewById(R.id.notes);
+		btn_date = (Button) findViewById(R.id.button2);
+		btn_type = (Button) findViewById(R.id.button1);
+		btn_personnel = (Button) findViewById(R.id.button3);
+		btn_safetytopic = (Button) findViewById(R.id.addtopics);
+		tv_wind = (TextView) findViewById(R.id.wind);
+		tv_temp = (TextView) findViewById(R.id.temp);
+		tv_precip = (TextView) findViewById(R.id.precip);
+		tv_humidity = (TextView) findViewById(R.id.humidity);
+		tv_weather = (TextView) findViewById(R.id.body);
+		img_weatherIcon = (ImageView) findViewById(R.id.imgview);
+		txt_notes = (EditText) findViewById(R.id.notes);
 		personnellist = (ListView) findViewById(R.id.personellist);
+		safetyListView=(ListView)findViewById(R.id.safetylist);
 		companylist = (ListView) findViewById(R.id.companieslist);
 
-		textdate = (TextView) findViewById(R.id.textdate);
-		texttype = (TextView) findViewById(R.id.texttype);
+		tv_textdate = (TextView) findViewById(R.id.textdate);
+		tv_texttype = (TextView) findViewById(R.id.texttype);
 
-		wind.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		temp.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		precip.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		humidity.setTypeface(Prefrences
+		tv_wind.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		tv_temp.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		tv_precip.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		tv_humidity.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		weather.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		tv_weather.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
 
-		texttype.setTypeface(Prefrences
+		tv_texttype.setTypeface(Prefrences
+				.helveticaNeuebd(getApplicationContext()));
+		tv_textdate.setTypeface(Prefrences
+				.helveticaNeuebd(getApplicationContext()));
+
+		btn_type.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		btn_date.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		btn_personnel.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		textdate.setTypeface(Prefrences
+		btn_safetytopic.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
 
-		type.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		date.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		personnel.setTypeface(Prefrences
-				.helveticaNeuelt(getApplicationContext()));
-		safetytopic.setTypeface(Prefrences
-				.helveticaNeuelt(getApplicationContext()));
+		btn_save.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		btn_back.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 
-		save.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		back.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-
-		notes.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		txt_notes.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
 
 		if (Prefrences.selecteddate == "") {
 			Log.d("if if if ", "if if if ");
 			if (Prefrences.reportTypeDialog == 1) {
-				type.setText("Daily");
+				btn_type.setText("Daily");
 				weatherlayout.setVisibility(View.VISIBLE);
 				safetytopiclayout.setVisibility(View.GONE);
-				type.setEnabled(true);
+				btn_type.setEnabled(true);
 
 			} else if (Prefrences.reportTypeDialog == 2) {
-				type.setText("Safety");
+				btn_type.setText("Safety");
 				safetytopiclayout.setVisibility(View.VISIBLE);
 				weatherlayout.setVisibility(View.GONE);
-				type.setEnabled(true);
+				btn_type.setEnabled(true);
 			} else if (Prefrences.reportTypeDialog == 3) {
-				type.setText("Weekly");
+				btn_type.setText("Weekly");
 				weatherlayout.setVisibility(View.GONE);
 				safetytopiclayout.setVisibility(View.GONE);
-				type.setEnabled(true);
+				btn_type.setEnabled(true);
 			}
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 			currentDateandTime = sdf.format(new Date());
 
-			textdate.setText(" - " + currentDateandTime);
-			texttype.setText(type.getText().toString());
+			tv_textdate.setText(" - " + currentDateandTime);
+			tv_texttype.setText(btn_type.getText().toString());
 		} else {
 			Log.d("else else", "else else else");
-			type.setText("Daily");
+			btn_type.setText("Daily");
 			weatherlayout.setVisibility(View.VISIBLE);
 			safetytopiclayout.setVisibility(View.GONE);
-			type.setEnabled(false);
-			textdate.setText(" - " + Prefrences.selecteddate);
-			texttype.setText(type.getText().toString());
+			btn_type.setEnabled(true);
+			tv_textdate.setText(" - " + Prefrences.selecteddate);
+			tv_texttype.setText(btn_type.getText().toString());
 			// date.setText(""+Prefrences.selecteddate);
 			// date.setText("Hello...");
 			// date.setBackgroundColor(Color.WHITE);
 			// date.setTextColor(Color.BLACK);
-			Log.d("date button", "date button" + date.getText().toString()
+			Log.d("date button", "date button" + btn_date.getText().toString()
 					+ ", prefrencedate" + Prefrences.selecteddate);
 		}
 
-		date.setOnClickListener(new OnClickListener() {
+		btn_date.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -218,7 +232,7 @@ public class ReportItemCreate extends Activity {
 			}
 		});
 
-		type.setOnClickListener(new OnClickListener() {
+		btn_type.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -229,37 +243,37 @@ public class ReportItemCreate extends Activity {
 				// expiry_popup.setCancelable(false);
 
 				popup.setContentView(R.layout.bridge_expiry_popup);
-				Email = (Button) popup.findViewById(R.id.Email);
-				Call = (Button) popup.findViewById(R.id.Call);
-				Text = (Button) popup.findViewById(R.id.Text);
-				Cancel = (Button) popup.findViewById(R.id.Cancel);
-				expiry_alert = (TextView) popup.findViewById(R.id.alert_text);
+				btn_Email = (Button) popup.findViewById(R.id.Email);
+				btn_Call = (Button) popup.findViewById(R.id.Call);
+				btn_Text = (Button) popup.findViewById(R.id.Text);
+				btn_Cancel = (Button) popup.findViewById(R.id.Cancel);
+				tv_expiry_alert = (TextView) popup.findViewById(R.id.alert_text);
 				// popup.getWindow().setWindowAnimations(R.anim.slide_in_from_bottom);
 				RelativeLayout expiry_main = (RelativeLayout) popup
 						.findViewById(R.id.list_outside);
 				// expiry_main.setInAnimation(R.anim.slide_in_from_top);
 
 				// expiry_alert.setText("Contact "+Prefrences.ContactName.toString());
-				Email.setTypeface(Prefrences
+				btn_Email.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				Text.setTypeface(Prefrences
+				btn_Text.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				Call.setTypeface(Prefrences
+				btn_Call.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				Cancel.setTypeface(Prefrences
+				btn_Cancel.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
 
-				expiry_alert.setTypeface(Prefrences
+				tv_expiry_alert.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
 
 				list_outside = (RelativeLayout) popup
 						.findViewById(R.id.list_outside);
 				new ASSL(ReportItemCreate.this, expiry_main, 1134, 720, false);
 
-				Email.setText("Daily");
-				Call.setText("Safety");
-				Text.setText("Weekly");
-				expiry_alert.setText("Reports");
+				btn_Email.setText("Daily");
+				btn_Call.setText("Safety");
+				btn_Text.setText("Weekly");
+				tv_expiry_alert.setText("Reports");
 
 				list_outside.setOnClickListener(new OnClickListener() {
 					@Override
@@ -272,40 +286,40 @@ public class ReportItemCreate extends Activity {
 					}
 				});
 
-				Email.setOnClickListener(new OnClickListener() {
+				btn_Email.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						type.setText("Daily");
-						texttype.setText("Daily");
+						btn_type.setText("Daily");
+						tv_texttype.setText("Daily");
 						weatherlayout.setVisibility(View.VISIBLE);
 						safetytopiclayout.setVisibility(View.GONE);
 						popup.dismiss();
 					}
 				});
 
-				Call.setOnClickListener(new OnClickListener() {
+				btn_Call.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						type.setText("Safety");
-						texttype.setText("Safety");
+						btn_type.setText("Safety");
+						tv_texttype.setText("Safety");
 						safetytopiclayout.setVisibility(View.VISIBLE);
 						weatherlayout.setVisibility(View.GONE);
 						popup.dismiss();
 					}
 				});
 
-				Text.setOnClickListener(new OnClickListener() {
+				btn_Text.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						type.setText("Weekly");
-						texttype.setText("Weekly");
+						btn_type.setText("Weekly");
+						tv_texttype.setText("Weekly");
 						weatherlayout.setVisibility(View.GONE);
 						safetytopiclayout.setVisibility(View.GONE);
 						popup.dismiss();
 					}
 				});
 
-				Cancel.setOnClickListener(new OnClickListener() {
+				btn_Cancel.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						popup.dismiss();
@@ -316,21 +330,24 @@ public class ReportItemCreate extends Activity {
 			}
 		});
 
-		safetytopic.setOnClickListener(new OnClickListener() {
+		btn_safetytopic.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub addtopic ???????????
 
+				safetyTopic();
+
+				
 			}
 		});
 
-		personnel.setOnClickListener(new OnClickListener() {
+		btn_personnel.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-
+				
 				popup = new Dialog(ReportItemCreate.this,
 						android.R.style.Theme_Translucent_NoTitleBar);
 				// expiry_popup.setCancelable(false);
@@ -340,32 +357,32 @@ public class ReportItemCreate extends Activity {
 				RelativeLayout expiry_main = (RelativeLayout) popup
 						.findViewById(R.id.list_outside);
 				// expiry_main.setInAnimation(R.anim.slide_in_from_top);
-				Email = (Button) popup.findViewById(R.id.Email);
-				Call = (Button) popup.findViewById(R.id.Call);
-				Text = (Button) popup.findViewById(R.id.Text);
-				Cancel = (Button) popup.findViewById(R.id.Cancel);
-				expiry_alert = (TextView) popup.findViewById(R.id.alert_text);
+				btn_Email = (Button) popup.findViewById(R.id.Email);
+				btn_Call = (Button) popup.findViewById(R.id.Call);
+				btn_Text = (Button) popup.findViewById(R.id.Text);
+				btn_Cancel = (Button) popup.findViewById(R.id.Cancel);
+				tv_expiry_alert = (TextView) popup.findViewById(R.id.alert_text);
 				// expiry_alert.setText("Contact "+Prefrences.ContactName.toString());
-				Email.setTypeface(Prefrences
+				btn_Email.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				Text.setTypeface(Prefrences
+				btn_Text.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				Call.setTypeface(Prefrences
+				btn_Call.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				Cancel.setTypeface(Prefrences
+				btn_Cancel.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
 
-				expiry_alert.setTypeface(Prefrences
+				tv_expiry_alert.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
 
 				list_outside = (RelativeLayout) popup
 						.findViewById(R.id.list_outside);
 				new ASSL(ReportItemCreate.this, expiry_main, 1134, 720, false);
 
-				Email.setVisibility(View.GONE);
-				Call.setText("Individuals");
-				Text.setText("Companies");
-				expiry_alert.setText("Reports Personnel");
+				btn_Email.setVisibility(View.GONE);
+				btn_Call.setText("Individuals");
+				btn_Text.setText("Companies");
+				tv_expiry_alert.setText("Reports Personnel");
 
 				list_outside.setOnClickListener(new OnClickListener() {
 					@Override
@@ -386,9 +403,10 @@ public class ReportItemCreate extends Activity {
 				// }
 				// });
 
-				Call.setOnClickListener(new OnClickListener() {
+				btn_Call.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
+						Prefrences.text=11;
 						// type.setText("Safety");
 						Intent intent = new Intent(ReportItemCreate.this,
 								UsersList.class);
@@ -399,10 +417,11 @@ public class ReportItemCreate extends Activity {
 					}
 				});
 
-				Text.setOnClickListener(new OnClickListener() {
+				btn_Text.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						// type.setText("Weekly");
+						Prefrences.text=11;
 						Intent intent = new Intent(ReportItemCreate.this,
 								CompanyList.class);
 						startActivity(intent);
@@ -412,7 +431,7 @@ public class ReportItemCreate extends Activity {
 					}
 				});
 
-				Cancel.setOnClickListener(new OnClickListener() {
+				btn_Cancel.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						popup.dismiss();
@@ -423,7 +442,7 @@ public class ReportItemCreate extends Activity {
 			}
 		});
 
-		gallery.setOnClickListener(new OnClickListener() {
+		img_gallery.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -436,7 +455,7 @@ public class ReportItemCreate extends Activity {
 			}
 		});
 
-		camera.setOnClickListener(new OnClickListener() {
+		img_camera.setOnClickListener(new OnClickListener() {
 
 			@SuppressLint("SimpleDateFormat")
 			@Override
@@ -456,7 +475,7 @@ public class ReportItemCreate extends Activity {
 			}
 		});
 
-		back.setOnClickListener(new OnClickListener() {
+		btn_back.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -464,6 +483,7 @@ public class ReportItemCreate extends Activity {
 				Prefrences.selecteddate = "";
 				Prefrences.reportTypeDialog = 0;
 				personelHoursArray.clear();
+				personelIdArrayList.clear();
 				personelnamesArray.clear();
 				CompaniesArray.clear();
 				CompanyIdArrayList.clear();
@@ -487,14 +507,14 @@ public class ReportItemCreate extends Activity {
 						R.anim.slide_out_right);
 			}
 		});
-		save.setOnClickListener(new OnClickListener() {
+		btn_save.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if (isInternetPresent) {
 					// Prefrences.stopingHit = 1;
-					if (save.getText().equals("Create")) {
+					if (btn_save.getText().equals("Create")) {
 						createReportHit();
 
 					} else {
@@ -606,8 +626,9 @@ public class ReportItemCreate extends Activity {
 		}
 
 		public class ViewHolder {
-			public TextView personnelname, personnelhours, Remove;
+			public TextView personnelname, personnelhours;
 			// int pos;
+			ImageView Remove;
 			RelativeLayout root, relatlay;
 
 		}
@@ -628,12 +649,12 @@ public class ReportItemCreate extends Activity {
 						.findViewById(R.id.personelname);
 				holder.personnelhours = (TextView) convertView
 						.findViewById(R.id.personelhours);
-				holder.Remove = (TextView) convertView
+				holder.Remove = (ImageView) convertView
 						.findViewById(R.id.remove);
 				holder.relatlay = (RelativeLayout) convertView
 						.findViewById(R.id.relatlay);
-				holder.Remove.setTypeface(Prefrences
-						.helveticaNeuelt(getApplicationContext()));
+//				holder.Remove.setTypeface(Prefrences
+//						.helveticaNeuelt(getApplicationContext()));
 				holder.personnelhours.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
 				holder.personnelname.setTypeface(Prefrences
@@ -666,7 +687,7 @@ public class ReportItemCreate extends Activity {
 						.toString());
 				holder.personnelhours.setText("");
 			}
-			holder.Remove.setText("Remove");
+//			holder.Remove.setText("Remove");
 			holder.Remove.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -717,8 +738,8 @@ public class ReportItemCreate extends Activity {
 		}
 
 		public class ViewHolder {
-			public TextView personnelname, personnelhours, Remove;
-
+			public TextView personnelname, personnelhours;
+			ImageView Remove;
 			RelativeLayout root, relatlay;
 
 		}
@@ -739,13 +760,13 @@ public class ReportItemCreate extends Activity {
 						.findViewById(R.id.personelname);
 				holder.personnelhours = (TextView) convertView
 						.findViewById(R.id.personelhours);
-				holder.Remove = (TextView) convertView
+				holder.Remove = (ImageView) convertView
 						.findViewById(R.id.remove);
 				holder.relatlay = (RelativeLayout) convertView
 						.findViewById(R.id.relatlay);
 
-				holder.Remove.setTypeface(Prefrences
-						.helveticaNeuelt(getApplicationContext()));
+//				holder.Remove.setTypeface(Prefrences
+//						.helveticaNeuelt(getApplicationContext()));
 				holder.personnelhours.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
 				holder.personnelname.setTypeface(Prefrences
@@ -765,10 +786,7 @@ public class ReportItemCreate extends Activity {
 			holder.personnelname.setTag(holder);
 			holder.Remove.setTag(holder);
 			holder.relatlay.setTag(holder);
-			// Log.d("Loggy","Loggy"+reportdata.get(ret).personnel.get(position).users.get(0).uFullName.toString());
-
-			// holder.personnelname.setText(Prefrences.personelName[position].toString());
-			// holder.personnelhours.setText(Prefrences.personelHours[position].toString());
+			
 			if (!CompaniesArray.get(position).isEmpty()) {
 				holder.personnelname.setText(CompaniesArray.get(position)
 						.toString());
@@ -780,13 +798,13 @@ public class ReportItemCreate extends Activity {
 				holder.personnelhours.setText("");
 			}
 
-			holder.Remove.setText("Remove");
+//			holder.Remove.setText("Remove");
 			holder.Remove.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-
+					ViewHolder holder2 = (ViewHolder) v.getTag();
 					CompaniesArray.remove(position);
 					OnsiteArray.remove(position);
 					CompanyIdArrayList.remove(position);
@@ -934,7 +952,7 @@ public class ReportItemCreate extends Activity {
 			String final_date = new_month + "/" + new_day + "/" + year;
 			Log.i("date", "" + final_date);
 
-			date.setText(final_date);
+			btn_date.setText(final_date);
 		}
 	};
 
@@ -1020,6 +1038,7 @@ public class ReportItemCreate extends Activity {
 		// JSONObject jo2 =new JSONObject();
 		JSONArray jsonPersonnel1 = new JSONArray();
 		JSONArray jsonCompany = new JSONArray();
+		JSONArray jsonSafety = new JSONArray();
 		// “report_companies” : [
 		// {
 		// “name” : “XYZ Locksmith”,
@@ -1048,22 +1067,32 @@ public class ReportItemCreate extends Activity {
 				jsonCompany.put(jo4);
 			}
 
-			// Log.d("jo3", "jo3" + jo3.length());
+			for (int j = 0; j < arraysafety.size(); j++) {
+				JSONObject jo5 = new JSONObject();
+//				Log.i("id ", "" + arraysafety.get(j).toString());
+				jo5.put("id", arraysafety.get(j).Id.toString());
+				jo5.put("title", arraysafety.get(j).Title.toString());
+				jo5.put("info", arraysafety.get(j).Info.toString());
+				jsonSafety.put(jo5);
+			}
+			
+			 Log.d("arraysafety", "size" + arraysafety.size());
 			// try {
 			jsonobj.put("author_id", Prefrences.userId);
 
-			jsonobj.put("created_date", date.getText().toString());
-			jsonobj.put("humidity", humidity.getText().toString());
-			jsonobj.put("precip", precip.getText().toString());
+			jsonobj.put("created_date", btn_date.getText().toString());
+			jsonobj.put("humidity", tv_humidity.getText().toString());
+			jsonobj.put("precip", tv_precip.getText().toString());
 			jsonobj.put("project_id", Prefrences.selectedProId);
-			jsonobj.put("report_type", type.getText().toString());
-			jsonobj.put("temp", temp.getText().toString());
-			jsonobj.put("weather", weather.getText().toString());
+			jsonobj.put("report_type", btn_type.getText().toString());
+			jsonobj.put("temp", tv_temp.getText().toString());
+			jsonobj.put("weather", tv_weather.getText().toString());
 			jsonobj.put("weather_icon", icons);
-			jsonobj.put("wind", wind.getText().toString());
-			jsonobj.put("body", notes.getText().toString());
+			jsonobj.put("wind", tv_wind.getText().toString());
+			jsonobj.put("body", txt_notes.getText().toString());
 			jsonobj.put("report_users", jsonPersonnel1);
 			jsonobj.put("report_companies", jsonCompany);
+			jsonobj.put("safety_topics", jsonSafety );
 			jsonobj.put("mobile", "1");
 
 			JSONObject finalJson = new JSONObject();
@@ -1088,7 +1117,14 @@ public class ReportItemCreate extends Activity {
 								res = new JSONObject(response);
 								Log.v("response ---- ",
 										"---*****----" + res.toString(2));
-
+//								JSONObject duplicate = res.getJSONObject("duplicate");
+//
+//								duplicate.getString("")
+								
+//								if(res.toString().equalsIgnoreCase("duplicate": "06\/25\/2014")))
+//								{
+//									Toast.makeText(getApplicationContext(), "Duplication",  Toast.LENGTH_LONG).show();
+//								}
 								 JSONObject report =
 								 res.getJSONObject("report");
 								
@@ -1104,23 +1140,30 @@ public class ReportItemCreate extends Activity {
 									Prefrences.dismissLoadingDialog();
 									AlertMessage();
 								}
-								if (save.getText().equals("Create")) {
-									save.setText("Save");
+								if (btn_save.getText().equals("Create")) {
+									btn_save.setText("Save");
 									DateFormat dateFormat = new SimpleDateFormat(
 											"yyyy/MM/dd");
 									// get current date time with Date()
 									Date date = new Date();
-									if (type.getText().toString()
+									if (btn_type.getText().toString()
 											.equalsIgnoreCase("Daily")) {
 										Prefrences.saveDateDaily(dateFormat
 												.format(date).toString(),
-												getApplicationContext());
-									} else if (type.getText().toString()
+												getApplicationContext(),btn_type.getText().toString());
+									}
+									 else if (btn_type.getText().toString()
 											.equalsIgnoreCase("Safety")) {
 										Prefrences.saveDateSafety(dateFormat
 												.format(date).toString(),
-												getApplicationContext());
+												getApplicationContext(),btn_type.getText().toString());
 									}
+									 else if (btn_type.getText().toString()
+												.equalsIgnoreCase("Weekly")) {
+											Prefrences.saveDateWeekly(dateFormat
+													.format(date).toString(),
+													getApplicationContext(),btn_type.getText().toString());
+										}
 								}
 
 							} catch (Exception e) {
@@ -1180,16 +1223,19 @@ public class ReportItemCreate extends Activity {
 
 							precips = current.getString("precipProbability");
 							double pre = Double.parseDouble(precips);
+							
 							pre = pre * 100;
 							precips = Double.toString(pre);
+//							precips= String.format("%.1f", precips);
 							// precips=precips.spl
 
 							humiditys = current.getString("humidity");
 							double hum = Double.parseDouble(humiditys);
 							hum = hum * 100;
 							humiditys = Double.toString(hum);
+//							humiditys= String.format("%.1f", humiditys);
 							// bodys=current.getString("windSpeed");
-
+							
 							icons = current.getString("icon");
 							summarys = current.getString("summary");
 							// winds=current.getString("windSpeed");
@@ -1198,43 +1244,45 @@ public class ReportItemCreate extends Activity {
 									+ tempsHigh + precips + humiditys
 									+ tempsLow + icons + summarys);
 							if (Prefrences.selecteddate != "") {
-								date.setText(Prefrences.selecteddate);
+								btn_date.setText(Prefrences.selecteddate);
 							} else {
-								date.setText(currentDateandTime);
+								btn_date.setText(currentDateandTime);
 							}
-							wind.setText(winds + "mph");
-							temp.setText(tempsLow + (char) 0x00B0 + " / "
+							tv_wind.setText(winds + "mph");
+							tv_temp.setText(tempsLow + (char) 0x00B0 + " / "
 									+ tempsHigh + (char) 0x00B0);
-							String s = String.format("%.2f",
+							String str = String.format("%.2f",
 									Float.parseFloat(precips));
-							precip.setText(s + "%");
-							humidity.setText(humiditys + "%");
-							weather.setText(summarys);
+							tv_precip.setText(str + "%");
+							String str2 = String.format("%.2f",
+									Float.parseFloat(humiditys));
+							tv_humidity.setText(str2 + "%");
+							tv_weather.setText(summarys);
 							if (icons.toString().equalsIgnoreCase("clear-day")
 									|| icons.toString().equalsIgnoreCase(
 											"clear-night")) {
-								weatherIcon
+								img_weatherIcon
 										.setBackgroundResource(R.drawable.sunny_temp);
 							} else if (icons.toString()
 									.equalsIgnoreCase("rain")
 									|| icons.toString().equalsIgnoreCase(
 											"sleet")) {
-								weatherIcon
+								img_weatherIcon
 										.setBackgroundResource(R.drawable.rainy_temp);
 							} else if (icons.toString().equalsIgnoreCase(
 									"partly-cloudy-day")
 									|| icons.toString().equalsIgnoreCase(
 											"partly-cloudy-night")) {
-								weatherIcon
+								img_weatherIcon
 										.setBackgroundResource(R.drawable.partly_temp);
 							} else if (icons.toString().equalsIgnoreCase(
 									"cloudy")) {
-								weatherIcon
+								img_weatherIcon
 										.setBackgroundResource(R.drawable.cloudy_temp);
 							} else if (icons.toString()
 									.equalsIgnoreCase("wind")
 									|| icons.toString().equalsIgnoreCase("fog")) {
-								weatherIcon
+								img_weatherIcon
 										.setBackgroundResource(R.drawable.wind_temp);
 							} else {
 								Log.d("hi no image ", "hiii no image");
@@ -1276,16 +1324,16 @@ public class ReportItemCreate extends Activity {
 			// try {
 			jsonobj.put("author_id", Prefrences.userId);
 
-			jsonobj.put("created_date", date.getText().toString());
-			jsonobj.put("humidity", humidity.getText().toString());
-			jsonobj.put("precip", precip.getText().toString());
+			jsonobj.put("created_date", btn_date.getText().toString());
+			jsonobj.put("humidity", tv_humidity.getText().toString());
+			jsonobj.put("precip", tv_precip.getText().toString());
 			jsonobj.put("project_id", Prefrences.selectedProId);
-			jsonobj.put("report_type", type.getText().toString());
-			jsonobj.put("temp", temp.getText().toString());
-			jsonobj.put("weather", weather.getText().toString());
+			jsonobj.put("report_type", btn_type.getText().toString());
+			jsonobj.put("temp", tv_temp.getText().toString());
+			jsonobj.put("weather", tv_weather.getText().toString());
 			jsonobj.put("weather_icon", icons);
-			jsonobj.put("wind", wind.getText().toString());
-			jsonobj.put("body", notes.getText().toString());
+			jsonobj.put("wind", tv_wind.getText().toString());
+			jsonobj.put("body", txt_notes.getText().toString());
 			jsonobj.put("report_users", jsonArray);
 
 			JSONObject finalJson = new JSONObject();
@@ -1493,5 +1541,317 @@ public class ReportItemCreate extends Activity {
 		alert.show();
 
 	}
+	public void safetyTopic(){
+		
 
+			Prefrences.showLoadingDialog(ReportItemCreate.this, "Loading...");
+
+
+			RequestParams params = new RequestParams();
+			
+			params.put("user_id", Prefrences.userId);
+
+			AsyncHttpClient client = new AsyncHttpClient();
+			client.setTimeout(100000);
+			client.addHeader("Content-type", "application/json");
+			client.addHeader("Accept", "application/json");
+			// client.get()
+			client.get(getApplicationContext(),
+					Prefrences.url+"/reports/options",params,
+					new AsyncHttpResponseHandler() {
+						@Override
+						public void onSuccess(String response) {
+							JSONObject res = null;
+							try {
+								res = new JSONObject(response);
+								Log.v("response ---- ",
+										"---*****----" + res.toString(2));
+								safetyArray=new ArrayList<SafetyTopics>();
+								JSONArray current = res.getJSONArray("possible_topics");
+//								// winds,temps,precips,humiditys,bodys,icons,summarys
+								String id,title,info;
+								for(int i=0;i<current.length();i++)
+								{
+								
+									JSONObject obj = current
+											.getJSONObject(i);
+								
+								id = obj.getString("id");
+								title = obj.getString("title");
+								info = obj.getString("info");
+								
+								safetyArray.add(new SafetyTopics(id, title, info));
+	
+								}
+
+								Log.d("Safety", "size = "+safetyArray.size());
+								dialog = new Dialog(activity,
+										android.R.style.Theme_Translucent_NoTitleBar);
+								// dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+								dialog.setContentView(R.layout.dialogbox_list);
+								ArrayList<SafetyTopics> array = new ArrayList<SafetyTopics>();
+
+								Window window = dialog.getWindow();
+								WindowManager.LayoutParams wlp = window.getAttributes();
+
+								wlp.gravity = Gravity.CENTER;
+								wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+								// wlp.width &= ~WindowManager.LayoutParams.MATCH_PARENT;
+								window.setAttributes(wlp);
+								array = safetyArray;
+								// dialog.setTitle("Location");
+								TextView txtwho = (TextView) dialog
+										.findViewById(R.id.txt_who);
+								txtwho.setText("Location");
+								LinearLayout linearLay = (LinearLayout) dialog
+										.findViewById(R.id.db);
+								RelativeLayout list_outside = (RelativeLayout) dialog
+										.findViewById(R.id.list_outside);
+
+								// db.setBackgroundColor(drawable.transparent_image);
+								new ASSL(activity, linearLay, 1134, 720, false);
+								Button cancel = (Button) dialog.findViewById(R.id.cancel);
+
+								ListView dialoglist = (ListView) dialog
+										.findViewById(R.id.dialoglist);
+								// Button btn_cancel = (Button)dialog.
+								// findViewById(R.id.cancel);
+
+								adapter1 adp = new adapter1(activity, array);
+								dialoglist.setAdapter(adp);
+								cancel.setOnClickListener(new OnClickListener() {
+
+									@Override
+									public void onClick(View v) {
+										// TODO Auto-generated method stub
+
+										dialog.dismiss();
+									}
+								});
+
+								list_outside.setOnClickListener(new OnClickListener() {
+
+									@Override
+									public void onClick(View v) {
+										// TODO Auto-generated method stub
+
+										dialog.dismiss();
+									}
+								});
+
+								dialog.show();
+								
+
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							Prefrences.dismissLoadingDialog();
+						}
+
+						@Override
+						public void onFailure(Throwable arg0) {
+							Log.e("request fail", arg0.toString());
+							Prefrences.dismissLoadingDialog();
+						}
+					});
+	
+	}
+	
+	public class adapter1 extends BaseAdapter {
+
+		ArrayList<SafetyTopics> array;
+		// ArrayList<Users>usr;
+		Context con;
+
+		public adapter1(Context con, ArrayList<SafetyTopics> array) {
+			// TODO Auto-generated constructor stub
+			this.array = array;
+			this.con = con;
+			// this.usr=usrs;
+		}
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			// Log.d("userlist","Size========="+array.size());
+			// if()
+			return array.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return array.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(final int position, View convertView,
+				ViewGroup parent) {
+			// TODO Auto-generated method stub
+
+			viewholder holder;
+			// final Users body = (Users) this.getItem(position);
+			// Log.d("adp","body="+body+"item pos"+this.getItem(position));
+
+			if (convertView == null) {
+				holder = new viewholder();
+				// LayoutInflater inflater =
+				// ((Activity)con).getLayoutInflater();
+				LayoutInflater inflater = (LayoutInflater) con
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(R.layout.dialog2list_item, null);
+				holder.linear = (LinearLayout) convertView
+						.findViewById(R.id.dialoglinear);
+				holder.linear.setLayoutParams(new ListView.LayoutParams(
+						ListView.LayoutParams.MATCH_PARENT, 80));
+				ASSL.DoMagic(holder.linear);
+				convertView.setTag(holder);
+			} else {
+				holder = (viewholder) convertView.getTag();
+			}
+
+			holder.txtview = (TextView) convertView.findViewById(R.id.array);
+			holder.txtview.setTypeface(Prefrences
+					.helveticaNeuelt(activity));
+			holder.txtview.setText(array.get(position).Title.toString());
+
+			holder.txtview.setOnClickListener(new View.OnClickListener() {
+
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					
+					arraysafety.add(array.get(position));
+					Prefrences.selected_location = array.get(position).Title.toString();
+					safetyadapter adp = new safetyadapter();
+					safetyListView.setAdapter(adp);
+					setlist(safetyListView, adp, 100);
+					dialog.dismiss();
+					
+				}
+				
+			});
+			return convertView;
+		}
+
+	}
+
+	
+	private static class viewholder {
+		TextView txtview;
+		LinearLayout linear;
+	}
+	
+	public class safetyadapter extends BaseAdapter {
+
+		LayoutInflater inflator;
+
+		public safetyadapter() {
+			inflator = (LayoutInflater) ReportItemCreate.this
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			Log.d("paersonnel adapter", "In adapter");
+		}
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			// Log.v("size of personel","size of personel"+reportdata.get(ret).personnel.size());
+			// return Prefrences.personelName.length;
+			return arraysafety.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return position;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return position;
+		}
+
+		public class ViewHolder {
+			public TextView personnelname;
+			ImageView info, Remove;
+			// int pos;
+			RelativeLayout root, relatlay;
+
+		}
+
+		@Override
+		public View getView(final int position, View convertView,
+				ViewGroup parent) {
+			// TODO Auto-generated method stub
+			final ViewHolder holder;
+			if (convertView == null) {
+				convertView = inflator.inflate(R.layout.safetylistitem,
+						null);
+
+				holder = new ViewHolder();
+				holder.root = (RelativeLayout) convertView
+						.findViewById(R.id.root);
+				holder.info=(ImageView)convertView.findViewById(R.id.info);
+				holder.personnelname = (TextView) convertView
+						.findViewById(R.id.personelname);
+//				holder.personnelhours = (TextView) convertView
+//						.findViewById(R.id.personelhours);
+				holder.Remove = (ImageView) convertView
+						.findViewById(R.id.remove);
+				holder.relatlay = (RelativeLayout) convertView
+						.findViewById(R.id.relatlay);
+//				holder.Remove.setTypeface(Prefrences
+//						.helveticaNeuelt(getApplicationContext()));
+//				holder.personnelhours.setTypeface(Prefrences
+//						.helveticaNeuelt(getApplicationContext()));
+				holder.personnelname.setTypeface(Prefrences
+						.helveticaNeuelt(getApplicationContext()));
+				holder.root.setLayoutParams(new ListView.LayoutParams(
+						ListView.LayoutParams.MATCH_PARENT, 100));
+				ASSL.DoMagic(holder.root);
+				/************ Set holder with LayoutInflater ************/
+				convertView.setTag(holder);
+			}
+
+			else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			// holder.personnelhours.setTag(holder);
+			// holder.personnelname.setTag(holder);
+			// holder.Remove.setTag(holder);
+			// holder.relatlay.setTag(holder);
+			// Log.d("Loggy","Loggy"+reportdata.get(ret).personnel.get(position).users.get(0).uFullName.toString());
+
+			// holder.personnelname.setText(Prefrences.personelName[position].toString());
+			// holder.personnelhours.setText(Prefrences.personelHours[position].toString());
+			
+				holder.personnelname.setText(arraysafety.get(position).Title
+						.toString());
+//				holder.personnelhours.setText(arraysafety.get(position).Id
+//						.toString());
+			
+//			holder.Remove.setText("Remove");
+			holder.Remove.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+
+					arraysafety.remove(position);
+					
+					holder.relatlay.removeViewAt(position);
+					
+				}
+			});
+			notifyDataSetChanged();
+			return convertView;
+		}
+
+	}
 }

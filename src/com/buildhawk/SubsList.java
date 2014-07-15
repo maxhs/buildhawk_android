@@ -32,15 +32,15 @@ import android.widget.Toast;
 public class SubsList extends Activity {
 
 	ListView lstvw;
-	ArrayList<subcontractors> array;
+	ArrayList<Users> array;
 	InputMethodManager imm;
-	TextView back;
+	TextView tv_back;
 	Context con;
 	LinearLayout relLay;
 	Dialog popup;
-	Button Submit, Cancel;
-	EditText hours, location;
-	TextView expiry_alert;
+	Button btn_Submit, btn_Cancel;
+	EditText txt_hours, txt_location;
+	TextView tv_expiry_alert;
 	RelativeLayout list_outside;
 
 	@Override
@@ -51,14 +51,14 @@ public class SubsList extends Activity {
 		new ASSL(this, relLay, 1134, 720, false);
 
 		con = SubsList.this;
-		back = (TextView) findViewById(R.id.back);
+		tv_back = (TextView) findViewById(R.id.back);
 
 		lstvw = (ListView) findViewById(R.id.subslist);
 
-		back.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		tv_back.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 
-		array = Homepage.sub2;
-		back.setOnClickListener(new OnClickListener() {
+		array = ProjectsAdapter.user2;
+		tv_back.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -89,10 +89,10 @@ public class SubsList extends Activity {
 
 	public class adapter extends BaseAdapter {
 
-		ArrayList<subcontractors> array;
+		ArrayList<Users> array;
 		Context con;
 
-		public adapter(Context con, ArrayList<subcontractors> array) {
+		public adapter(Context con, ArrayList<Users> array) {
 			// TODO Auto-generated constructor stub
 			this.array = array;
 			this.con = con;
@@ -122,7 +122,7 @@ public class SubsList extends Activity {
 			// TODO Auto-generated method stub
 
 			viewholder holder;
-			final subcontractors body = (subcontractors) this.getItem(position);
+			final Users body = (Users) this.getItem(position);
 			// Log.d("adp","body="+body+"item pos"+this.getItem(position));
 
 			if (convertView == null) {
@@ -145,7 +145,7 @@ public class SubsList extends Activity {
 			holder.txtview = (TextView) convertView.findViewById(R.id.array);
 			holder.txtview.setTypeface(Prefrences
 					.helveticaNeuelt(getApplicationContext()));
-			holder.txtview.setText(body.sName.toString());
+			holder.txtview.setText(body.uFullName.toString());
 			holder.txtview.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -157,13 +157,13 @@ public class SubsList extends Activity {
 
 					if (Prefrences.text == 1) {
 						Prefrences.text = 0;
-						Log.v("", "" + body.sEmail.toString());
+						Log.v("", "" + body.uEmail.toString());
 						// Intent emailIntent = new Intent(Intent.ACTION_SENDTO,
 						// Uri.fromParts(
 						// "mailto",body.uEmail.toString(), null));
 						Intent emailIntent = new Intent(Intent.ACTION_SEND);
 						emailIntent.putExtra(Intent.EXTRA_EMAIL,
-								new String[] { body.sEmail.toString() });
+								new String[] { body.uEmail.toString() });
 						emailIntent.putExtra(
 								android.content.Intent.EXTRA_SUBJECT, "");
 						emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
@@ -181,15 +181,15 @@ public class SubsList extends Activity {
 						}
 					} else if (Prefrences.text == 2) {
 						Prefrences.text = 0;
-						Log.v("", "" + body.sPhone.toString());
+						Log.v("", "" + body.uPhone.toString());
 						Intent phoneCallIntent = new Intent(Intent.ACTION_CALL);
 						phoneCallIntent.setData(Uri.parse("tel:"
-								+ body.sPhone.toString()));
+								+ body.uPhone.toString()));
 						startActivity(phoneCallIntent);
 					} else if (Prefrences.text == 3) {
 						Prefrences.text = 0;
 						startActivity(new Intent(Intent.ACTION_VIEW, Uri
-								.fromParts("sms", body.sPhone.toString(), null)));
+								.fromParts("sms", body.uPhone.toString(), null)));
 					}
 					// else
 					// {

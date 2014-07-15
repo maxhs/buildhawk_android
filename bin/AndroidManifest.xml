@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
     <application
         android:allowBackup="true"
@@ -61,7 +62,7 @@
             android:name="com.buildhawk.Homepage"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.buildhawk.MainActivity1"
+            android:name="com.buildhawk.SelectedImageView"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.buildhawk.MainActivity"
@@ -137,6 +138,15 @@
         <activity
             android:name="com.buildhawk.SubsList"
             android:label="@string/title_activity_subs_list" >
+        </activity>
+
+        <service
+            android:name="com.buildhawk.MyService"
+            android:enabled="true" />
+
+        <activity
+            android:name="com.buildhawk.AddUser"
+            android:label="@string/title_activity_add_user" >
         </activity>
     </application>
 

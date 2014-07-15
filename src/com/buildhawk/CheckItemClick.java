@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -45,9 +47,11 @@ import android.graphics.Color;
 import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.CalendarContract.Reminders;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -74,8 +78,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.buildhawk.R.drawable;
+import com.buildhawk.utils.Categories;
+import com.buildhawk.utils.CheckItems;
 import com.buildhawk.utils.CommentsChecklistItem;
+import com.buildhawk.utils.DataCheckListItems;
 import com.buildhawk.utils.DialogBox;
+import com.buildhawk.utils.SubCategories;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -86,25 +94,27 @@ public class CheckItemClick extends Activity {
 	public static Fragment fragment;
 	private int resultLoadImage = 1;
 	private int takePicture = 1;
-	private int pickContact = 1;
 	private Uri imageUri;
 	RelativeLayout relLay;
-	TextView txtBody, txtType;
-	EditText commentbody;
-	Button sendcomment;
+	TextView tv_txtBody, tv_txtType;
+	EditText edt_txt_commentbody;
+	Button btn_sendcomment;
+	CustomDateTimePicker custom;
 	// public static ArrayList<PhotosCheckListItem>pho=new
 	// ArrayList<PhotosCheckListItem>();
 	ArrayList<CommentsChecklistItem> comm = new ArrayList<CommentsChecklistItem>();
-	Button complete, progress, notapp, save;
-	int completed;
+	Button btn_complete, btn_progress, btn_notapp, btn_save;
+	int completed=0;
 	String picturePath;
 	LinearLayout lin2;
 	int temp, temp2;
 	LinearLayout lin3;
 	SwipeDetector swipeDetector;
-	String idCheckitem, statusCheckitem;
+	static String idCheckitem;
+	String statusCheckitem, catid,subcatid;
 	ListView commentslist;
-	Context con;
+	static Context con;
+	static TextView txt_reminder;
 	SwipeDetector swipeDetecter = new SwipeDetector();
 	ScrollView scrollView;
 	ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -118,161 +128,201 @@ public class CheckItemClick extends Activity {
 		relLay = (RelativeLayout) findViewById(R.id.rellay);
 		new ASSL(this, relLay, 1134, 720, false);
 
+		
 		con = CheckItemClick.this;
 		comm.clear();
 		comm.addAll(ChecklistFragment.comments);
 		commentslist = (ListView) findViewById(R.id.commentslist);
 
-		ImageView camera = (ImageView) findViewById(R.id.camera);
-		ImageView gallery = (ImageView) findViewById(R.id.photogallery);
-		ImageView call = (ImageView) findViewById(R.id.call);
-		Button back = (Button) findViewById(R.id.back);
-		save = (Button) findViewById(R.id.save);
-		ImageView email = (ImageView) findViewById(R.id.email);
-		ImageView message = (ImageView) findViewById(R.id.message);
-		commentbody = (EditText) findViewById(R.id.commentBody);
-		sendcomment = (Button) findViewById(R.id.sendcomment);
-		complete = (Button) findViewById(R.id.complete_btn);
-		progress = (Button) findViewById(R.id.progress_btn);
-		notapp = (Button) findViewById(R.id.notApplicable_btn);
-		txtBody = (TextView) findViewById(R.id.txt_body);
-		txtType = (TextView) findViewById(R.id.txt_type);
+		ImageView img_camera = (ImageView) findViewById(R.id.camera);
+		ImageView img_reminder = (ImageView) findViewById(R.id.reminder);
+		ImageView img_gallery = (ImageView) findViewById(R.id.photogallery);
+		ImageView img_call = (ImageView) findViewById(R.id.call);
+		Button btn_back = (Button) findViewById(R.id.back);
+		btn_save = (Button) findViewById(R.id.save);
+		ImageView img_email = (ImageView) findViewById(R.id.email);
+		ImageView img_message = (ImageView) findViewById(R.id.message);
+		edt_txt_commentbody = (EditText) findViewById(R.id.commentBody);
+		btn_sendcomment = (Button) findViewById(R.id.sendcomment);
+		btn_complete = (Button) findViewById(R.id.complete_btn);
+		btn_progress = (Button) findViewById(R.id.progress_btn);
+		btn_notapp = (Button) findViewById(R.id.notApplicable_btn);
+		tv_txtBody = (TextView) findViewById(R.id.txt_body);
+		tv_txtType = (TextView) findViewById(R.id.txt_type);
+		txt_reminder= (TextView) findViewById(R.id.txtReminder);
 
-		complete.setTypeface(Prefrences
+		txt_reminder.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		txtBody.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		txtType.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		progress.setTypeface(Prefrences
+		btn_complete.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		notapp.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		commentbody.setTypeface(Prefrences
+		tv_txtBody.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		tv_txtType.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		btn_progress.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		sendcomment.setTypeface(Prefrences
+		btn_notapp.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		edt_txt_commentbody.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		back.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
-		save.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		btn_sendcomment.setTypeface(Prefrences
+				.helveticaNeuelt(getApplicationContext()));
+		btn_back.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		btn_save.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 		scrollView = (ScrollView) findViewById(R.id.scrollView1_checkitem);
 		scrollView.smoothScrollTo(0, 0);
-		// scrollView.post(new Runnable() {
-		// public void run() {
-		// scrollView.fullScroll(ScrollView.FOCUS_BLOCK_DESCENDANTS);
-		// }
-		// });
+		
+		
+		
+		
+		custom = new CustomDateTimePicker(this,
+	            new CustomDateTimePicker.ICustomDateTimeListener() {
 
-		// scrollView.scrollTo(0, 0);
-		// scrollView.scrollBy(0, 0);
+			@Override
+			public void onSet(Dialog dialog, Calendar calendarSelected,
+					Date dateSelected, int year, String monthFullName,
+					String monthShortName, int monthNumber, int date,
+					String weekDayFullName, String weekDayShortName,
+					int hour24, int hour12, int min, int sec,
+					String AM_PM) {
+				// TODO Auto-generated method stub
+			        	
+
+		                           txt_reminder.setText(monthShortName 
+		                                    + " " + calendarSelected
+                                            .get(Calendar.DAY_OF_MONTH) + " " + year
+		                                    + " " + hour24 + ":" + min
+		                                    + ":" + sec);
+		                           String str = txt_reminder.getText().toString()+".454 UTC";
+		                   	    SimpleDateFormat df = new SimpleDateFormat("MMM dd yyyy HH:mm:ss.SSS zzz");
+		                   	    Date date1 = null;
+								try {
+									date1 = df.parse(str);
+								} catch (java.text.ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+		                   	    long epoch = date1.getTime();
+		                   	    System.out.println(epoch); // 1055545912454
+		                           reminderSet(epoch);
+	                }
+
+	                @Override
+	                public void onCancel() {
+
+	                }
+
+	            });
+
+	  /**
+	    * Pass Directly current time format it will return AM and PM if you set
+	    * false
+	    */
+	    custom.set24HourFormat(false);
+	    /**
+	    * Pass Directly current data and time to show when it pop up
+	    */
+		   custom.setDate(Calendar.getInstance());
+
 
 		Bundle bundle = getIntent().getExtras();
-		txtBody.setText(bundle.getString("body"));
+		tv_txtBody.setText(bundle.getString("body"));
 
-		txtType.setText(bundle.getString("itemtype"));
+		tv_txtType.setText(bundle.getString("itemtype"));
 
 		final commentadapter comadap = new commentadapter();
 		commentslist.setAdapter(comadap);
 
 		setlist(commentslist, comadap, 230);
 
-		// comm=bundle.getParcelableArrayList("hello");
-		// Log.d("","ppppppppppp"+comm);
-		idCheckitem = bundle.getString("id");
-		statusCheckitem = bundle.getString("status");
+		
+			idCheckitem = bundle.getString("item_id");
+			statusCheckitem = bundle.getString("status");
+			catid = bundle.getString("cat_id");
+			subcatid = bundle.getString("subcat_id");		
 
-		if (statusCheckitem.equalsIgnoreCase("Completed")) {
+		if (statusCheckitem.equalsIgnoreCase("1")) {
+			completed=1;
+			btn_complete.setBackgroundColor(Color.BLACK);
+			btn_complete.setTextColor(Color.WHITE);
+			btn_progress.setBackgroundResource(drawable.transparentclick);
+			btn_progress.setTextColor(Color.BLACK);
+			btn_notapp.setBackgroundResource(drawable.transparentclick);
+			btn_notapp.setTextColor(Color.BLACK);
 
-			complete.setBackgroundColor(Color.BLACK);
-			complete.setTextColor(Color.WHITE);
-			progress.setBackgroundResource(drawable.transparentclick);
-			progress.setTextColor(Color.BLACK);
-			notapp.setBackgroundResource(drawable.transparentclick);
-			notapp.setTextColor(Color.BLACK);
+		} else if (statusCheckitem.equalsIgnoreCase("0")) {
+			btn_complete.setBackgroundResource(drawable.transparentclick);
+			btn_complete.setTextColor(Color.BLACK);
+			btn_progress.setBackgroundColor(Color.BLACK);
+			btn_progress.setTextColor(Color.WHITE);
+			btn_notapp.setBackgroundResource(drawable.transparentclick);
+			btn_notapp.setTextColor(Color.BLACK);
 
-		} else if (statusCheckitem.equalsIgnoreCase("In-Progress")) {
-			complete.setBackgroundResource(drawable.transparentclick);
-			complete.setTextColor(Color.BLACK);
-			progress.setBackgroundColor(Color.BLACK);
-			progress.setTextColor(Color.WHITE);
-			notapp.setBackgroundResource(drawable.transparentclick);
-			notapp.setTextColor(Color.BLACK);
-
-		} else if (statusCheckitem.equalsIgnoreCase("Not Applicable")) {
-			complete.setBackgroundResource(drawable.transparentclick);
-			complete.setTextColor(Color.BLACK);
-			progress.setBackgroundResource(drawable.transparentclick);
-			progress.setTextColor(Color.BLACK);
-			notapp.setBackgroundColor(Color.BLACK);
-			notapp.setTextColor(Color.WHITE);
+		} else if (statusCheckitem.equalsIgnoreCase("-1")) {
+			btn_complete.setBackgroundResource(drawable.transparentclick);
+			btn_complete.setTextColor(Color.BLACK);
+			btn_progress.setBackgroundResource(drawable.transparentclick);
+			btn_progress.setTextColor(Color.BLACK);
+			btn_notapp.setBackgroundColor(Color.BLACK);
+			btn_notapp.setTextColor(Color.WHITE);
 		} else {
 			statusCheckitem = "";
-			complete.setBackgroundResource(drawable.transparentclick);
-			complete.setTextColor(Color.BLACK);
-			progress.setBackgroundResource(drawable.transparentclick);
-			progress.setTextColor(Color.BLACK);
-			notapp.setBackgroundResource(drawable.transparentclick);
-			notapp.setTextColor(Color.BLACK);
+			btn_complete.setBackgroundResource(drawable.transparentclick);
+			btn_complete.setTextColor(Color.BLACK);
+			btn_progress.setBackgroundResource(drawable.transparentclick);
+			btn_progress.setTextColor(Color.BLACK);
+			btn_notapp.setBackgroundResource(drawable.transparentclick);
+			btn_notapp.setTextColor(Color.BLACK);
 		}
 
-		complete.setOnClickListener(new OnClickListener() {
+		btn_complete.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
 				completed = 1;
-				statusCheckitem = "Completed";
-				complete.setBackgroundColor(Color.BLACK);
-				complete.setTextColor(Color.WHITE);
-				progress.setBackgroundResource(drawable.transparentclick);
-				progress.setTextColor(Color.BLACK);
-				notapp.setBackgroundResource(drawable.transparentclick);
-				notapp.setTextColor(Color.BLACK);
+				statusCheckitem = "1";
+				btn_complete.setBackgroundColor(Color.BLACK);
+				btn_complete.setTextColor(Color.WHITE);
+				btn_progress.setBackgroundResource(drawable.transparentclick);
+				btn_progress.setTextColor(Color.BLACK);
+				btn_notapp.setBackgroundResource(drawable.transparentclick);
+				btn_notapp.setTextColor(Color.BLACK);
 			}
 		});
 
-		progress.setOnClickListener(new OnClickListener() {
+		btn_progress.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				statusCheckitem = "In-Progress";
-				complete.setBackgroundResource(drawable.transparentclick);
-				complete.setTextColor(Color.BLACK);
-				progress.setBackgroundColor(Color.BLACK);
-				progress.setTextColor(Color.WHITE);
-				notapp.setBackgroundResource(drawable.transparentclick);
-				notapp.setTextColor(Color.BLACK);
+				statusCheckitem = "0";
+				btn_complete.setBackgroundResource(drawable.transparentclick);
+				btn_complete.setTextColor(Color.BLACK);
+				btn_progress.setBackgroundColor(Color.BLACK);
+				btn_progress.setTextColor(Color.WHITE);
+				btn_notapp.setBackgroundResource(drawable.transparentclick);
+				btn_notapp.setTextColor(Color.BLACK);
 				completed = 0;
 
 			}
 		});
 
-		notapp.setOnClickListener(new OnClickListener() {
+		btn_notapp.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				statusCheckitem = "Not Applicable";
-				complete.setBackgroundResource(drawable.transparentclick);
-				complete.setTextColor(Color.BLACK);
-				progress.setBackgroundResource(drawable.transparentclick);
-				progress.setTextColor(Color.BLACK);
-				notapp.setBackgroundColor(Color.BLACK);
-				notapp.setTextColor(Color.WHITE);
+				statusCheckitem = "-1";
+				btn_complete.setBackgroundResource(drawable.transparentclick);
+				btn_complete.setTextColor(Color.BLACK);
+				btn_progress.setBackgroundResource(drawable.transparentclick);
+				btn_progress.setTextColor(Color.BLACK);
+				btn_notapp.setBackgroundColor(Color.BLACK);
+				btn_notapp.setTextColor(Color.WHITE);
 				completed = 0;
 			}
 		});
 
-		// for(int j=0;j<ProjectsAdapter.checkall.size();j++)
-		// {
-		// //Log.d("",""+ProjectsAdapter.checkall.get(j).id+",,,"+txt_body.getText().toString());
-		// if(ProjectsAdapter.checkall.get(j).id.equals(id_checkitem))
-		// {
-		// //Log.d("",""+ProjectsAdapter.checkall.get(j).id+",,,"+ProjectsAdapter.checkall.get(j).commentsCount.toString());
-		// temp =
-		// Integer.parseInt(ProjectsAdapter.checkall.get(j).commentsCount.toString());
-		// temp2 =
-		// Integer.parseInt(ProjectsAdapter.checkall.get(j).photosCount.toString());
-		// }
-		// }
-		save.setOnClickListener(new OnClickListener() {
+		
+		btn_save.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
@@ -290,181 +340,22 @@ public class CheckItemClick extends Activity {
 					exception.printStackTrace();
 
 				}
-				updateitem();
-				Prefrences.stopingHit = 1;
-				// if(Prefrences.selectedCheckitem==0){
-				// for(int i=0;i<ProjectsAdapter.SynItems.size();i++)
-				// {
-				// if(ProjectsAdapter.SynItems.get(i).id.equals(id_checkitem))
-				// {
-				// ProjectsAdapter.SynItems.get(i).status = status_checkitem;
-				// }
-				// }
-				// }
-				// else if(Prefrences.selectedCheckitem==1){
-				// for(int i=0;i<ProjectsAdapter.Syncomp.size();i++)
-				// {
-				// if(ProjectsAdapter.Syncomp.get(i).id.equals(id_checkitem))
-				// {
-				// ProjectsAdapter.Syncomp.get(i).status = status_checkitem;
-				// }
-				// }
-				// }
-				// if (Prefrences.selectedCheckitem == 2) {
-				// for (int i = 0; i < ProjectsAdapter.categList.size(); i++) {
-				// for (int j = 0; j < ProjectsAdapter.categList.get(i).subCat
-				// .size(); j++) {
-				// for (int k = 0; k < ProjectsAdapter.categList
-				// .get(i).subCat.get(j).checkItems.size(); k++) {
-				// if (ProjectsAdapter.categList.get(i).subCat
-				// .get(j).checkItems.get(k).id
-				// .equals(id_checkitem)) {
-				// ProjectsAdapter.categList.get(i).subCat
-				// .get(j).checkItems.get(k).status = status_checkitem;
-				// // if(status_checkitem.equalsIgnoreCase("In-progress"))
-				// // {
-				// //
-				// ProjectsAdapter.progressList2.add(ProjectsAdapter.categList.get(i).subCat.get(j).checkItems.get(k));
-				// // }
-				// // else
-				// // if(status_checkitem.equalsIgnoreCase("Completed"))
-				// // {
-				// //
-				// ProjectsAdapter.completelist.add(ProjectsAdapter.categList.get(i));
-				// // }
-				// // else if(status_checkitem.equals(""))
-				// // {}
-				//
-				// }
-				// }
-				// }
-				// }
-				// } else if (Prefrences.selectedCheckitem == 3) {
-				// for (int i = 0; i < ProjectsAdapter.activelist.size(); i++) {
-				// for (int j = 0; j < ProjectsAdapter.activelist.get(i).subCat
-				// .size(); j++) {
-				// for (int k = 0; k < ProjectsAdapter.activelist
-				// .get(i).subCat.get(j).checkItems.size(); k++) {
-				// if (ProjectsAdapter.activelist.get(i).subCat
-				// .get(j).checkItems.get(k).id
-				// .equals(id_checkitem)) {
-				// ProjectsAdapter.activelist.get(i).subCat
-				// .get(j).checkItems.get(k).status = status_checkitem;
-				//
-				// // if(status_checkitem.equalsIgnoreCase("In-progress"))
-				// // {
-				// //
-				// ProjectsAdapter.progressList2.add(ProjectsAdapter.activelist.get(i).subCat.get(j).checkItems.get(k));
-				// //
-				// ProjectsAdapter.activelist.get(i).subCat.get(j).checkItems.remove(ProjectsAdapter.activelist.get(i).subCat.get(j).checkItems.get(k));
-				// // }
-				// // else
-				// // if(status_checkitem.equalsIgnoreCase("Completed"))
-				// // {
-				// //
-				// ProjectsAdapter.completelist.add(ProjectsAdapter.activelist.get(i));
-				// //
-				// ProjectsAdapter.activelist.get(i).subCat.get(j).checkItems.remove(ProjectsAdapter.activelist.get(i).subCat.get(j).checkItems.get(k));
-				// // }
-				// // else if(status_checkitem.equals(""))
-				// // {}
-				// // for(int
-				// // p=0;p<ProjectsAdapter.categList.size();p++)
-				// // {
-				// // for(int q=0; q
-				// // <ProjectsAdapter.categList.get(p).subCat.size();q++)
-				// // {
-				// // for(int
-				// //
-				// r=0;r<ProjectsAdapter.categList.get(p).subCat.get(q).checkItems.size();r++)
-				// // {
-				// //
-				// if(ProjectsAdapter.categList.get(p).subCat.get(q).checkItems.get(r).id.equals(id_checkitem))
-				// // {
-				// //
-				// ProjectsAdapter.categList.get(p).subCat.get(q).checkItems.get(r).status=
-				// // status_checkitem;
-				// // }
-				// // }
-				// // }
-				// // }
-				// }
-				// }
-				// }
-				// }
-				// } else if (Prefrences.selectedCheckitem == 4) {
-				// for (int i = 0; i < ProjectsAdapter.completelist.size(); i++)
-				// {
-				// for (int j = 0; j <
-				// ProjectsAdapter.completelist.get(i).subCat
-				// .size(); j++) {
-				// for (int k = 0; k < ProjectsAdapter.completelist
-				// .get(i).subCat.get(j).checkItems.size(); k++) {
-				// if (ProjectsAdapter.completelist.get(i).subCat
-				// .get(j).checkItems.get(k).id
-				// .equals(id_checkitem)) {
-				// ProjectsAdapter.completelist.get(i).subCat
-				// .get(j).checkItems.get(k).status = status_checkitem;
-				// // if(status_checkitem.equalsIgnoreCase("In-progress"))
-				// // {
-				// //
-				// ProjectsAdapter.progressList2.add(ProjectsAdapter.categList.get(i).subCat.get(j).checkItems.get(k));
-				// // }
-				// // else
-				// // if(status_checkitem.equalsIgnoreCase("Completed"))
-				// // {
-				// //
-				// ProjectsAdapter.completelist.add(ProjectsAdapter.categList.get(i));
-				// // }
-				// }
-				// }
-				// }
-				// }
-				// }
-				//
-				// else if (Prefrences.selectedCheckitem == 5) {
-				// for (int i = 0; i < ProjectsAdapter.progressList2.size();
-				// i++) {
-				// if (ProjectsAdapter.progressList2.get(i).id
-				// .equals(id_checkitem)) {
-				// ProjectsAdapter.progressList2.get(i).status =
-				// status_checkitem;
-				// }
-				// }
-				// } else if (Prefrences.selectedCheckitem == 6) {
-				// for (int i = 0; i < ProjectsAdapter.checkall.size(); i++) {
-				// if (ProjectsAdapter.checkall.get(i).id
-				// .equals(id_checkitem)) {
-				// ProjectsAdapter.checkall.get(i).status = status_checkitem;
-				//
-				// }
-				// }
-				// }
-				// // else if(Prefrences.selectedCheckitem==1){
-				// // for(int i=0;i<ProjectsAdapter.Syncomp.size();i++)
-				// // {
-				// // if(ProjectsAdapter.Syncomp.get(i).id.equals(id_checkitem))
-				// // {
-				// // ProjectsAdapter.Syncomp.get(i).status = status_checkitem;
-				// // }
-				// // }
-				// // }
-				// // else if(Prefrences.selectedCheckitem==1){
-				// // for(int i=0;i<ProjectsAdapter.Syncomp.size();i++)
-				// // {
-				// // if(ProjectsAdapter.Syncomp.get(i).id.equals(id_checkitem))
-				// // {
-				// // ProjectsAdapter.Syncomp.get(i).status = status_checkitem;
-				// // }
-				// // }
-				// // }
+				updateItem();
+
 
 			}
 		});
+		
+		if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ) {
+			edt_txt_commentbody.setBackground(null);
+		}
+		else {
+			edt_txt_commentbody.setBackgroundDrawable(null);
+		}
 
-		commentbody.setBackground(null);
-
-		commentbody.addTextChangedListener(new TextWatcher() {
+		
+		
+		edt_txt_commentbody.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void onTextChanged(CharSequence charsequence, int arg1,
@@ -475,7 +366,7 @@ public class CheckItemClick extends Activity {
 			@Override
 			public void beforeTextChanged(CharSequence arg0, int arg1,
 					int arg2, int arg3) {
-				sendcomment.setVisibility(View.GONE);
+				btn_sendcomment.setVisibility(View.GONE);
 			}
 
 			@Override
@@ -483,30 +374,46 @@ public class CheckItemClick extends Activity {
 				// progressList.setVisibility(View.VISIBLE);
 				// Log.i("ARG", "-------" + arg0);
 				if (arg0.toString().length() == 0) {
-					sendcomment.setVisibility(View.GONE);
+					btn_sendcomment.setVisibility(View.GONE);
 				} else {
-					sendcomment.setVisibility(View.VISIBLE);
+					btn_sendcomment.setVisibility(View.VISIBLE);
 				}
 				// ChecklistFragment.this.checkadapter.search2(arg0.toString());
 			}
 		});
 
-		sendcomment.setOnClickListener(new OnClickListener() {
+		btn_sendcomment.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
+				try {
 
-				commentAdd(commentbody.getText().toString());
+					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+					imm.hideSoftInputFromWindow(getCurrentFocus()
+
+					.getWindowToken(), 0);
+
+				} catch (Exception exception) {
+
+					exception.printStackTrace();
+
+				}
+			if(ConnectionDetector.isConnectingToInternet()){
+				commentAdd(edt_txt_commentbody.getText().toString());
 				// commentslist.add
-				comm.add(new CommentsChecklistItem(idCheckitem, commentbody
+				comm.add(new CommentsChecklistItem(idCheckitem, edt_txt_commentbody
 						.getText().toString(), null, "just now"));
 				Log.d("*****", "increased size" + comm.size());
 				commentslist.setAdapter(comadap);
 				comadap.notifyDataSetChanged();
 				setlist(commentslist, comadap, 230);
-				commentbody.setText("");
-				sendcomment.setVisibility(View.GONE);
+				edt_txt_commentbody.setText("");
+				btn_sendcomment.setVisibility(View.GONE);
+			}else{
+				Toast.makeText(CheckItemClick.this,"No internet connection.", Toast.LENGTH_SHORT).show();
+			}
 			}
 		});
 
@@ -546,7 +453,7 @@ public class CheckItemClick extends Activity {
 					Prefrences.selectedPic = (Integer) view.getTag();
 					Log.i("Tag Value", "" + Prefrences.selectedPic);
 
-					Intent intent = new Intent(con, MainActivity1.class);
+					Intent intent = new Intent(con, SelectedImageView.class);
 					intent.putExtra("array", arr);
 					intent.putExtra("ids", ids);
 					intent.putExtra("desc", desc);
@@ -579,7 +486,7 @@ public class CheckItemClick extends Activity {
 		// lin3.addView(edt1);
 		// }
 
-		back.setOnClickListener(new OnClickListener() {
+		btn_back.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
@@ -603,7 +510,7 @@ public class CheckItemClick extends Activity {
 			}
 		});
 
-		email.setOnClickListener(new OnClickListener() {
+		img_email.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 
@@ -612,7 +519,7 @@ public class CheckItemClick extends Activity {
 			}
 		});
 
-		message.setOnClickListener(new OnClickListener() {
+		img_message.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
@@ -622,7 +529,7 @@ public class CheckItemClick extends Activity {
 			}
 		});
 
-		call.setOnClickListener(new OnClickListener() {
+		img_call.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
@@ -633,7 +540,7 @@ public class CheckItemClick extends Activity {
 			}
 		});
 
-		gallery.setOnClickListener(new OnClickListener() {
+		img_gallery.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
@@ -646,7 +553,7 @@ public class CheckItemClick extends Activity {
 			}
 		});
 
-		camera.setOnClickListener(new OnClickListener() {
+		img_camera.setOnClickListener(new OnClickListener() {
 
 			@SuppressLint("SimpleDateFormat")
 			@Override
@@ -664,6 +571,22 @@ public class CheckItemClick extends Activity {
 				picturePath = photo.toString();
 				startActivityForResult(intent, takePicture);
 
+			}
+		});
+		
+	
+		
+		img_reminder.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+//				Toast.makeText(getApplicationContext(), "Reminder Underconstruction...", Toast.LENGTH_LONG).show();
+				
+					
+				custom.showDialog();
+//				
 			}
 		});
 	}
@@ -689,6 +612,17 @@ public class CheckItemClick extends Activity {
 		}
 	}
 
+	public static void main(String[] args) throws Exception
+	{
+	    String str = txt_reminder.getText().toString()+".454 UTC";
+	    SimpleDateFormat df = new SimpleDateFormat("MMM dd yyyy HH:mm:ss.SSS zzz");
+	    Date date = df.parse(str);
+	    long epoch = date.getTime();
+	    System.out.println(epoch); // 1055545912454
+        reminderSet(epoch);
+
+	}
+	
 	public void setlist(ListView listview, ListAdapter listAdapter, int size) {
 		int maxHeight = 0;
 		listAdapter = listview.getAdapter();
@@ -858,121 +792,7 @@ public class CheckItemClick extends Activity {
 				});
 	}
 
-	// public void upload() {
-	// StringEntity se = null;
-	// Prefrences.showLoadingDialog(CheckItemClick.this, "Loading...");
-	// RequestParams params = new RequestParams();
-	// // File file1 = new File(picturePath);
-	// // try {
-	// // // params.put("photo[image]",file1);
-	// // } catch (FileNotFoundException e1) {
-	// // e1.printStackTrace();
-	// // }
-	// //
-	// // File file = new File(Environment.getExternalStoragePublicDirectory(
-	// // Environment.DIRECTORY_DCIM).toString()
-	// // + "/Camera/Test.jpg");
-	// JSONObject json2 = new JSONObject();
-	// JSONObject json = new JSONObject();
-	// MultipartEntity entity = new MultipartEntity(
-	// HttpMultipartMode.BROWSER_COMPATIBLE);
-	// File file = new File(picturePath);
-	// try {
-	//
-	// // json.put("id", "10");
-	// // json.put("source", "Worklist");
-	// // json.put("user_id", "46");
-	// // json.put("company_id", "1");
-	// // json.put("project_id", "37");
-	// // json.put("image", file);
-	//
-	// params.put("photo", json.toString());
-	// json2.put("photo", json);
-	// se = new StringEntity(json2.toString());
-	//
-	// ContentBody encFile = new FileBody(file, "image/png");
-	// // ContentBody str = new StringBody("application/json");
-	// entity.addPart("punchlist_item_id",
-	// new StringBody(String.valueOf(10)));
-	// entity.addPart("source", new StringBody(String.valueOf("Worklist")));
-	// entity.addPart("user_id", new StringBody(String.valueOf(46)));
-	// entity.addPart("company_id", new StringBody(String.valueOf(1)));
-	// entity.addPart("project_id", new StringBody(String.valueOf(37)));
-	// entity.addPart("image", encFile);
-	// // entity.addPart(json.toString(), str);
-	// // //entity.ad
-	// // entity.toString();
-	// // } catch (UnsupportedEncodingException e1) {
-	// // // TODO Auto-generated catch block
-	// // e1.printStackTrace();
-	// } catch (JSONException e) {
-	//
-	// e.printStackTrace();
-	// }
-	// // params.put("photo", json.toString());
-	// catch (UnsupportedEncodingException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	//
-	// AsyncHttpClient client = new AsyncHttpClient();
-	//
-	// client.addHeader("ENCTYPE", "multipart/form-data");
-	// client.addHeader("Content-type", "application/json");
-	// client.addHeader("Accept", "application/json");
-	// client.post(CheckItemClick.this, Prefrences.url
-	// + "/punchlist_items/photo", entity, "image/jpeg",
-	// new AsyncHttpResponseHandler() {
-	//
-	// // client.addHeader("Content-type", "image/jpeg");
-	// // client.addHeader("Accept", "application/json");
-	// //
-	// // // client.post(this, Prefrences.url +
-	// // "/punchlist_items/photo", se, "application/json",
-	// //
-	// // client.post(this, Prefrences.url +
-	// // "/punchlist_items/photo", params,// arg3)(this, , entity,
-	// // "image/jpeg",
-	// // new AsyncHttpResponseHandler() {
-	//
-	// @Override
-	// public void onSuccess(String response) {
-	//
-	// JSONObject res = null;
-	//
-	// try {
-	// res = new JSONObject(response);
-	// Log.v("response ---- ",
-	// "---*****----" + res.toString(2));
-	//
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// Prefrences.dismissLoadingDialog();
-	// }
-	//
-	// @Override
-	// public void onFailure(Throwable arg0) {
-	// Log.e("request fail", arg0.toString());
-	// Prefrences.dismissLoadingDialog();
-	// }
-	// });
-	// }
-
-	//
-	// void opengallery() {
-	//
-	// Intent intent = new Intent();
-	// intent.setType("image/*");
-	// intent.setAction(Intent.ACTION_GET_CONTENT);
-	// /**
-	// * To select an image from existing files, use Intent.createChooser to
-	// * open image chooser. Android will automatically display a list of
-	// * supported applications, such as image gallery or file manager.
-	// */
-	// startActivityForResult(Intent.createChooser(intent, "Select Picture"),
-	// 1);
-	// }
+	
 
 	// ************ API hit for "Post A Worklist Photo." *************//
 
@@ -1134,8 +954,7 @@ public class CheckItemClick extends Activity {
 			if (comm.get(position).created_at.toString().equals("just now")) {
 				holder.date.setText("just now");
 			} else {
-				String date = comm.get(position).created_at.toString()
-						.substring(0, 10);
+				String date = utcToLocal(comm.get(position).created_at.toString());
 				Log.d("date==", "" + date);
 				holder.date.setText("" + date);
 			}
@@ -1154,6 +973,7 @@ public class CheckItemClick extends Activity {
 					((int) (200.0f * ASSL.Yscale())));
 
 			layoutParams2.setMargins(0, 0, 0, 0);
+			
 
 			holder.lin4.setOnLongClickListener(new View.OnLongClickListener() {
 
@@ -1189,7 +1009,7 @@ public class CheckItemClick extends Activity {
 												// close
 												// current activity
 												Log.d("Dialog", "Delete");
-												deletecomments(ids);
+												deleteComments(ids);
 												comm.remove(position);
 												Log.d("", "" + position);
 												Log.d("", "" + comm.size());
@@ -1285,7 +1105,7 @@ public class CheckItemClick extends Activity {
 		return true;
 	}
 
-	public void deletecomments(String idComment) {
+	public void deleteComments(String idComment) {
 
 		Prefrences.showLoadingDialog(CheckItemClick.this, "Loading...");
 		JSONObject json = new JSONObject();
@@ -1476,45 +1296,246 @@ public class CheckItemClick extends Activity {
 	// }
 	// }
 
-	void updateitem() {
+	void updateItem() {
 
 		Prefrences.showLoadingDialog(CheckItemClick.this, "Loading...");
-		JSONObject json = new JSONObject();
-		RequestParams params = new RequestParams();
-		try {
-			json.put("id", idCheckitem);
-			json.put("completed_by_user_id", Prefrences.userId);
-			json.put("status", statusCheckitem);
-			json.put("completed", completed);
+//		JSONObject json = new JSONObject();
+		 RequestParams params = new RequestParams();
 
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-		}
+	
+		 		params.put("id", idCheckitem);
+		 		params.put("user_id", Prefrences.userId);
+		 		params.put("checklist_item[state]", statusCheckitem);
+		 		if(statusCheckitem.equalsIgnoreCase("1"))
+		 			params.put("checklist_item[completed_by_user_id]", Prefrences.userId);
+		 				
+		
+				
+//			 params.put("checklist_item[state]", "0");
+//				Log.e("State", "---      0");
+//			}else if(statusCheckitem.equalsIgnoreCase("Completed")){
+//				params.put("checklist_item[state]", "1");
+//				Log.e("State", "---      1");
+//			}else if(statusCheckitem.equalsIgnoreCase("-1")){
+//				params.put("checklist_item[state]", "-1");
+//				Log.e("State", "---     -1");
+//			}else{
+//				params.put("checklist_item[state]", "nil");
+//				Log.e("State", "---      null");
+//			}
+//		 params.put("checklist_item[completed_by_user_id]", Prefrences.userId);
+//		try {
+//			json.put("id", idCheckitem);
+//			json.put("user_id", Prefrences.userId);
+//			if(completed==1)
+//			json.put("completed_by_user_id", Prefrences.userId);
+//			//json.put("status", statusCheckitem);
+//			if(statusCheckitem.equalsIgnoreCase("In-Progress")){
+//				
+//				json.put("checklist_item[state]", "0");
+//				Log.e("State", "---      0");
+//			}else if(statusCheckitem.equalsIgnoreCase("Completed")){
+//				json.put("checklist_item[state]", "1");
+//				Log.e("State", "---      1");
+//			}else if(statusCheckitem.equalsIgnoreCase("Not Applicable")){
+//				json.put("checklist_item[state]", "-1");
+//				Log.e("State", "---     -1");
+//			}else{
+//				json.put("checklist_item[state]", null);
+//				Log.e("State", "---      null");
+//			}
+//			
+//			
+//			
+//				json.put("completed", completed);
+//			Log.v("value chk ---- ",Prefrences.userId+" "+statusCheckitem+" "+idCheckitem);
+//
+//		} catch (Exception e1) {
+//			e1.printStackTrace();
+//		}
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.addHeader("Content-type", "application/json");
 		client.addHeader("Accept", "application/json");
-		ByteArrayEntity entity = null;
-		try {
-			entity = new ByteArrayEntity(json.toString().getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-		}
+//		ByteArrayEntity entity = null;
+//		try {
+////			entity = new ByteArrayEntity(json.toString().getBytes("UTF-8"));
+//		} catch (UnsupportedEncodingException e1) {
+//			e1.printStackTrace();
+//		}
 		client.put(this, Prefrences.url + "/checklist_items/" + idCheckitem,
-				entity, "application/json", new AsyncHttpResponseHandler() {
+				params, new AsyncHttpResponseHandler() {
+
 					@Override
 					public void onSuccess(String response) {
 						JSONObject res = null;
+						call_service();
+					
 						try {
+							
 							res = new JSONObject(response);
 							Log.v("response ---- ",
 									"---*****----" + res.toString(2));
+							
+							for(int i=0;i<ChecklistFragment.categList.size();i++){
+								if(ChecklistFragment.categList.get(i).getid().equalsIgnoreCase(catid)){
+									ArrayList<SubCategories> list_val = ChecklistFragment.categList.get(i).getsubcat_array();
+									for(int j=0;j<list_val.size();j++){
+										if(list_val.get(j).getsub_id().equalsIgnoreCase(subcatid)){
+											 ArrayList<CheckItems> checklist =  list_val.get(j).getcheckItems();
+											 for(int k=0;k<checklist.size();k++){
+												 Log.e("k val123", k+".. ");
+												 if(checklist.get(k).getitemid().equalsIgnoreCase(idCheckitem)){
+												
+													 JSONObject cCount = res.getJSONObject("checklist_item");
+													 Log.e("check123", k+" "+cCount.getString("body"));
+													 
+													 ChecklistFragment.categList.get(i).getsubcat_array().get(j).getcheckItems().set(k, new CheckItems(catid, subcatid,
+													idCheckitem,
+													cCount.getString("body"),
+													cCount.getString("state"),
+													cCount.getString("item_type"),
+													cCount.getString("photos_count"),
+													cCount.getString("comments_count")));
+													 
+													break; 
+													 
+												 }
+												 
+											 }
+											
+										}
+									}
+									
+								}
+								
+							}
+							
+							
+							
+							
+							ChecklistFragment.activelist.clear();
+							ChecklistFragment.completelist.clear();
+							ChecklistFragment.pcategList.clear();
+							
+							ChecklistFragment.progressList2.clear();
+							ChecklistFragment.checkall.clear();
+							
+							for(int i=0;i<ChecklistFragment.categList.size();i++){
+								
+								ChecklistFragment.psubCatList = new ArrayList<SubCategories>();
+								ChecklistFragment.activeSubCatList = new ArrayList<SubCategories>();
+								ChecklistFragment.completeSubCatList = new ArrayList<SubCategories>();
+								
+									ArrayList<SubCategories> list_val = ChecklistFragment.categList.get(i).getsubcat_array();
+									
+									for(int j=0;j<list_val.size();j++){
+										
+										ArrayList<CheckItems> activeCheckItemList = new ArrayList<CheckItems>();
+										ArrayList<CheckItems> completeCheckItemList = new ArrayList<CheckItems>();
+										ArrayList<CheckItems> progressList = new ArrayList<CheckItems>();
+										
+										ArrayList<CheckItems> checklist =  list_val.get(j).getcheckItems();
+											 
+											 for(int k=0;k<checklist.size();k++){
+													if (!checklist.get(k).status
+															.equals("1")
+															&& !checklist.get(k).status
+																	.equals("-1")) {
+																activeCheckItemList.add(checklist.get(k));
+													}
+
+													if (checklist.get(k).status
+															.equals("1")) {
+														Log.e("complete", ",,"+ k);
+														completeCheckItemList.add(checklist.get(k));
+													}
+
+													if (checklist.get(k).status.equals("0")) {
+														progressList.add(checklist.get(k));
+														Log.e("Progress",",,"+ k);
+													//	progressList.add(ChecklistFragment.categList.get(i).getsubcat_array().get(j).getcheckItems().get(k));
+														
+													}
+												 
+											 }
+											 
+											ChecklistFragment.checkall.addAll(checklist);
+											 ChecklistFragment.progressList2.addAll(progressList);
+											 
+												if (activeCheckItemList.size() > 0) {
+												
+												ChecklistFragment.activeSubCatList.add(new SubCategories( list_val.get(j).getsub_id(),
+														list_val.get(j).name,
+														list_val.get(j).completedDate,
+														list_val.get(j).milestoneDate,
+														list_val.get(j).progPerc,
+														activeCheckItemList));
+											}
+											 
+											 
+
+												if (completeCheckItemList.size() > 0) {
+												
+													ChecklistFragment.completeSubCatList.add(new SubCategories( list_val.get(j).getsub_id(),
+															list_val.get(j).name,
+															list_val.get(j).completedDate,
+															list_val.get(j).milestoneDate,
+															list_val.get(j).progPerc,
+															 completeCheckItemList));
+
+												
+												if (progressList.size() > 0) {
+
+													ChecklistFragment.psubCatList.add(new SubCategories( list_val.get(j).getsub_id(),
+															list_val.get(j).name,
+															list_val.get(j).completedDate,
+															list_val.get(j).milestoneDate,
+															list_val.get(j).progPerc,
+														 progressList));
+												}
+												}
+											
+										}
+									
+									
+									
+									
+									if (ChecklistFragment.psubCatList.size() > 0) {
+									ChecklistFragment.pcategList.add(new Categories(ChecklistFragment.categList.get(i).id,ChecklistFragment.categList.get(i).name,
+											ChecklistFragment.categList.get(i).completedDate, ChecklistFragment.categList.get(i).milestoneDate, ChecklistFragment.categList.get(i).progPerc,
+											ChecklistFragment.psubCatList));
+									}
+
+									if (ChecklistFragment.activeSubCatList.size() > 0) {
+										ChecklistFragment.activelist.add(new Categories(ChecklistFragment.categList.get(i).id,ChecklistFragment.categList.get(i).name,
+												ChecklistFragment.categList.get(i).completedDate, ChecklistFragment.categList.get(i).milestoneDate, ChecklistFragment.categList.get(i).progPerc,
+												ChecklistFragment.activeSubCatList));
+
+									}
+
+									if (ChecklistFragment.completeSubCatList.size() > 0) {
+										ChecklistFragment.completelist.add(new Categories(ChecklistFragment.categList.get(i).id,ChecklistFragment.categList.get(i).name,
+												ChecklistFragment.categList.get(i).completedDate, ChecklistFragment.categList.get(i).milestoneDate, ChecklistFragment.categList.get(i).progPerc,
+												ChecklistFragment.completeSubCatList));
+									}
+								}
+									
+								
+								
+							
+							
+
+							
+							
+							
+							Prefrences.CheckItemClickFlag =true;
 							finish();
+							
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 						Prefrences.dismissLoadingDialog();
-						// ChecklistFragment.showcomments(id_checkitem,
-						// status_checkitem, check)
+						
 					}
 
 					@Override
@@ -1682,5 +1703,62 @@ public class CheckItemClick extends Activity {
 		System.out.println(responseString);
 
 	}
+	
+	public static void reminderSet(long epoch) {
+		Prefrences.showLoadingDialog(con, "Loading...");
+//		JSONObject json = new JSONObject();
+		RequestParams params = new RequestParams();
+		
+		params.put("reminder[checklist_item_id]",idCheckitem );
+		params.put("reminder[user_id]", Prefrences.userId);
+		params.put("reminder[project_id]",Prefrences.selectedProId );
+		params.put("date",""+epoch);
 
+		AsyncHttpClient client = new AsyncHttpClient();
+		client.addHeader("Content-type", "application/json");
+		client.addHeader("Accept", "application/json");
+		
+		client.post(con, Prefrences.url + "/reminders", params,
+				 new AsyncHttpResponseHandler() {
+					@Override
+					public void onSuccess(String response) {
+						JSONObject res = null;
+						try {
+							res = new JSONObject(response);
+							Log.v("response ---- ",
+									"---*****----" + res.toString(2));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						Prefrences.dismissLoadingDialog();
+					}
+
+					@Override
+					public void onFailure(Throwable arg0) {
+						Log.e("request fail", arg0.toString());
+						Prefrences.dismissLoadingDialog();
+					}
+				});
+	}
+	
+	public void call_service(){
+		Log.e("Inside service call", "fgbvtxsh");
+		startService(new Intent(this, MyService.class));
+	}
+
+	public static String utcToLocal(String utcTime) {
+
+	SimpleDateFormat sdf = new SimpleDateFormat("mm/dd/yy, hh:mm a");
+	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+	try {
+	Date myDate = simpleDateFormat.parse(utcTime);
+	String localDate = sdf.format(myDate);
+	Log.d("date ","hiii date "+localDate.toString());
+	return localDate;
+	} catch (Exception e1) {
+	Log.e("e1","="+e1);
+	return utcTime;
+	}
+	}
 }

@@ -24,8 +24,9 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginLeft="10px"
                 android:background="@color/black"
+                android:textColor="@color/white"
                 android:text="Back"
-                android:textSize="28px"
+                android:textSize="36px"
                 android:textStyle="bold" />
 
             <Button
@@ -34,10 +35,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
+                android:textColor="@color/white"
                 android:layout_marginRight="10px"
                 android:background="@color/black"
                 android:text="Save"
-                android:textSize="28px"
+                android:textSize="36px"
                 android:textStyle="bold" />
         </RelativeLayout>
 
@@ -220,6 +222,40 @@
                     android:layout_height="wrap_content"
                     android:background="@color/shaded_gray"
                     android:text="" />
+                
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/background_draw" >
+                    
+                    <ImageView
+                                android:id="@+id/reminder"
+                                android:layout_width="155px"
+                                android:layout_height="155px"
+                                android:layout_margin="15px"
+                                android:src="@drawable/clock" />
+                    <TextView
+                    android:id="@+id/txtReminder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="36px"
+                    android:textColor="@color/black"
+                    android:layout_toRightOf="@+id/reminder"
+                    android:layout_marginLeft="20px"
+                    android:text="Reminder"
+                    android:layout_marginTop="60px"
+                    android:gravity="center"
+                     />
+                    
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/textView05"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/shaded_gray"
+                    android:text="" />
 
                 <LinearLayout
                     android:id="@+id/LinearLayout1"
@@ -233,7 +269,7 @@
                         android:layout_width="520px"
                         android:layout_height="150px"
                         android:ems="10"
-                        android:hint="Add comments..."
+                        android:hint="Add Comments..."
                         android:paddingLeft="15px"
                         android:paddingRight="15px"
                         android:singleLine="false"

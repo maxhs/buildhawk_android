@@ -7,7 +7,9 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.TimeZone;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,6 +31,7 @@ import rmn.androidscreenlibrary.ASSL;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,6 +43,7 @@ import android.graphics.Color;
 import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -85,9 +89,9 @@ public class WorkItemClick extends Activity {
 	private static int PICK_CONTACT = 1;
 	private Handler mHandler = new Handler();
 	RelativeLayout relLay;
-	int status = 0;
+	
 
-	ImageView ladder_page2 = null;
+	ImageView img_ladder_page2 = null;
 	ArrayList<PunchListsPhotos> photosarrayArrayList;
 	ArrayList<String> arr = new ArrayList<String>();
 	ArrayList<String> ids = new ArrayList<String>();
@@ -101,19 +105,23 @@ public class WorkItemClick extends Activity {
 	String picturePath = "";
 	private Uri imageUri;
 	LinearLayout lin2;
-	EditText body;
+	EditText txt_body;
 	public static Button btnS_location, btnS_assigned;
+//	String assignee_str,location_str;
 	ListView commentslist;
-	EditText commentbody;
-	Button sendcomment;
-	Button markcomplete;
-	Button save;
-	Context con;
-	String id_punchlist_item;
+	EditText txt_commentbody;
+	Button btn_sendcomment;
+	Button btn_markcomplete;
+	Button btn_save;
+	static Context con;
+	static String id_punchlist_item;
 	int pos;
+	static TextView reminder_txt;
 	ScrollView scrollView;
 	ArrayList<String> picarray = new ArrayList<String>();
 	ArrayList<Comments> comm = new ArrayList<Comments>();
+	CustomDateTimePicker custom;
+	String assignee_id;
 
 	SwipeDetector swipeDetecter = new SwipeDetector();
 
@@ -126,33 +134,41 @@ public class WorkItemClick extends Activity {
 		new ASSL(this, relLay, 1134, 720, false);
 
 		con = WorkItemClick.this;
-		body = (EditText) findViewById(R.id.txt_body);
+		txt_body = (EditText) findViewById(R.id.txt_body);
 		btnS_assigned = (Button) findViewById(R.id.assigned_btn);
 		btnS_location = (Button) findViewById(R.id.location_btn);
 
-		markcomplete = (Button) findViewById(R.id.btnComplete);
-		ImageView camera = (ImageView) findViewById(R.id.camera);
-		ImageView gallery = (ImageView) findViewById(R.id.photogallery);
-		ImageView call = (ImageView) findViewById(R.id.call);
-		Button back = (Button) findViewById(R.id.back);
-		save = (Button) findViewById(R.id.save);
-		ImageView email = (ImageView) findViewById(R.id.email);
-		ImageView message = (ImageView) findViewById(R.id.message);
+		btn_markcomplete = (Button) findViewById(R.id.btnComplete);
+		ImageView img_reminder = (ImageView) findViewById(R.id.reminder);
+		ImageView img_camera = (ImageView) findViewById(R.id.camera);
+		ImageView img_gallery = (ImageView) findViewById(R.id.photogallery);
+		ImageView img_call = (ImageView) findViewById(R.id.call);
+		Button btn_back = (Button) findViewById(R.id.back);
+		btn_save = (Button) findViewById(R.id.save);
+		ImageView img_email = (ImageView) findViewById(R.id.email);
+		ImageView img_message = (ImageView) findViewById(R.id.message);
 		lin2 = (LinearLayout) findViewById(R.id.scrolllayout2);
-		commentbody = (EditText) findViewById(R.id.commentBody);
-		sendcomment = (Button) findViewById(R.id.sendcomment);
+		txt_commentbody = (EditText) findViewById(R.id.commentBody);
+		btn_sendcomment = (Button) findViewById(R.id.sendcomment);
+		reminder_txt= (TextView) findViewById(R.id.txtReminder);
 
-		body.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		reminder_txt.setTypeface(Prefrences
+				.helveticaNeuelt(getApplicationContext()));
+		
+		btn_save.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		btn_back.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+
+		txt_body.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
 		btnS_location.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
 		btnS_assigned.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
 
-		commentbody.setTypeface(Prefrences
+		txt_commentbody.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		sendcomment.setTypeface(Prefrences
+		btn_sendcomment.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		markcomplete.setTypeface(Prefrences
+		btn_markcomplete.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
 		// photosarrayArrayList.clear();
 		photosarrayArrayList = new ArrayList<PunchListsPhotos>();
@@ -187,24 +203,110 @@ public class WorkItemClick extends Activity {
 
 		commentslist = (ListView) findViewById(R.id.commentslist);
 		final commentadapter comadap = new commentadapter();
+		
+		custom = new CustomDateTimePicker(this,
+	            new CustomDateTimePicker.ICustomDateTimeListener() {
+
+			@Override
+			public void onSet(Dialog dialog, Calendar calendarSelected,
+					Date dateSelected, int year, String monthFullName,
+					String monthShortName, int monthNumber, int date,
+					String weekDayFullName, String weekDayShortName,
+					int hour24, int hour12, int min, int sec,
+					String AM_PM) {
+				// TODO Auto-generated method stub
+			        	
+//	                year = yr;
+//	        month = monthOfYear;
+//	        day = dayOfMonth;
+//	       	 hours = hour24;
+//	            min = minute;                  Jun 13 2003 23:11:52.454 UTC
+//	       	    	 if(hours==0)
+//	       	    	 hours=12;
+//	                updateDate();
+		                   
+		                           reminder_txt.setText(monthShortName 
+		                                    + " " + calendarSelected
+                                            .get(Calendar.DAY_OF_MONTH) + " " + year
+		                                    + " " + hour24 + ":" + min
+		                                    + ":" + sec);
+		                           String str = reminder_txt.getText().toString()+".000 UTC";
+		                   	    SimpleDateFormat df = new SimpleDateFormat("MMM dd yyyy HH:mm:ss.SSS zzz");
+		                   	    Date date1 = null;
+								try {
+									date1 = df.parse(str);
+								} catch (java.text.ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+		                   	    long epoch = date1.getTime();
+		                   	    System.out.println(epoch); // 1055545912454
+//		                           ReminderSet(epoch);
+	                }
+
+	                @Override
+	                public void onCancel() {
+
+	                }
+
+	            });
+
+	  /**
+	    * Pass Directly current time format it will return AM and PM if you set
+	    * false
+	    */
+	    custom.set24HourFormat(false);
+	    /**
+	    * Pass Directly current data and time to show when it pop up
+	    */
+		   custom.setDate(Calendar.getInstance());
+		   
+		   img_reminder.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					
+					Toast.makeText(getApplicationContext(), "Reminder Underconstruction...", Toast.LENGTH_LONG).show();
+					
+						
+					custom.showDialog();
+//					
+				}
+			});
 
 		if (ProjectDetail.flag == 0) {
-			save.setText("Save");
+			btn_save.setText("Save");
 			comm.addAll(WorkListCompleteAdapter.commnt2);
 			Bundle bundle = getIntent().getExtras();
 			id_punchlist_item = bundle.getString("id");
+			if(bundle.getString("completed").equals("true")){
+				btn_markcomplete.setText("Completed");
+				btn_markcomplete.setBackgroundResource(drawable.completecolor);
+				btn_markcomplete.setTextColor(Color.WHITE);
+				Prefrences.statusCompleted = 1;
+			}
+			else {
+				btn_markcomplete.setText("Mark Complete");
+				btn_markcomplete.setBackgroundResource(drawable.markcomplete);
+				btn_markcomplete.setTextColor(Color.BLACK);
+				Prefrences.statusCompleted = 0;
+
+			}
 			Log.d("worklist", "id of worklist " + id_punchlist_item);
 			pos = bundle.getInt("pos");
 			if (!bundle.getString("location").equals("null")) {
-				btnS_location.setText("" + bundle.getString("location"));
+				Prefrences.location_str=bundle.getString("location");
+				btnS_location.setText("Location: " + Prefrences.location_str);
 			}
 			if (!bundle.getString("assignee").equals("null")) {
-				btnS_assigned.setText("" + bundle.getString("assignee"));
+				Prefrences.assignee_str = bundle.getString("assignee");
+				btnS_assigned.setText("Assigned: " + Prefrences.assignee_str);
 			}
 
 			// btn_assigned.setText("Assigned:"+bundle.getString("assigne"));
-			body.setText(bundle.getString("body"));
-
+			txt_body.setText(bundle.getString("body"));
+			Log.d("-----status-----","----status-----"+Prefrences.statusCompleted);
 			commentslist.setAdapter(comadap);
 			setlist(commentslist, comadap, 230);
 
@@ -222,13 +324,13 @@ public class WorkItemClick extends Activity {
 
 		} else {
 
-			body.setText("");
+			txt_body.setText("");
 			// btn_location.setText("Location");
-			save.setText("Add");
+			btn_save.setText("Add");
 			// btn_assigned.setText("Assignee");
 
 		}
-		save.setOnClickListener(new OnClickListener() {
+		btn_save.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -246,11 +348,14 @@ public class WorkItemClick extends Activity {
 					exception.printStackTrace();
 
 				}
-				if (save.getText().toString().equalsIgnoreCase("Add")) {
-					create_worklist(body.getText().toString(),
-							Prefrences.userId, btnS_location.getText()
-									.toString(), btnS_assigned.getText()
-									.toString(), Prefrences.selectedProId);
+				if(ConnectionDetector.isConnectingToInternet()){
+				if (btn_save.getText().toString().equalsIgnoreCase("Add")) {
+					
+					
+					create_worklist(txt_body.getText().toString(),
+							Prefrences.userId,Prefrences.location_str// btnS_location.getText().toString()
+							, Prefrences.assignee_str//btnS_assigned.getText().toString()
+									, Prefrences.selectedProId);
 					ProjectDetail.flag = 0;
 
 				} else {
@@ -258,26 +363,29 @@ public class WorkItemClick extends Activity {
 					updateWorkListHit(WorkItemClick.this);
 
 				}
+				}else{
+					Toast.makeText(WorkItemClick.this,"No internet connection.", Toast.LENGTH_SHORT).show();
+				}
 				
 
 			}
 		});
 
-		markcomplete.setOnClickListener(new OnClickListener() {
+		btn_markcomplete.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (markcomplete.getText().toString().equals("Mark Complete")) {
-					markcomplete.setText("Completed");
-					markcomplete.setBackgroundResource(drawable.completecolor);
-					markcomplete.setTextColor(Color.WHITE);
-					status = 1;
+				if (btn_markcomplete.getText().toString().equals("Mark Complete")) {
+					btn_markcomplete.setText("Completed");
+					btn_markcomplete.setBackgroundResource(drawable.completecolor);
+					btn_markcomplete.setTextColor(Color.WHITE);
+					Prefrences.statusCompleted = 1;
 				} else {
-					markcomplete.setText("Mark Complete");
-					markcomplete.setBackgroundResource(drawable.markcomplete);
-					markcomplete.setTextColor(Color.BLACK);
-					status = 0;
+					btn_markcomplete.setText("Mark Complete");
+					btn_markcomplete.setBackgroundResource(drawable.markcomplete);
+					btn_markcomplete.setTextColor(Color.BLACK);
+					Prefrences.statusCompleted = 0;
 
 				}
 
@@ -285,9 +393,14 @@ public class WorkItemClick extends Activity {
 		});
 
 		// Log.d("--------","888888"+DocumentFragment.photosList.size());
-
-		commentbody.setBackground(null);
-		commentbody.addTextChangedListener(new TextWatcher() {
+		if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ) {
+			txt_commentbody.setBackground(null);
+		}
+		else {
+			txt_commentbody.setBackgroundDrawable(null);
+		}
+	
+		txt_commentbody.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void onTextChanged(CharSequence cs, int arg1, int arg2,
@@ -298,7 +411,7 @@ public class WorkItemClick extends Activity {
 			@Override
 			public void beforeTextChanged(CharSequence arg0, int arg1,
 					int arg2, int arg3) {
-				sendcomment.setVisibility(View.GONE);
+				btn_sendcomment.setVisibility(View.GONE);
 			}
 
 			@Override
@@ -306,15 +419,15 @@ public class WorkItemClick extends Activity {
 				// progressList.setVisibility(View.VISIBLE);
 				// Log.i("ARG", "-------" + arg0);
 				if (arg0.toString().length() == 0) {
-					sendcomment.setVisibility(View.GONE);
+					btn_sendcomment.setVisibility(View.GONE);
 				} else {
-					sendcomment.setVisibility(View.VISIBLE);
+					btn_sendcomment.setVisibility(View.VISIBLE);
 				}
 				// ChecklistFragment.this.checkadapter.search2(arg0.toString());
 			}
 		});
 
-		sendcomment.setOnClickListener(new OnClickListener() {
+		btn_sendcomment.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -332,16 +445,16 @@ public class WorkItemClick extends Activity {
 					exception.printStackTrace();
 
 				}
-				commentAdd(commentbody.getText().toString());
+				commentAdd(txt_commentbody.getText().toString());
 				// commentslist.add
-				comm.add(new Comments(id_punchlist_item, commentbody.getText()
+				comm.add(new Comments(id_punchlist_item, txt_commentbody.getText()
 						.toString(), null, "just now"));
 				Log.d("*****", "increased size" + comm.size());
 				commentslist.setAdapter(comadap);
 				comadap.notifyDataSetChanged();
 				setlist(commentslist, comadap, 230);
-				commentbody.setText("");
-				sendcomment.setVisibility(View.GONE);
+				txt_commentbody.setText("");
+				btn_sendcomment.setVisibility(View.GONE);
 				
 
 			}
@@ -367,12 +480,13 @@ public class WorkItemClick extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				Log.d("location : ","Location : "+Prefrences.location_str);//btnS_location.getText().toString());
 				Prefrences.text = 5;
 				Show_Dialog2(v);
 			}
 		});
 
-		back.setOnClickListener(new OnClickListener() {
+		btn_back.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -397,7 +511,7 @@ public class WorkItemClick extends Activity {
 			}
 		});
 
-		email.setOnClickListener(new OnClickListener() {
+		img_email.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 
@@ -407,7 +521,7 @@ public class WorkItemClick extends Activity {
 			}
 		});
 
-		message.setOnClickListener(new OnClickListener() {
+		img_message.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -422,7 +536,7 @@ public class WorkItemClick extends Activity {
 			}
 		});
 
-		call.setOnClickListener(new OnClickListener() {
+		img_call.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -434,7 +548,7 @@ public class WorkItemClick extends Activity {
 			}
 		});
 
-		gallery.setOnClickListener(new OnClickListener() {
+		img_gallery.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -447,7 +561,7 @@ public class WorkItemClick extends Activity {
 			}
 		});
 
-		camera.setOnClickListener(new OnClickListener() {
+		img_camera.setOnClickListener(new OnClickListener() {
 
 			@SuppressLint("SimpleDateFormat")
 			@Override
@@ -508,7 +622,7 @@ public class WorkItemClick extends Activity {
 
 		for (int i = 0; i < photosarrayArrayList.size(); i++) {
 			if (!photosarrayArrayList.get(i).original.equalsIgnoreCase("")) {
-				ladder_page2 = new ImageView(WorkItemClick.this);
+				img_ladder_page2 = new ImageView(WorkItemClick.this);
 				arr.add(photosarrayArrayList.get(i).urlLarge);
 				ids.add(photosarrayArrayList.get(i).id);
 				desc.add(photosarrayArrayList.get(i).description);
@@ -519,27 +633,27 @@ public class WorkItemClick extends Activity {
 				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 						(int) (200), (int) (200));
 				lp.setMargins(10, 10, 10, 10);
-				ladder_page2.setTag(i);
-				ladder_page2.setLayoutParams(lp);
+				img_ladder_page2.setTag(i);
+				img_ladder_page2.setLayoutParams(lp);
 				// Picasso.with(WorkItemClick.this).load(arr.get(i).toString())
 				// .into(ladder_page2);
 
 				Picasso.with(WorkItemClick.this)
 						.load(photosarrayArrayList.get(i).urlSmall)
 
-						.into(ladder_page2);
+						.into(img_ladder_page2);
 
 				// // ladder_page2.setImageBitmap(myBitmap);
-				lin2.addView(ladder_page2);
+				lin2.addView(img_ladder_page2);
 
-				ladder_page2.setOnClickListener(new OnClickListener() {
+				img_ladder_page2.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
 						Prefrences.selectedPic = (Integer) v.getTag();
 						Log.i("Tag Value", "" + Prefrences.selectedPic);
 
-						Intent intent = new Intent(con, MainActivity1.class);
+						Intent intent = new Intent(con, SelectedImageView.class);
 						intent.putExtra("array", arr);
 						intent.putExtra("ids", ids);
 						intent.putExtra("desc", desc);
@@ -839,13 +953,15 @@ public class WorkItemClick extends Activity {
 			if (comm.get(position).created_at.toString().equals("just now")) {
 				holder.date.setText("just now");
 			} else {
-				String date = comm.get(position).created_at.toString()
-						.substring(0, 10);
-				String time = comm.get(position).created_at.toString()
-						.substring(11, 19);
-				Log.d("date==", "" + date);
-				Log.d("time==", "" + time);
-				holder.date.setText("" + date + "," + time);
+				
+//				String date = comm.get(position).created_at.toString()
+//						.substring(0, 10);
+//				String time = comm.get(position).created_at.toString()
+//						.substring(11, 19);
+				String date = utcToLocal(comm.get(position).created_at.toString());
+//				Log.d("date==", "" + date);
+//				Log.d("time==", "" + time);
+				holder.date.setText(date);
 			}
 
 			final LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(
@@ -1035,15 +1151,18 @@ public class WorkItemClick extends Activity {
 			String assigneeId = null;
 			jsonobj.put("user_id", user_id);
 			jsonobj.put("location", location);
-			for (int j = 0; j < Homepage.user2.size(); j++) {
-				if (Homepage.user2.get(j).uFullName.toString()
-						.equalsIgnoreCase(Prefrences.assigneename.toString())) {
-					assigneeId = Homepage.user2.get(j).uId.toString();
+			for (int j = 0; j < ProjectsAdapter.user2.size(); j++) {
+				if (ProjectsAdapter.user2.get(j).uFullName.toString()
+						.equalsIgnoreCase(Prefrences.assignee_str.toString())) {
+					assigneeId = ProjectsAdapter.user2.get(j).uId.toString();
+				}
+				else{
+					assigneeId="";
 				}
 			}
 			Log.d("assignee", "Assignee Id" + assigneeId
 					+ "Prefrences.assigneename.toString()"
-					+ Prefrences.assigneename.toString());
+					+ Prefrences.assignee_str.toString());
 			jsonobj.put("assignee_id", assigneeId);
 
 			jomain.put("worklist_item", jsonobj);
@@ -1099,7 +1218,7 @@ public class WorkItemClick extends Activity {
 								} else {
 									Prefrences.dismissLoadingDialog();
 								}
-								save.setText("Save");
+								btn_save.setText("Save");
 								// String body = punchlist_item_obj
 								// .getString("body");
 								// String epoch_time = punchlist_item_obj
@@ -1253,6 +1372,7 @@ public class WorkItemClick extends Activity {
 								// "--------------comments data end-------------------------");
 								//
 								// }
+								finish();
 							}
 
 							catch (Exception e) {
@@ -1282,49 +1402,143 @@ public class WorkItemClick extends Activity {
 
 		Prefrences.showLoadingDialog(con, "Loading...");
 		JSONObject jsonobj = new JSONObject();
-		String assignee_id = null;
+		assignee_id = "";
 		RequestParams params = new RequestParams();
 
 		params.put("worklist_item[mobile]", "1");
-		params.put("worklist_item[body]", body.getText().toString());
-		params.put("worklist_item[location]", btnS_location.getText()
-				.toString());
+		params.put("worklist_item[body]", txt_body.getText().toString());
+		
+		params.put("worklist_item[location]", Prefrences.location_str);//btnS_location.getText().toString());
 		params.put("worklist_item[user_id]", Prefrences.userId);
-		params.put("worklist_item[status]", "" + status);
+		params.put("worklist_item[completed]", ""+Prefrences.statusCompleted); //0 incomplete, 1 complete.
 		params.put("worklist_item[completed_by_user_id]", Prefrences.userId);
-		for (int i = 0; i < Homepage.user2.size(); i++) {
-			if (Homepage.user2.get(i).uFullName.toString().equalsIgnoreCase(
-					btnS_assigned.getText().toString())) {
-				assignee_id = Homepage.user2.get(i).uId.toString();
+		for (int i = 0; i < ProjectsAdapter.user2.size(); i++) {
+			if (ProjectsAdapter.user2.get(i).uFullName.toString().equalsIgnoreCase(Prefrences.assignee_str)) {
+				assignee_id = ProjectsAdapter.user2.get(i).uId.toString();
 			}
 		}
 		Log.d("", "assignee id ==== " + assignee_id);
 		params.put("worklist_item[assignee_id]", assignee_id);
+		if(Prefrences.worklisttypes==0 || Prefrences.worklisttypes==2 || Prefrences.worklisttypes==3)
+		{
+		for(int i=0; i < WorklistFragment.punchListItem.size();i++){
+			if(WorklistFragment.punchListItem.get(i).id.toString().equals(id_punchlist_item)){
+				
+				Log.d("hellloooooo","yoooo");
+				WorklistFragment.punchListItem.get(i).body=txt_body.getText().toString();
+				WorklistFragment.punchListItem.get(i).location=Prefrences.location_str;//btnS_location.getText().toString();
+				WorklistFragment.punchListItem.get(i).assignee.get(0).fullName=Prefrences.assignee_str;//btnS_assigned.getText().toString();
+				WorklistFragment.punchListItem.get(i).assignee.get(0).id=assignee_id.toString();
+				if(Prefrences.statusCompleted==1)
+				{
+					WorklistFragment.punchListItem.get(i).completed="true";
+					WorklistFragment.worklist_complted.add(0, new PunchListsItem(id_punchlist_item, txt_body.getText().toString(),WorklistFragment.assigne ,
+							Prefrences.location_str// btnS_location.getText().toString()
+							, "",
+							"true", photosarrayArrayList, "", comm, ""));
+					for(int j=0;j<WorklistFragment.worklist_Active.size();j++)
+					{
+						if(WorklistFragment.worklist_Active.get(j).id.toString().equals(id_punchlist_item))
+							WorklistFragment.worklist_Active.remove(j);
+					}
+				}
+				else if(Prefrences.statusCompleted==0)
+				{
+				WorklistFragment.punchListItem.get(i).completed="false";
+				WorklistFragment.worklist_Active.add(0, new PunchListsItem(id_punchlist_item, txt_body.getText().toString(),WorklistFragment.assigne ,
+						Prefrences.location_str//btnS_location.getText().toString()
+						,"","false", photosarrayArrayList, "", comm, ""));
+				
+				for(int j=0;j<WorklistFragment.worklist_complted.size();j++)
+				{
+					if(WorklistFragment.worklist_complted.get(j).id.toString().equals(id_punchlist_item))
+						WorklistFragment.worklist_complted.remove(j);
+				}
+			}
+				}
+				
+		}
+		}
+		else if(Prefrences.worklisttypes==1)
+		{
+		for(int i=0; i < WorklistFragment.worklist_Active.size();i++){
+			if(WorklistFragment.worklist_Active.get(i).id.toString().equals(id_punchlist_item)){
+				
+				Log.d("hellloooooo","yoooo");
+				WorklistFragment.worklist_Active.get(i).body=txt_body.getText().toString();
+				WorklistFragment.worklist_Active.get(i).location=Prefrences.location_str;//btnS_location.getText().toString();
+				WorklistFragment.worklist_Active.get(i).assignee.get(0).fullName=Prefrences.assignee_str;//btnS_assigned.getText().toString();
+				WorklistFragment.worklist_Active.get(i).assignee.get(0).id=assignee_id.toString();
+				if(Prefrences.statusCompleted==1){
+					WorklistFragment.worklist_Active.get(i).completed="true";
+					
+					WorklistFragment.worklist_complted.add(0, new PunchListsItem(id_punchlist_item, txt_body.getText().toString(),
+							WorklistFragment.assigne , Prefrences.assignee_str//btnS_location.getText().toString()
+							, "",
+							"true", photosarrayArrayList, "", comm, ""));
+					WorklistFragment.worklist_Active.remove(i);
+					
+				}
+				else
+					WorklistFragment.worklist_Active.get(i).completed="false";
+				
+				
+			}
+				
+		}
+		}
+		else if(Prefrences.worklisttypes==4){
+		for(int i=0; i < WorklistFragment.worklist_complted.size();i++){
+			if(WorklistFragment.worklist_complted.get(i).id.toString().equals(id_punchlist_item)){
+				Log.d("hellloooooo","yoooo");
+				WorklistFragment.worklist_complted.get(i).body=txt_body.getText().toString();
+				WorklistFragment.worklist_complted.get(i).location=Prefrences.location_str;//btnS_location.getText().toString();
+				WorklistFragment.worklist_complted.get(i).assignee.get(0).fullName=Prefrences.assignee_str;//btnS_assigned.getText().toString();
+				WorklistFragment.worklist_complted.get(i).assignee.get(0).id=assignee_id.toString();
+				if(Prefrences.statusCompleted==1){
+					WorklistFragment.worklist_complted.get(i).completed="true";
+					
+				}
+				else{
+					WorklistFragment.worklist_complted.get(i).completed="false";
+					WorklistFragment.worklist_Active.add(0, new PunchListsItem(id_punchlist_item, txt_body.getText().toString(),
+							WorklistFragment.assigne , 
+							Prefrences.location_str//btnS_location.getText().toString()
+							, "",	"false", photosarrayArrayList, "", comm, ""));
+					
+					WorklistFragment.worklist_complted.remove(i);
+				}
+			}
+				
+		}
+		}
+		
+		
 		Log.i("id", id_punchlist_item);
-		Log.i("body", body.getText().toString());
-		Log.i("location", btnS_location.getText().toString());
+		Log.i("body", txt_body.getText().toString());
+		Log.i("location",Prefrences.location_str); //btnS_location.getText().toString());
 		Log.i("user_id", Prefrences.userId);
-		Log.i("status", "" + status);
+		Log.i("status", "" + Prefrences.statusCompleted);
 		Log.i("completed_by_user_id", Prefrences.userId);
-		Log.i("user_assignee", "" + btnS_assigned.getText().toString());
+		Log.i("user_assignee", "" + Prefrences.assignee_str);//btnS_assigned.getText().toString());
 		// params.put();
 
 		try {
 
 			jsonobj.put("worklist_item[mobile]", 1);// id_punchlist_item);
 
-			jsonobj.put("worklist_item[body]", body.getText().toString()
+			jsonobj.put("worklist_item[body]", txt_body.getText().toString()
 					+ "Eshant");
-			jsonobj.put("worklist_item[location]", btnS_location.getText()
-					.toString());
+			jsonobj.put("worklist_item[location]", Prefrences.location_str);//btnS_location.getText().toString());
 			jsonobj.put("worklist_item[user_id]", Prefrences.userId);
-			jsonobj.put("worklist_item[status]", "" + status);
+			jsonobj.put("worklist_item[status]", "" + Prefrences.statusCompleted);
 			jsonobj.put("worklist_item[completed_by_user_id]",
 					Prefrences.userId);
-			for (int i = 0; i < Homepage.user2.size(); i++) {
-				if (Homepage.user2.get(i).uFullName.toString()
-						.equalsIgnoreCase(btnS_assigned.getText().toString())) {
-					assignee_id = Homepage.user2.get(i).uId.toString();
+			for (int i = 0; i < ProjectsAdapter.user2.size(); i++) {
+				if (ProjectsAdapter.user2.get(i).uFullName.toString()
+						.equalsIgnoreCase(Prefrences.assignee_str//btnS_assigned.getText().toString()
+								)) {
+					assignee_id = ProjectsAdapter.user2.get(i).uId.toString();
 				}
 			}
 			Log.d("", "assignee id ==== " + assignee_id);
@@ -1348,6 +1562,7 @@ public class WorkItemClick extends Activity {
 							JSONObject res = null;
 							try {
 								res = new JSONObject(response);
+								startservice();
 								Log.v("response ---- ",
 										"---*****----" + res.toString(2));
 							} catch (Exception e) {
@@ -1607,13 +1822,14 @@ public class WorkItemClick extends Activity {
 
 		mpEntity.addPart("worklist_item[mobile]", new StringBody("1"));
 
-		mpEntity.addPart("worklist_item[body]", new StringBody(body.getText()
+		mpEntity.addPart("worklist_item[body]", new StringBody(txt_body.getText()
 				.toString() + "Eshant"));
 
-		mpEntity.addPart("worklist_item[location]", new StringBody(
-				btnS_location.getText().toString()));
+		mpEntity.addPart("worklist_item[location]", new StringBody(Prefrences.location_str
+//				btnS_location.getText().toString()
+				));
 
-		mpEntity.addPart("worklist_item[status]", new StringBody("" + status));
+		mpEntity.addPart("worklist_item[status]", new StringBody("" + Prefrences.statusCompleted));
 
 		mpEntity.addPart("worklist_item[completed_by_user_id]", new StringBody(
 				Prefrences.userId));
@@ -1647,6 +1863,66 @@ public class WorkItemClick extends Activity {
 
 		System.out.println(responseString);
 
+	}
+	
+	public static void ReminderSet(long epoch) {
+		Prefrences.showLoadingDialog(con, "Loading...");
+//		JSONObject json = new JSONObject();
+		RequestParams params = new RequestParams();
+		
+		params.put("reminder[worklist_item_id]",id_punchlist_item );
+		params.put("reminder[user_id]", Prefrences.userId);
+		params.put("reminder[project_id]",Prefrences.selectedProId );
+		params.put("date",""+epoch);
+
+		AsyncHttpClient client = new AsyncHttpClient();
+		client.addHeader("Content-type", "application/json");
+		client.addHeader("Accept", "application/json");
+		
+		client.post(con, Prefrences.url + "/reminders", params,
+				 new AsyncHttpResponseHandler() {
+					@Override
+					public void onSuccess(String response) {
+						JSONObject res = null;
+						try {
+							res = new JSONObject(response);
+							Log.v("response ---- ",
+									"---*****----" + res.toString(2));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						Prefrences.dismissLoadingDialog();
+					}
+
+					@Override
+					public void onFailure(Throwable arg0) {
+						Log.e("request fail", arg0.toString());
+						Prefrences.dismissLoadingDialog();
+					}
+				});
+	}
+	
+	public void startservice(){
+		Log.d("in service","in service");
+		startService(new Intent(this, MyService.class));
+	}
+	
+	@SuppressLint("SimpleDateFormat")
+	public static String utcToLocal(String utcTime) {
+
+		SimpleDateFormat sdf = new SimpleDateFormat("mm/dd/yy, hh:mm a");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		try {
+			Date myDate = simpleDateFormat.parse(utcTime);
+			String localDate = sdf.format(myDate);
+			Log.d("date ", "hiii date " + localDate.toString());
+			return localDate;
+		} catch (Exception e1) {
+			Log.e("e1", "=" + e1);
+			return utcTime;
+		}
 	}
 
 }

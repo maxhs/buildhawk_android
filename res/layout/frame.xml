@@ -11,6 +11,7 @@
         android:layout_width="405px"
         android:layout_height="200px"
         android:gravity="center"
+        android:textColor="@color/white"
         android:textSize="28px"
         android:layout_marginLeft="175px"
         android:background="#0000" />

@@ -16,5 +16,6 @@
     <string name="title_activity_report_item_create">ReportItemCreate</string>
     <string name="title_activity_company_list">CompanyList</string>
     <string name="title_activity_subs_list">SubsList</string>
+    <string name="title_activity_add_user">AddUser</string>
 
 </resources>

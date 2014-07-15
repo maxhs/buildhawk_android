@@ -26,7 +26,8 @@
                 android:layout_height="90px"
                 android:gravity="center"
                 android:text="Medium Text"
-                	android:textStyle="bold"
+                android:textStyle="bold"
+                android:textColor="@color/white"
                 android:textSize="36px" />
 
             <Button
@@ -62,13 +63,22 @@
         </RelativeLayout>
 
         <ImageView
+            android:id="@+id/searchimg"
+            android:layout_width="65px"
+            android:layout_height="65px"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10px"
+            android:src="@drawable/search" />
+
+        <ImageView
             android:id="@+id/addWorkitem"
             android:layout_width="58px"
             android:layout_height="58px"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:visibility="gone"
             android:src="@drawable/add"
+            android:visibility="gone"
             android:layout_marginRight="10px"
             android:tag="mwar" />
 
@@ -198,7 +208,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:text="Worklist"
+                android:text="Tasks"
                 android:layout_marginBottom="4px"
                 android:textColor="@color/white"
                 android:textSize="32px" />
@@ -211,5 +221,23 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/botBtn" 
         android:visibility="visible"/>
+<!--     <FrameLayout -->
+<!--         android:id="@+id/fragment2" -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="match_parent" -->
+<!--         android:layout_above="@+id/botBtn"  -->
+<!--         android:visibility="visible"/> -->
+<!--     <FrameLayout -->
+<!--         android:id="@+id/fragment3" -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="match_parent" -->
+<!--         android:layout_above="@+id/botBtn"  -->
+<!--         android:visibility="visible"/> -->
+<!--     <FrameLayout -->
+<!--         android:id="@+id/fragment4" -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="match_parent" -->
+<!--         android:layout_above="@+id/botBtn"  -->
+<!--         android:visibility="visible"/>  -->
 
 </RelativeLayout>

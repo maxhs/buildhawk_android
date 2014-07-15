@@ -13,30 +13,47 @@
         android:layout_marginTop="115px"
         android:background="@color/white" >
 
-        <EditText
-            android:id="@+id/checksearch"
-            android:layout_width="match_parent"
-            android:layout_height="80px"
-            android:background="@drawable/edittext_background"
-            android:cursorVisible="true"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="Search"
-            android:singleLine="true"
-            android:textColor="@color/black"
-            android:textCursorDrawable="@drawable/color_cursor"
-            android:textSize="36px" />
+        <RelativeLayout
+            android:id="@+id/search_rel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
 
-      
+            <EditText
+                android:id="@+id/checksearch"
+                android:layout_width="520px"
+                android:layout_height="80px"
+                android:background="@drawable/edittext_background"
+                android:cursorVisible="true"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="Search"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textCursorDrawable="@drawable/color_cursor"
+                android:textSize="36px"
+                android:visibility="visible" >
+
+                <requestFocus />
+            </EditText>
+
+            <Button
+                android:id="@+id/cancelSearch"
+                android:layout_width="200px"
+                android:layout_height="80px"
+                android:layout_alignParentRight="true"
+                android:textSize="28px"
+                android:text="Cancel" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/topBtn"
             android:layout_width="match_parent"
             android:layout_height="80px"
-            android:layout_below="@+id/checksearch"
             android:layout_marginLeft="10px"
             android:layout_marginRight="10px"
             android:layout_marginTop="10px"
+            android:layout_below="@+id/search_rel"
             android:background="@drawable/black_background"
             android:gravity="center_vertical" >
 
@@ -90,26 +107,25 @@
                 android:textSize="30px" />
         </LinearLayout>
 
-          <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+        <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
             xmlns:ptr="http://schemas.android.com/apk/res-auto"
             android:id="@+id/expandList"
             android:layout_width="match_parent"
             android:layout_height="940px"
             android:layout_below="@+id/topBtn"
             android:background="@color/white"
-            android:transcriptMode="disabled"  >
+            android:transcriptMode="disabled" >
         </com.handmark.pulltorefresh.library.PullToRefreshExpandableListView>
-<!--         <ExpandableListView -->
-<!--             android:id="@+id/expandList" -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="940px" -->
-<!--             android:layout_below="@+id/topBtn" -->
-<!--             android:background="@color/white" -->
-<!--             android:transcriptMode="disabled" > -->
-<!--         </ExpandableListView> -->
+        <!-- <ExpandableListView -->
+        <!-- android:id="@+id/expandList" -->
+        <!-- android:layout_width="match_parent" -->
+        <!-- android:layout_height="940px" -->
+        <!-- android:layout_below="@+id/topBtn" -->
+        <!-- android:background="@color/white" -->
+        <!-- android:transcriptMode="disabled" > -->
+        <!-- </ExpandableListView> -->
 
-
-<com.handmark.pulltorefresh.library.PullToRefreshListView
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
             xmlns:ptr="http://schemas.android.com/apk/res-auto"
             android:id="@+id/progressList"
             android:layout_width="match_parent"
@@ -117,27 +133,26 @@
             android:layout_below="@+id/topBtn"
             android:background="@color/white"
             android:transcriptMode="disabled"
-            android:visibility="visible"  >
+            android:visibility="visible" >
         </com.handmark.pulltorefresh.library.PullToRefreshListView>
-<!--         <ListView -->
-<!--             android:id="@+id/progressList" -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="940px" -->
-<!--             android:layout_below="@+id/topBtn" -->
-<!--             android:background="@color/white" -->
-<!--             android:transcriptMode="disabled" -->
-<!--             android:visibility="visible" > -->
-<!--         </ListView> -->
+        <!-- <ListView -->
+        <!-- android:id="@+id/progressList" -->
+        <!-- android:layout_width="match_parent" -->
+        <!-- android:layout_height="940px" -->
+        <!-- android:layout_below="@+id/topBtn" -->
+        <!-- android:background="@color/white" -->
+        <!-- android:transcriptMode="disabled" -->
+        <!-- android:visibility="visible" > -->
+        <!-- </ListView> -->
 
         <ListView
             android:id="@+id/checksearchlist"
             android:layout_width="match_parent"
             android:layout_height="940px"
-            android:layout_below="@+id/checksearch"
             android:background="@color/white"
-            android:transcriptMode="disabled" >
+            android:transcriptMode="disabled" 
+            android:layout_below="@+id/search_rel">
         </ListView>
-
     </RelativeLayout>
 
 </RelativeLayout>

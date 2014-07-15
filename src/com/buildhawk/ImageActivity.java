@@ -54,12 +54,13 @@ public class ImageActivity extends Activity {
 	LinearLayout lay;
 	LinearLayout mainLayout;
 	ImageView imgView;
-	TextView txtView, sort, projecttext;
+	TextView txtView, tv_sort, tv_projecttext;
 	int count = 0;
 	RelativeLayout relLay;
 	RelativeLayout back;
-	TextView tvKey;
-
+	TextView tv_Key;
+	ConnectionDetector connDect;
+	Boolean isInternetPresent = false;
 	String key;
 
 	@Override
@@ -69,9 +70,12 @@ public class ImageActivity extends Activity {
 
 		relLay = (RelativeLayout) findViewById(R.id.rellay);
 		new ASSL(this, relLay, 1134, 720, false);
+		connDect = new ConnectionDetector(getApplicationContext());
+		isInternetPresent = connDect.isConnectingToInternet();
 		// Bundle bundle=new Bundle();
 		// bundle.getString("key",)
-		sort = (TextView) findViewById(R.id.sort);
+		tv_sort = (TextView) findViewById(R.id.sort);
+		tv_sort.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 		// projecttext=(TextView)findViewById(R.id.project_txt);
 		back = (RelativeLayout) findViewById(R.id.back);
 
@@ -154,7 +158,7 @@ public class ImageActivity extends Activity {
 			}
 		});
 
-		sort.setOnClickListener(new OnClickListener() {
+		tv_sort.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -229,7 +233,7 @@ public class ImageActivity extends Activity {
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 
-						byname(key);
+						byName(key);
 						dialog.dismiss();
 					}
 				});
@@ -240,11 +244,11 @@ public class ImageActivity extends Activity {
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						if (key.equals("Report")) {
-							byname(key);
+							byName(key);
 						} else if (key.equals("Project Docs")) {
-							byname(key);
+							byName(key);
 						} else {
-							bydate(key);
+							byDate(key);
 						}
 						dialog.dismiss();
 					}
@@ -256,15 +260,15 @@ public class ImageActivity extends Activity {
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						if (key.equals("Checklist")) {
-							byphase(key);
+							byPhase(key);
 						} else if (key.equals("All")) {
-							byall(key);
+							byAll(key);
 						} else if (key.equals("Report")) {
-							bydate(key);
+							byDate(key);
 						} else if (key.equals("Worklist")) {
-							byall(key);
+							byAll(key);
 						} else if (key.equals("Project Docs")) {
-							byall(key);
+							byAll(key);
 						}
 						dialog.dismiss();
 					}
@@ -293,15 +297,15 @@ public class ImageActivity extends Activity {
 		});
 
 		if (key.equals("Checklist")) {
-			byphase(key);
+			byPhase(key);
 		} else if (key.equals("All")) {
-			byall(key);
+			byAll(key);
 		} else if (key.equals("Report")) {
-			bydate(key);
+			byDate(key);
 		} else if (key.equals("Worklist")) {
-			byall(key);
+			byAll(key);
 		} else if (key.equals("Project Docs")) {
-			byall(key);
+			byAll(key);
 		}
 
 	}
@@ -343,7 +347,7 @@ public class ImageActivity extends Activity {
 		cdd.show();
 	}
 
-	void byall(String str) {
+	void byAll(String str) {
 		mainLayout.removeAllViews();
 		arr.clear();
 		ids.clear();
@@ -390,6 +394,7 @@ public class ImageActivity extends Activity {
 
 					Picasso.with(this)
 							.load(arraylist.get(pos).url200.toString())
+							.placeholder(R.drawable.default_200)
 							.into(imgView);
 					lay.addView(imgView);
 				} else {
@@ -405,6 +410,7 @@ public class ImageActivity extends Activity {
 					imgView.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(pos).url200.toString())
+							.placeholder(R.drawable.default_200)
 							.into(imgView);
 					lay.addView(imgView);
 
@@ -415,46 +421,44 @@ public class ImageActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-
-						Log.i("Tag Value", "" + Prefrences.selectedPic);
-						Prefrences.selectedPic = (Integer) v.getTag();
-						Log.i("Tag Value", "" + Prefrences.selectedPic);
-
-						Intent intent = new Intent(ImageActivity.this,
-								MainActivity1.class);
-						intent.putExtra("array", arr);
-						intent.putExtra("ids", ids);
-						intent.putExtra("desc", desc);
-						intent.putExtra("key", key);
-						Log.d("", "----0000000----" + key);
-						intent.putExtra("id",
-								arraylist.get(Prefrences.selectedPic).id);
-
-						intent.putStringArrayListExtra("doc", docuser);
-						intent.putStringArrayListExtra("work", workuser);
-						intent.putStringArrayListExtra("check", checkuser);
-						intent.putStringArrayListExtra("report", reportuser);
-						intent.putStringArrayListExtra("allusers", allusers);
-
-						intent.putStringArrayListExtra("doc_date", docdate);
-						intent.putStringArrayListExtra("work_date", workdate);
-						intent.putStringArrayListExtra("check_date", checkdate);
-						intent.putStringArrayListExtra("report_date",
-								reportdate);
-						intent.putStringArrayListExtra("all_date", alldates);
-
-						intent.putStringArrayListExtra("doc_phase", docphase);
-						intent.putStringArrayListExtra("worklist_phase",
-								worklistphase);
-						intent.putStringArrayListExtra("checklist_phase",
-								checklistphase);
-						intent.putStringArrayListExtra("report_phase",
-								reportphase);
-						intent.putStringArrayListExtra("all_phase", allphase);
-						startActivity(intent);
-						finish();
-						overridePendingTransition(R.anim.slide_in_right,
-								R.anim.slide_out_left);
+						
+					if (isInternetPresent) {
+								
+							
+							Log.i("Tag Value", "" + Prefrences.selectedPic);
+							Prefrences.selectedPic = (Integer) v.getTag();
+							Log.i("Tag Value", "" + Prefrences.selectedPic);
+	
+							Intent intent = new Intent(ImageActivity.this,
+									SelectedImageView.class);
+							intent.putExtra("array", arr);
+							intent.putExtra("ids", ids);
+							intent.putExtra("desc", desc);
+							intent.putExtra("key", key);
+							Log.d("", "----0000000----" + key);
+							intent.putExtra("id",arraylist.get(Prefrences.selectedPic).id);
+							intent.putStringArrayListExtra("doc", docuser);
+							intent.putStringArrayListExtra("work", workuser);
+							intent.putStringArrayListExtra("check", checkuser);
+							intent.putStringArrayListExtra("report", reportuser);
+							intent.putStringArrayListExtra("allusers", allusers);
+							intent.putStringArrayListExtra("doc_date", docdate);
+							intent.putStringArrayListExtra("work_date", workdate);
+							intent.putStringArrayListExtra("check_date", checkdate);
+							intent.putStringArrayListExtra("report_date",reportdate);
+							intent.putStringArrayListExtra("all_date", alldates);
+							intent.putStringArrayListExtra("doc_phase", docphase);
+							intent.putStringArrayListExtra("worklist_phase",worklistphase);
+							intent.putStringArrayListExtra("checklist_phase",checklistphase);
+							intent.putStringArrayListExtra("report_phase",reportphase);
+							intent.putStringArrayListExtra("all_phase", allphase);
+							startActivity(intent);
+							finish();
+							overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+					} else {
+						Toast.makeText(getApplicationContext(),"No internet connection.", Toast.LENGTH_SHORT).show();
+								
+					}
 					}
 				});
 
@@ -463,7 +467,7 @@ public class ImageActivity extends Activity {
 		}
 	}
 
-	void byname(String s) {
+	void byName(String s) {
 		mainLayout.removeAllViews();
 		arraylist.clear();
 		users.clear();
@@ -590,6 +594,7 @@ public class ImageActivity extends Activity {
 					imgView.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
+							.placeholder(R.drawable.default_200)
 							.into(imgView);
 					lay.addView(imgView);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -608,6 +613,7 @@ public class ImageActivity extends Activity {
 
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
+							.placeholder(R.drawable.default_200)
 							.into(imgView);
 					lay.addView(imgView);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -625,7 +631,7 @@ public class ImageActivity extends Activity {
 						Log.i("Tag Value", "" + Prefrences.selectedPic);
 
 						Intent intent = new Intent(ImageActivity.this,
-								MainActivity1.class);
+								SelectedImageView.class);
 						intent.putExtra("array", arr);
 						intent.putExtra("ids", ids);
 						intent.putExtra("desc", desc);
@@ -666,7 +672,7 @@ public class ImageActivity extends Activity {
 		}
 	}
 
-	void bydate(String str) {
+	void byDate(String str) {
 		mainLayout.removeAllViews();
 		arraylist.clear();
 		dates.clear();
@@ -796,6 +802,7 @@ public class ImageActivity extends Activity {
 					imgView.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
+							.placeholder(R.drawable.default_200)
 							.into(imgView);
 					lay.addView(imgView);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -813,6 +820,7 @@ public class ImageActivity extends Activity {
 					imgView.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
+							.placeholder(R.drawable.default_200)
 							.into(imgView);
 					lay.addView(imgView);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -829,7 +837,7 @@ public class ImageActivity extends Activity {
 						Log.i("Tag Value", "" + Prefrences.selectedPic);
 
 						Intent intent = new Intent(ImageActivity.this,
-								MainActivity1.class);
+								SelectedImageView.class);
 						intent.putExtra("array", arr);
 						intent.putExtra("ids", ids);
 						intent.putExtra("desc", desc);
@@ -870,7 +878,7 @@ public class ImageActivity extends Activity {
 		}
 	}
 
-	void byphase(String str) {
+	void byPhase(String str) {
 		mainLayout.removeAllViews();
 		arraylist.clear();
 		phase.clear();
@@ -999,6 +1007,7 @@ public class ImageActivity extends Activity {
 					imgView.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
+							.placeholder(R.drawable.default_200)
 							.into(imgView);
 					lay.addView(imgView);
 					Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -1016,6 +1025,7 @@ public class ImageActivity extends Activity {
 					imgView.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
+							.placeholder(R.drawable.default_200)
 							.into(imgView);
 					lay.addView(imgView);
 					Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -1026,13 +1036,15 @@ public class ImageActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-
+						if (isInternetPresent) {
+							
+						
 						Log.i("Tag Value", "" + Prefrences.selectedPic);
 						Prefrences.selectedPic = (Integer) v.getTag();
 						Log.i("Tag Value", "" + Prefrences.selectedPic);
 
 						Intent intent = new Intent(ImageActivity.this,
-								MainActivity1.class);
+								SelectedImageView.class);
 						intent.putExtra("array", arr);
 						intent.putExtra("ids", ids);
 						intent.putExtra("desc", desc);
@@ -1066,6 +1078,9 @@ public class ImageActivity extends Activity {
 						finish();
 						overridePendingTransition(R.anim.slide_in_right,
 								R.anim.slide_out_left);
+						} else {
+								Toast.makeText(getApplicationContext(),"No internet connection.", Toast.LENGTH_SHORT).show();
+							}
 					}
 				});
 				pos++;

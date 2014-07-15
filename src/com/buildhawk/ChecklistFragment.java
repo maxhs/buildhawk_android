@@ -3,6 +3,7 @@ package com.buildhawk;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import rmn.androidscreenlibrary.ASSL;
@@ -10,34 +11,37 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path.FillType;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
-import android.widget.ExpandableListAdapter;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.ExpandableListView.OnGroupClickListener;
-import android.widget.ExpandableListView.OnGroupCollapseListener;
-import android.widget.ExpandableListView.OnGroupExpandListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import com.buildhawk.WorkListCompleteAdapter.ViewHolder;
 import com.buildhawk.utils.Categories;
 import com.buildhawk.utils.CheckItems;
 import com.buildhawk.utils.CheckList;
@@ -51,48 +55,50 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class ChecklistFragment extends Fragment {
 
-	public ArrayList<Categories> categList = new ArrayList<Categories>();
+	public static ArrayList<Categories> categList = new ArrayList<Categories>();
 
-	public ArrayList<Categories> pcategList = new ArrayList<Categories>();
-	public ArrayList<Categories> activelist = new ArrayList<Categories>();
-	public ArrayList<Categories> completelist = new ArrayList<Categories>();
-	public ArrayList<CheckList> checkList = new ArrayList<CheckList>();
-	public ArrayList<CheckItems> checkall = new ArrayList<CheckItems>();
+	public static ArrayList<Categories> pcategList = new ArrayList<Categories>();
+	public static ArrayList<Categories> activelist = new ArrayList<Categories>();
+	public static ArrayList<Categories> completelist = new ArrayList<Categories>();
+	public static ArrayList<CheckList> checkList = new ArrayList<CheckList>();
+	public static ArrayList<CheckItems> checkall = new ArrayList<CheckItems>();
 
-	public ArrayList<CheckItems> progressList2 = new ArrayList<CheckItems>();
+	public static ArrayList<CheckItems> progressList2 = new ArrayList<CheckItems>();
 
 	public ArrayList<SubCategories> subCatList;
-	public ArrayList<SubCategories> activeSubCatList;
-	public ArrayList<SubCategories> completeSubCatList;
-	public ArrayList<SubCategories> psubCatList;
+	public static ArrayList<SubCategories> activeSubCatList;
+	public static ArrayList<SubCategories> completeSubCatList;
+	public static ArrayList<SubCategories> psubCatList;
 
 	ExpandableListView actualListview;
 	public ArrayList<ProjectsFields> projectsListAll = new ArrayList<ProjectsFields>();
-
+	ConnectionDetector connDect;
 	View footerView;
 	Boolean pull = false;
 	PullToRefreshExpandableListView expandlist;
 	ListView searchlist;
 	PullToRefreshListView progressList;
-	TextView active;
-	TextView all;
-	TextView progress;
-	TextView complete;
-	TextView searchcheck;
-	Button sendcomment;
+	TextView tv_active;
+	TextView tv_all;
+	TextView tv_progress;
+	TextView tv_complete;
+	EditText txt_searchcheck;
+	public static RelativeLayout search_rel;
+	Button btn_cancel;
+	Button btn_sendcomment;
 	RelativeLayout relLay;
-	static ArrayList<Categories> listDataHeader;
-	static ArrayList<Categories> activeHeader;
-	static ArrayList<Categories> completeHeader;
+	
+	ParentLevel listAdapter;
+	Boolean isInternetPresent = false;
 	checkAdapter checkadapter;
 	Handler mHandler = new Handler();
+	progressAdapter adapter;
 	// PullToRefreshListView list;
 
 	public static ArrayList<CommentsChecklistItem> comments = new ArrayList<CommentsChecklistItem>();
@@ -100,8 +106,9 @@ public class ChecklistFragment extends Fragment {
 	public static ArrayList<DataCheckListItems> checklistitemdata = new ArrayList<DataCheckListItems>();
 
 	// private ArrayList<Categories> progressarray;
-	public static ArrayList<CheckItems> progressarr;
+//	public static ArrayList<CheckItems> progressarr;
 	static Context con;
+	SharedPreferences sharedpref;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -116,28 +123,36 @@ public class ChecklistFragment extends Fragment {
 
 		// list = (PullToRefreshListView) root.findViewById(R.id.pullList);
 
-		active = (TextView) root.findViewById(R.id.active);
-		all = (TextView) root.findViewById(R.id.all);
-		progress = (TextView) root.findViewById(R.id.progress);
-		complete = (TextView) root.findViewById(R.id.completed);
-		searchcheck = (TextView) root.findViewById(R.id.checksearch);
+		search_rel=(RelativeLayout)root.findViewById(R.id.search_rel);
+		tv_active = (TextView) root.findViewById(R.id.active);
+		tv_all = (TextView) root.findViewById(R.id.all);
+		tv_progress = (TextView) root.findViewById(R.id.progress);
+		tv_complete = (TextView) root.findViewById(R.id.completed);
+		txt_searchcheck = (EditText) root.findViewById(R.id.checksearch);
+		btn_cancel=(Button)root.findViewById(R.id.cancelSearch);
 
+		sharedpref = getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
 		expandlist = (PullToRefreshExpandableListView) root
 				.findViewById(R.id.expandList);
 
+		search_rel.setVisibility(View.GONE);
 		progressList = (PullToRefreshListView) root
 				.findViewById(R.id.progressList);
 		searchlist = (ListView) root.findViewById(R.id.checksearchlist);
 
-		active.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
-		all.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
-		complete.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
-		progress.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
-
-		// Log.v("count..",","+ProjectsAdapter.categList.size()+", "+ProjectsAdapter.categList.get(0).subCat.size()+","+ProjectsAdapter.categList.get(0).subCat.get(0).checkItems.size());
+		tv_active.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
+		tv_all.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
+		tv_complete.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
+		tv_progress.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
+		Prefrences.checklisttypes=1;
+		// Log.v("count..",","+ProjectsAdapter.categList.size()+", "+ sAdapter.categList.get(0).subCat.size()+","+ProjectsAdapter.categList.get(0).subCat.get(0).checkItems.size());
 
 		progressList.setVisibility(View.GONE);
 		expandlist.setVisibility(View.VISIBLE);
+		
+		if(Prefrences.checklist_s.equalsIgnoreCase("")){
+			Prefrences.checklist_bool=false;
+		}
 
 		actualListview = expandlist.getRefreshableView();
 
@@ -151,6 +166,7 @@ public class ChecklistFragment extends Fragment {
 			}
 		});
 
+		
 		expandlist
 				.setOnRefreshListener(new OnRefreshListener<ExpandableListView>() {
 
@@ -163,117 +179,39 @@ public class ChecklistFragment extends Fragment {
 					}
 				});
 
-		// listDataHeader.clear();
-		// activeHeader.clear();
-		// completeHeader.clear();
+		btn_cancel.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				search_rel.setVisibility(View.GONE);
+				searchlist.setVisibility(View.GONE);
+			}
+		});
+		
+		txt_searchcheck.setOnEditorActionListener(new OnEditorActionListener() {
+		  	@Override
+			public boolean onEditorAction(TextView v, int actionId,
+					KeyEvent event) {		  		
+				// TODO Auto-generated method stub
+		  		if (actionId == EditorInfo.IME_ACTION_DONE) {
+//		                Toast.makeText(ACTIVITY_NAME.this, etSearchFriends.getText(),Toast.LENGTH_SHORT).show();
+		  							
+					 InputMethodManager imm = (InputMethodManager) con
+								.getSystemService(Context.INPUT_METHOD_SERVICE);
+						imm.hideSoftInputFromWindow(txt_searchcheck.getWindowToken(),
+								0);
+					
+					 
+		              return true;
+		            }
+		  		else{
+				return false;
+		  		}
+			}
+		});
 
-		// listDataHeader = categList;
-		// activeHeader = activelist;
-		// completeHeader = completelist;
-		// progressarr = progressList2;
-
-		// progressarray=ProjectsAdapter.PcategList;
-
-		// footerView =
-		// ((LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.last_item,
-		// null, false);
-		//
-		// LinearLayout lay = (LinearLayout)
-		// footerView.findViewById(R.id.footerview);
-		// lay.setLayoutParams(new ListView.LayoutParams(720, 156));
-		// ASSL.DoMagic(lay);
-
-		// ParentLevel listAdapter = new ParentLevel(con, listDataHeader);
-		// // checkListView.setAdapter(listAdapter);
-		// expandlist.setAdapter(listAdapter);
-		// checkadapter = new checkAdapter(con);
-		// searchlist.setAdapter(checkadapter);
-		// searchlist.setVisibility(View.GONE);
-
-		// // adpter = new CollectionAdapter();
-		// final ListView lv = list.getRefreshableView();
-		// lv.addFooterView(footerView);
-		// // list.setAdapter(adpter);
-		// list.setAdapter(checkadapter);
-		// list.setVisibility(View.VISIBLE);
-		//
-		// //*******************************
-		//
-
-		// list.setOnRefreshListener(new OnRefreshListener2<ListView>() {
-		//
-		// public void onPullDownToRefresh(PullToRefreshBase<ListView>
-		// refreshView) {
-		//
-		// projectDetail(getActivity());
-		// }
-		//
-		// @Override
-		// public void onPullUpToRefresh(
-		// PullToRefreshBase<ListView> refreshView) {
-		// // TODO Auto-generated method stub
-		//
-		// }
-		//
-		// });
-
-		// expandlist.setOnGroupClickListener(new OnGroupClickListener() {
-		//
-		// @Override
-		// public boolean onGroupClick(ExpandableListView parent, View v,
-		// int groupPosition, long id) {
-		// // Toast.makeText(getApplicationContext(),
-		// // "Group Clicked " + listDataHeader.get(groupPosition),
-		// // Toast.LENGTH_SHORT).show();
-		// return false;
-		// }
-		// });
-		//
-		// // Listview Group expanded listener
-		// expandlist.setOnGroupExpandListener(new OnGroupExpandListener() {
-		//
-		// @Override
-		// public void onGroupExpand(int groupPosition) {
-		// Toast.makeText(getActivity(),
-		// listDataHeader.get(groupPosition) + " Expanded",
-		// Toast.LENGTH_SHORT).show();
-		// }
-		// });
-		//
-		// // Listview Group collasped listener
-		// expandlist.setOnGroupCollapseListener(new OnGroupCollapseListener() {
-		//
-		// @Override
-		// public void onGroupCollapse(int groupPosition) {
-		// Toast.makeText(getActivity(),
-		// listDataHeader.get(groupPosition) + " Collapsed",
-		// Toast.LENGTH_SHORT).show();
-		//
-		// }
-		// });
-		//
-		// // Listview on child click listener
-		// expandlist.setOnChildClickListener(new OnChildClickListener() {
-		//
-		// @Override
-		// public boolean onChildClick(ExpandableListView parent, View v,
-		// int groupPosition, int childPosition, long id) {
-		// // TODO Auto-generated method stub
-		// Toast.makeText(
-		// getActivity(),
-		// listDataHeader.get(groupPosition)
-		// + " : "
-		// + listDataHeader.get(
-		// listDataHeader.get(groupPosition)).get(
-		// childPosition), Toast.LENGTH_SHORT)
-		// .show();
-		// return false;
-		// }
-		// });
-
-		Prefrences.selectedCheckitem = 2;
-
-		searchcheck.addTextChangedListener(new TextWatcher() {
+		txt_searchcheck.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void onTextChanged(CharSequence charSeq, int arg1, int arg2,
@@ -290,99 +228,94 @@ public class ChecklistFragment extends Fragment {
 			public void afterTextChanged(Editable arg0) {
 				// progressList.setVisibility(View.VISIBLE);
 				Log.i("ARG", "-------" + arg0);
-				Prefrences.selectedCheckitem = 6;
 				ChecklistFragment.this.checkadapter.search2(arg0.toString());
 			}
 		});
 
-		active.setOnClickListener(new OnClickListener() {
+		tv_active.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 
-				Prefrences.selectedCheckitem = 3;
-
-				ParentLevel listAdapter = new ParentLevel(con, activeHeader);
+				Prefrences.checklisttypes=2;
+				 listAdapter = new ParentLevel(con, activelist);
 
 				actualListview.setAdapter(listAdapter);
 				expandlist.setVisibility(View.VISIBLE);
 
 				progressList.setVisibility(View.GONE);
-				active.setBackgroundResource(R.color.black);
-				all.setBackgroundResource(R.drawable.all_white_background);
-				progress.setBackgroundResource(R.color.white);
-				complete.setBackgroundResource(R.drawable.complete_white_background);
+				tv_active.setBackgroundResource(R.color.black);
+				tv_all.setBackgroundResource(R.drawable.all_white_background);
+				tv_progress.setBackgroundResource(R.color.white);
+				tv_complete.setBackgroundResource(R.drawable.complete_white_background);
 
-				active.setTextColor(Color.WHITE);
-				complete.setTextColor(Color.BLACK);
-				all.setTextColor(Color.BLACK);
-				progress.setTextColor(Color.BLACK);
+				tv_active.setTextColor(Color.WHITE);
+				tv_complete.setTextColor(Color.BLACK);
+				tv_all.setTextColor(Color.BLACK);
+				tv_progress.setTextColor(Color.BLACK);
 
 			}
 		});
-		all.setOnClickListener(new OnClickListener() {
+		tv_all.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
-				Prefrences.selectedCheckitem = 2;
-
-				ParentLevel listAdapter = new ParentLevel(con, listDataHeader);
+				Prefrences.checklisttypes=1;
+				 listAdapter = new ParentLevel(con, categList);
 				actualListview.setAdapter(listAdapter);
 				expandlist.setVisibility(View.VISIBLE);
 				progressList.setVisibility(View.GONE);
-				active.setBackgroundResource(R.color.white);
-				progress.setBackgroundResource(R.color.white);
-				all.setBackgroundResource(R.drawable.all_black_background);
-				complete.setBackgroundResource(R.drawable.complete_white_background);
+				tv_active.setBackgroundResource(R.color.white);
+				tv_progress.setBackgroundResource(R.color.white);
+				tv_all.setBackgroundResource(R.drawable.all_black_background);
+				tv_complete.setBackgroundResource(R.drawable.complete_white_background);
 
-				active.setTextColor(Color.BLACK);
-				complete.setTextColor(Color.BLACK);
-				all.setTextColor(Color.WHITE);
-				progress.setTextColor(Color.BLACK);
+				tv_active.setTextColor(Color.BLACK);
+				tv_complete.setTextColor(Color.BLACK);
+				tv_all.setTextColor(Color.WHITE);
+				tv_progress.setTextColor(Color.BLACK);
 			}
 		});
 
-		progress.setOnClickListener(new OnClickListener() {
+		tv_progress.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
-
-				Prefrences.selectedCheckitem = 5;
+				Prefrences.checklisttypes=3;
 				expandlist.setVisibility(View.GONE);
-				progressAdapter adapter = new progressAdapter(con, progressarr);
+				 adapter = new progressAdapter(con, progressList2);
 				progressList.setAdapter(adapter);
 				progressList.setVisibility(View.VISIBLE);
-				active.setBackgroundResource(R.color.white);
-				complete.setBackgroundResource(R.drawable.complete_white_background);
-				all.setBackgroundResource(R.drawable.all_white_background);
-				progress.setBackgroundResource(R.color.black);
+				tv_active.setBackgroundResource(R.color.white);
+				tv_complete.setBackgroundResource(R.drawable.complete_white_background);
+				tv_all.setBackgroundResource(R.drawable.all_white_background);
+				tv_progress.setBackgroundResource(R.color.black);
 
-				active.setTextColor(Color.BLACK);
-				complete.setTextColor(Color.BLACK);
-				all.setTextColor(Color.BLACK);
-				progress.setTextColor(Color.WHITE);
+				tv_active.setTextColor(Color.BLACK);
+				tv_complete.setTextColor(Color.BLACK);
+				tv_all.setTextColor(Color.BLACK);
+				tv_progress.setTextColor(Color.WHITE);
 			}
 		});
 
-		complete.setOnClickListener(new OnClickListener() {
+		tv_complete.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
-
-				Prefrences.selectedCheckitem = 4;
-				ParentLevel listAdapter = new ParentLevel(con, completeHeader);
+				Prefrences.checklisttypes=4;
+				listAdapter = new ParentLevel(con, completelist);
 				actualListview.setAdapter(listAdapter);
 				expandlist.setVisibility(View.VISIBLE);
 				progressList.setVisibility(View.GONE);
-				progress.setBackgroundResource(R.color.white);
-				active.setBackgroundResource(R.color.white);
-				all.setBackgroundResource(R.drawable.all_white_background);
-				complete.setBackgroundResource(R.drawable.complete_black_background);
+				tv_progress.setBackgroundResource(R.color.white);
+				tv_active.setBackgroundResource(R.color.white);
+				tv_all.setBackgroundResource(R.drawable.all_white_background);
+				tv_complete.setBackgroundResource(R.drawable.complete_black_background);
 
-				active.setTextColor(Color.BLACK);
-				complete.setTextColor(Color.WHITE);
-				all.setTextColor(Color.BLACK);
-				progress.setTextColor(Color.BLACK);
+				tv_active.setTextColor(Color.BLACK);
+				tv_complete.setTextColor(Color.WHITE);
+				tv_all.setTextColor(Color.BLACK);
+				tv_progress.setTextColor(Color.BLACK);
 			}
 		});
 
@@ -392,21 +325,346 @@ public class ChecklistFragment extends Fragment {
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
+		Log.e("resumed", "msg");
 		super.onResume();
-		if (Prefrences.stopingHit == 1) {
+//		if(Prefrences.searchFlag==1)		
+//			tv_searchcheck.setVisibility(View.VISIBLE);
+		
+		connDect = new ConnectionDetector(getActivity());
+		isInternetPresent = connDect.isConnectingToInternet();
+		if(Prefrences.CheckItemClickFlag==true){
+			Prefrences.CheckItemClickFlag =false;
+			try{
+				listAdapter.notifyDataSetChanged();
+			}catch(Exception e){
+				
+			}
+			try{
+			adapter.notifyDataSetChanged();
+		}catch(Exception e){
+			
+		}
+		}
+		
 
+		if (Prefrences.stopingHit == 1) {
 			Prefrences.stopingHit = 0;
-			projectDetail(getActivity());
+			if(Prefrences.checklist_bool==false){
+				if (isInternetPresent) {
+					projectDetail(getActivity());
+				} else {
+					String response = sharedpref.getString("checklistfragment", "");
+					if(response.equalsIgnoreCase("")){
+						Toast.makeText(getActivity(),"No internet connection.", Toast.LENGTH_SHORT).show();
+					}else{
+						fillServerData(response);
+					}
+				}
+				
+			}else
+			{
+				JSONObject res=null;
+				try {
+					res = new JSONObject(Prefrences.checklist_s);
+				
+				JSONObject checklist = res.getJSONObject("checklist");
+				Log.v("checklist value", checklist.toString());
+
+				JSONArray categories = checklist
+						.getJSONArray("phases");
+				
+				
+				categList.clear();
+
+				
+				pcategList.clear();// = new ArrayList<Categories>();
+				activelist.clear();// = new ArrayList<Categories>();
+				completelist.clear();// = new
+										// ArrayList<Categories>();
+				checkList.clear();// = new ArrayList<CheckList>();
+				checkall.clear();// = new ArrayList<CheckItems>();
+
+				progressList2.clear();// = new
+										// ArrayList<CheckItems>();
+
+				for (int i = 0; i < categories.length(); i++)
+
+				{
+
+					JSONObject count = categories.getJSONObject(i);
+
+					JSONArray subCategories = count
+							.getJSONArray("categories");
+
+					subCatList = new ArrayList<SubCategories>();
+
+					psubCatList = new ArrayList<SubCategories>();
+					activeSubCatList = new ArrayList<SubCategories>();
+					completeSubCatList = new ArrayList<SubCategories>();
+
+					for (int j = 0; j < subCategories.length(); j++) {
+						JSONObject uCount = subCategories
+								.getJSONObject(j);
+
+						JSONArray checkItem = uCount
+								.getJSONArray("checklist_items");
+
+						ArrayList<CheckItems> checkItemList = new ArrayList<CheckItems>();
+
+						ArrayList<CheckItems> activeCheckItemList = new ArrayList<CheckItems>();
+						ArrayList<CheckItems> completeCheckItemList = new ArrayList<CheckItems>();
+						ArrayList<CheckItems> progressList = new ArrayList<CheckItems>();
+
+						for (int m = 0; m < checkItem.length(); m++) {
+							JSONObject cCount = checkItem
+									.getJSONObject(m);
+							String state;
+							try{
+							 state = cCount.getString("state");
+							 if(state.equalsIgnoreCase(null)){
+								 state = "";
+							 }
+							}catch(NullPointerException e){
+								state = "";
+							}
+
+							checkItemList.add(new CheckItems(count.getString("id"), uCount.getString("id"),
+									cCount.getString("id"),
+									cCount.getString("body"),
+									state,
+									cCount.getString("item_type"),
+									cCount.getString("photos_count"),
+									cCount.getString("comments_count")));
+
+							if (!checkItemList.get(m).status
+									.equals("1")
+									&& !checkItemList.get(m).status
+											.equals("-1")) {
+								activeCheckItemList.add(new CheckItems(count.getString("id"), uCount.getString("id"),
+										cCount.getString("id"),
+										cCount.getString("body"),
+										state,
+										cCount.getString("item_type"),
+										cCount.getString("photos_count"),
+										cCount.getString("comments_count")));
+							}
+
+							if (checkItemList.get(m).status
+									.equals("1")) {
+								completeCheckItemList.add(new CheckItems(count.getString("id"), uCount.getString("id"),
+										cCount.getString("id"),
+										cCount.getString("body"),
+										state,
+										cCount.getString("item_type"),
+										cCount.getString("photos_count"),
+										cCount.getString("comments_count")));
+							}
+
+							if (checkItemList.get(m).status
+									.equals("0")) {
+
+								progressList.add(new CheckItems(count.getString("id"), uCount.getString("id"),
+										cCount.getString("id"),
+										cCount.getString("body"),
+										state,
+										cCount.getString("item_type"),
+										cCount.getString("photos_count"),
+										cCount.getString("comments_count")));
+								// progressList2.addAll(progressList);
+								// Log.d("","Size="+progressList2.size()+"Body="+progressList2.get(m).body);
+							}
+
+						}
+						checkall.addAll(checkItemList);
+						progressList2.addAll(progressList);
+
+						if (activeCheckItemList.size() > 0) {
+							activeSubCatList.add(new SubCategories(uCount.getString("id"),
+									uCount.getString("name"),
+									uCount.getString("completed_date"),
+									uCount.getString("milestone_date"),
+									uCount.getString("progress_percentage"),
+									activeCheckItemList));
+						}
+
+						if (completeCheckItemList.size() > 0) {
+							completeSubCatList.add(new SubCategories(uCount.getString("id"),
+									uCount.getString("name"),
+									uCount.getString("completed_date"),
+									uCount.getString("milestone_date"),
+									uCount.getString("progress_percentage"),
+									completeCheckItemList));
+						}
+
+						subCatList.add(new SubCategories(uCount.getString("id"),
+								uCount.getString("name"),
+								uCount.getString("completed_date"),
+								uCount.getString("milestone_date"),
+								uCount.getString("progress_percentage"),
+								checkItemList));
+
+						psubCatList.add(new SubCategories(uCount.getString("id"),
+								uCount.getString("name"),
+								uCount.getString("completed_date"),
+								uCount.getString("milestone_date"),
+								uCount.getString("progress_percentage"),
+								progressList));
+					}
+					Log.d("checkall",
+							"size of checkall" + checkall.size());
+					categList.add(new Categories(count.getString("id"),
+							count.getString("name"), count
+							.getString("completed_date"), count
+							.getString("milestone_date"), count
+							.getString("progress_percentage"),
+							subCatList));
+
+					pcategList.add(new Categories(count.getString("id"),count
+							.getString("name"), count
+							.getString("completed_date"), count
+							.getString("milestone_date"), count
+							.getString("progress_percentage"),
+							psubCatList));
+
+					if (activeSubCatList.size() > 0) {
+						activelist.add(new Categories(count.getString("id"),count
+								.getString("name"), count
+								.getString("completed_date"), count
+								.getString("milestone_date"), count
+								.getString("progress_percentage"),
+								activeSubCatList));
+
+					}
+
+					if (completeSubCatList.size() > 0) {
+						completelist.add(new Categories(count.getString("id"),count
+								.getString("name"), count
+								.getString("completed_date"), count
+								.getString("milestone_date"), count
+								.getString("progress_percentage"),
+								completeSubCatList));
+						// Log.d("ActiveList",""+activelist.size());
+					}
+
+				}
+
+				checkList.add(new CheckList(checklist
+						.getString("id"), checklist
+						.getString("name"), categList));
+				
+				
+
+				
+
+				Log.d("project adapter ", "Progress List size = "
+						+ progressList2.size());
+				// for(int i=0;i<progressList2.size();i++)
+				Log.d("project adapter ",
+						"body" + progressList2.size());
+				
+				if(Prefrences.checklisttypes==1)
+				{
+				 listAdapter = new ParentLevel(con,
+						categList);
+				// checkListView.setAdapter(listAdapter);
+				actualListview.setAdapter(listAdapter);
+				checkadapter = new checkAdapter(con);
+				searchlist.setAdapter(checkadapter);
+				searchlist.setVisibility(View.GONE);
+				
+				tv_active.setBackgroundResource(R.color.white);
+				tv_progress.setBackgroundResource(R.color.white);
+				tv_all.setBackgroundResource(R.drawable.all_black_background);
+				tv_complete.setBackgroundResource(R.drawable.complete_white_background);
+
+				tv_active.setTextColor(Color.BLACK);
+				tv_complete.setTextColor(Color.BLACK);
+				tv_all.setTextColor(Color.WHITE);
+				tv_progress.setTextColor(Color.BLACK);
+				}
+				else if(Prefrences.checklisttypes==2)
+				{
+					 listAdapter = new ParentLevel(con, activelist);
+
+					actualListview.setAdapter(listAdapter);
+					expandlist.setVisibility(View.VISIBLE);
+					checkadapter = new checkAdapter(con);
+					searchlist.setAdapter(checkadapter);
+					searchlist.setVisibility(View.GONE);
+
+					progressList.setVisibility(View.GONE);
+					tv_active.setBackgroundResource(R.color.black);
+					tv_all.setBackgroundResource(R.drawable.all_white_background);
+					tv_progress.setBackgroundResource(R.color.white);
+					tv_complete.setBackgroundResource(R.drawable.complete_white_background);
+
+					tv_active.setTextColor(Color.WHITE);
+					tv_complete.setTextColor(Color.BLACK);
+					tv_all.setTextColor(Color.BLACK);
+					tv_progress.setTextColor(Color.BLACK);
+				}
+				else if(Prefrences.checklisttypes==3){
+					expandlist.setVisibility(View.GONE);
+					 adapter = new progressAdapter(con, progressList2);
+					progressList.setAdapter(adapter);
+					progressList.setVisibility(View.VISIBLE);
+					
+					checkadapter = new checkAdapter(con);
+					searchlist.setAdapter(checkadapter);
+					searchlist.setVisibility(View.GONE);
+					
+					tv_active.setBackgroundResource(R.color.white);
+					tv_complete.setBackgroundResource(R.drawable.complete_white_background);
+					tv_all.setBackgroundResource(R.drawable.all_white_background);
+					tv_progress.setBackgroundResource(R.color.black);
+
+					tv_active.setTextColor(Color.BLACK);
+					tv_complete.setTextColor(Color.BLACK);
+					tv_all.setTextColor(Color.BLACK);
+					tv_progress.setTextColor(Color.WHITE);
+				}
+				else if(Prefrences.checklisttypes==4){
+					 listAdapter = new ParentLevel(con, completelist);
+					actualListview.setAdapter(listAdapter);
+					expandlist.setVisibility(View.VISIBLE);
+					progressList.setVisibility(View.GONE);
+					
+					checkadapter = new checkAdapter(con);
+					searchlist.setAdapter(checkadapter);
+					searchlist.setVisibility(View.GONE);
+					
+					tv_progress.setBackgroundResource(R.color.white);
+					tv_active.setBackgroundResource(R.color.white);
+					tv_all.setBackgroundResource(R.drawable.all_white_background);
+					tv_complete.setBackgroundResource(R.drawable.complete_black_background);
+
+					tv_active.setTextColor(Color.BLACK);
+					tv_complete.setTextColor(Color.WHITE);
+					tv_all.setTextColor(Color.BLACK);
+					tv_progress.setTextColor(Color.BLACK);
+				}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 
 		}
+//		else
+//		{
+//			ParentLevel listAdapter = new ParentLevel(con, categList);
+//			actualListview.setAdapter(listAdapter);
+//			expandlist.setVisibility(View.VISIBLE);
+//			progressList.setVisibility(View.GONE);
+//		}
 	}
 
 	public void onBackPressed() {
 
-		activeHeader.clear();
-		completeHeader.clear();
-		progressarr.clear();
-		listDataHeader.clear();
+		activelist.clear();
+		completelist.clear();
+		progressList2.clear();
+		categList.clear();
 	}
 
 	// ****************************** Expandable List Adapters for Shows All
@@ -645,7 +903,7 @@ public class ChecklistFragment extends Fragment {
 						.setBackgroundResource(R.drawable.hands_outline_white);
 			}
 
-			if (check.status.equalsIgnoreCase("Completed")) {
+			if (check.status.equalsIgnoreCase("1")) {
 				holder3.imgRight.setBackgroundResource(R.drawable.check);
 				// holder3.rl.setAlpha(0.5f);
 				holder3.tv3.setAlpha(0.5f);
@@ -660,7 +918,7 @@ public class ChecklistFragment extends Fragment {
 							.setBackgroundResource(R.drawable.hands_outline_white);
 				}
 
-			} else if (check.status.equalsIgnoreCase("In-Progress")) {
+			} else if (check.status.equalsIgnoreCase("0")) {
 				holder3.tv3.setTextColor(Color.WHITE);
 				holder3.tv3.setAlpha(1);
 				// img_right.setBackgroundResource(R.drawable.back_onclick);
@@ -674,7 +932,7 @@ public class ChecklistFragment extends Fragment {
 					holder3.imgLeft
 							.setBackgroundResource(R.drawable.hands_outline_white);
 				}
-			} else if (check.status.equalsIgnoreCase("Not Applicable")) {
+			} else if (check.status.equalsIgnoreCase("-1")) {
 				holder3.tv3.setAlpha(0.5f);
 				holder3.tv3.setPaintFlags(holder3.tv3.getPaintFlags()
 						| Paint.STRIKE_THRU_TEXT_FLAG);
@@ -695,12 +953,15 @@ public class ChecklistFragment extends Fragment {
 
 				@Override
 				public void onClick(View view) {
+					
+					if (isInternetPresent) {
 
 					String idcheck, status;
-					idcheck = check.id.toString();
+					idcheck = check.item_id.toString();
 					status = check.status.toString();
+					
 					// Log.e("","874378684376348257"+id);
-					showcomments(idcheck, status, check);
+					showComments(idcheck, status, check);
 
 					// Intent in = new Intent(getActivity(),
 					// CheckItemClick.class);
@@ -713,7 +974,22 @@ public class ChecklistFragment extends Fragment {
 					// in.putExtra("itemtype", check.itemType.toString());
 					// //Log.d("111111","********----------"+childPosition+groupPosition);
 					// startActivity(in);
+					}else{
+						Log.e("tag", ""+Prefrences.selectedProId+" val "+ check.item_id.toString());
 
+						DatabaseClass dbObject = new DatabaseClass(getActivity());
+						dbObject.open();
+						if(dbObject.exists_checkitem(Prefrences.selectedProId, check.item_id.toString())){
+							String response = dbObject.get_checkitem(Prefrences.selectedProId, check.item_id.toString());
+							dbObject.close();
+							fillServerDataItem(response, check);
+							
+						}else{
+							dbObject.close();
+							Toast.makeText(getActivity(),"No internet connection.", Toast.LENGTH_SHORT).show();
+						}
+					
+				}
 				}
 			});
 
@@ -727,7 +1003,11 @@ public class ChecklistFragment extends Fragment {
 				photocount = Integer.parseInt(check.photosCount.toString());
 			}
 
-			if (photocount > 0) {
+			if(check.status.toString().equalsIgnoreCase("1"))
+			{
+				holder3.imgRight.setBackgroundResource(R.drawable.check);
+			}
+			else if (photocount > 0) {
 				holder3.imgRight.setBackgroundResource(R.drawable.camera_icon);
 			} else if (chatcount > 0) {
 				holder3.imgRight.setBackgroundResource(R.drawable.chat_icon);
@@ -876,10 +1156,10 @@ public class ChecklistFragment extends Fragment {
 				public void onClick(View view) {
 
 					String idcheck, status;
-					idcheck = body.id.toString();
+					idcheck = body.item_id.toString();
 					status = body.status.toString();
 
-					showcomments(idcheck, status, body);
+					showComments(idcheck, status, body);
 					// Intent in = new Intent(getActivity(),
 					// CheckItemClick.class);
 					// in.putExtra("body", body.body.toString());
@@ -972,13 +1252,16 @@ public class ChecklistFragment extends Fragment {
 				public void onClick(View view) {
 					Intent intent = new Intent(getActivity(),
 							CheckItemClick.class);
+					
+					Log.e("val.......",body.getitemid().toString()+" "+ body.getcat_id().toString()+" "+body.getsubCat_id().toString()+" "+ body.item_id);
 					intent.putExtra("body", body.body.toString());
 					intent.putExtra("itemtype", body.itemType.toString());
 					intent.putExtra("status", body.status.toString());
-					intent.putExtra("id", body.id.toString());
+					intent.putExtra("item_id", body.getitemid().toString());
+					intent.putExtra("cat_id", body.getcat_id().toString());
+					intent.putExtra("subcat_id", body.getsubCat_id().toString());
 					startActivity(intent);
-					getActivity().overridePendingTransition(
-							R.anim.slide_in_right, R.anim.slide_out_left);
+					getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				}
 			});
 			return convertView;
@@ -1010,7 +1293,7 @@ public class ChecklistFragment extends Fragment {
 		}
 	}
 
-	public static void showcomments(String idCheck, String status,
+	public void showComments(final String idCheck, String status,
 			final CheckItems check) {
 
 		Prefrences.showLoadingDialog(con, "Loading...");
@@ -1018,10 +1301,10 @@ public class ChecklistFragment extends Fragment {
 		RequestParams params = new RequestParams();
 
 		params.put("id", idCheck);
-		params.put("status", status);
+//		params.put("status", status);
 		// Log.e("json:", json1.toString());
 		AsyncHttpClient client = new AsyncHttpClient();
-
+		client.setTimeout(1000000);
 		client.addHeader("Content-type", "application/json");
 		client.addHeader("Accept", "application/json");
 
@@ -1031,111 +1314,16 @@ public class ChecklistFragment extends Fragment {
 
 					@Override
 					public void onSuccess(String response) {
-
-						JSONObject res = null;
-
-						try {
-
-							checklistitemdata.clear();
-							comments.clear();
-							photos.clear();
-							res = new JSONObject(response);
-							Log.v("response ", "" + res.toString(2));
-							JSONObject punchlists = res
-									.getJSONObject("checklist_item");// chexklist
-
-							JSONArray phot = punchlists.getJSONArray("photos");// categ
-
-							JSONArray personel = punchlists
-									.getJSONArray("comments");
-
-							for (int j = 0; j < phot.length(); j++) {
-								JSONObject ccount = phot.getJSONObject(j);
-
-								photos.add(new PhotosCheckListItem(ccount
-										.getString("id"), ccount
-										.getString("url_large"), ccount
-										.getString("original"), ccount
-										.getString("url_small"), ccount
-										.getString("url_thumb"), ccount
-										.getString("image_file_size"), ccount
-										.getString("image_content_type"),
-										ccount.getString("source"), ccount
-												.getString("phase"), ccount
-												.getString("created_at"),
-										ccount.getString("user_name"), ccount
-												.getString("name"), ccount
-												.getString("description"),
-										ccount.getString("created_date")));
-
-							}
-							// Prefrences.pho.addAll(photos);
-							// Log.v("%%%%%%%%%","photooooooossss sssiizzee "+CheckItemClick.pho.size());
-							// comments = new
-							// ArrayList<CommentsChecklistItem>();
-
-							for (int m = 0; m < personel.length(); m++) {
-								JSONObject count = personel.getJSONObject(m);
-
-								JSONObject cmpny = count.getJSONObject("user");
-
-								ArrayList<CommentsUserChecklistItem> cuser = new ArrayList<CommentsUserChecklistItem>();
-								cuser.add(new CommentsUserChecklistItem(cmpny
-										.getString("first_name"), cmpny
-										.getString("full_name"), cmpny
-										.getString("email"), cmpny
-										.getString("phone"), cmpny
-										.getString("id")));
-
-								comments.add(new CommentsChecklistItem(count
-										.getString("id"), count
-										.getString("body"), cuser, count
-										.getString("created_at")));
-
-							}
-							// Prefrences.comm.addAll(comments);
-							// for(int k=0;k<comments.size();k++)
-							// {
-							// CheckItemClick.comm.add(k,comments.get(k));
-							// }
-
-							// Log.v("%%%%%%%%%","photooooooossss sssiizzee "+CheckItemClick.comm.size());
-							Log.d("comments", "Size" + comments.size());
-							// Log.d("","commentbody "+comments.get(0).body.toString());
-
-							checklistitemdata.add(new DataCheckListItems(
-									punchlists.getString("id"), punchlists
-											.getString("body"), punchlists
-											.getString("status"), punchlists
-											.getString("item_type"), punchlists
-											.getString("photos_count"),
-									punchlists.getString("comments_count"),
-									photos, comments, punchlists
-											.getString("phase_name"),
-									punchlists.getString("project_id")));
-
-							// Log.d("checklistfragment ",
-							// "lalalala"+CheckItemClick.comm.size());
-
-							Intent intent = new Intent(con,
-									CheckItemClick.class);
-							intent.putExtra("body", check.body.toString());
-							intent.putExtra("id", check.id.toString());
-							// in.putParcelableArrayListExtra("key",
-							// (ArrayList<? extends Parcelable>) comments);
-							// in.putExtra("hello",comments);
-							intent.putExtra("status", check.status.toString());
-							intent.putExtra("itemtype",
-									check.itemType.toString());
-							// Log.d("111111","********----------"+childPosition+groupPosition);
-							con.startActivity(intent);
-							((Activity) con).overridePendingTransition(
-									R.anim.slide_in_right,
-									R.anim.slide_out_left);
-
-						} catch (Exception e) {
-							e.printStackTrace();
+						DatabaseClass dbObject = new DatabaseClass(getActivity());
+						dbObject.open();
+						Log.e("CHKITEMResponse", "msg: "+response);
+						if(dbObject.exists_checkitem(Prefrences.selectedProId, idCheck)){
+							dbObject.update_checkitem(Prefrences.selectedProId, idCheck, response);
+						}else{
+							dbObject.CreateChkItem(Prefrences.selectedProId, idCheck, response);
 						}
+						dbObject.close();
+						fillServerDataItem(response, check);
 						Prefrences.dismissLoadingDialog();
 					}
 
@@ -1164,317 +1352,17 @@ public class ChecklistFragment extends Fragment {
 
 		client.addHeader("Content-type", "application/json");
 		client.addHeader("Accept", "application/json");
-		client.setTimeout(100000);
+		client.setTimeout(1000000);
 		client.get(Prefrences.url + "/checklists/" + Prefrences.selectedProId,
 				params, new AsyncHttpResponseHandler() {
 
 					@Override
 					public void onSuccess(String response) {
 						Log.i("request succesfull", "response = " + response);
-						checkall.clear();
-						JSONObject res = null;
-						try {
-							res = new JSONObject(response);
-
-							JSONObject checklist = res
-									.getJSONObject("checklist");
-							Log.v("checklist value", checklist.toString());
-
-							JSONArray categories = checklist
-									.getJSONArray("phases");
-							categList.clear();
-
-							pcategList.clear();// = new ArrayList<Categories>();
-							activelist.clear();// = new ArrayList<Categories>();
-							completelist.clear();// = new
-													// ArrayList<Categories>();
-							checkList.clear();// = new ArrayList<CheckList>();
-							checkall.clear();// = new ArrayList<CheckItems>();
-
-							progressList2.clear();// = new
-													// ArrayList<CheckItems>();
-
-							for (int i = 0; i < categories.length(); i++)
-
-							{
-
-								JSONObject count = categories.getJSONObject(i);
-
-								JSONArray subCategories = count
-										.getJSONArray("categories");
-
-								subCatList = new ArrayList<SubCategories>();
-
-								psubCatList = new ArrayList<SubCategories>();
-								activeSubCatList = new ArrayList<SubCategories>();
-								completeSubCatList = new ArrayList<SubCategories>();
-
-								for (int j = 0; j < subCategories.length(); j++) {
-									JSONObject uCount = subCategories
-											.getJSONObject(j);
-
-									JSONArray checkItem = uCount
-											.getJSONArray("checklist_items");
-
-									ArrayList<CheckItems> checkItemList = new ArrayList<CheckItems>();
-
-									ArrayList<CheckItems> activeCheckItemList = new ArrayList<CheckItems>();
-									ArrayList<CheckItems> completeCheckItemList = new ArrayList<CheckItems>();
-									ArrayList<CheckItems> progressList = new ArrayList<CheckItems>();
-
-									for (int m = 0; m < checkItem.length(); m++) {
-										JSONObject cCount = checkItem
-												.getJSONObject(m);
-
-										checkItemList.add(new CheckItems(
-												cCount.getString("id"),
-												cCount.getString("body"),
-												cCount.getString("status"),
-												cCount.getString("item_type"),
-												cCount.getString("photos_count"),
-												cCount.getString("comments_count")));
-
-										if (!checkItemList.get(m).status
-												.equals("Completed")
-												&& !checkItemList.get(m).status
-														.equals("Not Applicable")) {
-											activeCheckItemList.add(new CheckItems(
-													cCount.getString("id"),
-													cCount.getString("body"),
-													cCount.getString("status"),
-													cCount.getString("item_type"),
-													cCount.getString("photos_count"),
-													cCount.getString("comments_count")));
-										}
-
-										if (checkItemList.get(m).status
-												.equals("Completed")) {
-											completeCheckItemList.add(new CheckItems(
-													cCount.getString("id"),
-													cCount.getString("body"),
-													cCount.getString("status"),
-													cCount.getString("item_type"),
-													cCount.getString("photos_count"),
-													cCount.getString("comments_count")));
-										}
-
-										if (checkItemList.get(m).status
-												.equals("In-Progress")) {
-
-											progressList.add(new CheckItems(
-													cCount.getString("id"),
-													cCount.getString("body"),
-													cCount.getString("status"),
-													cCount.getString("item_type"),
-													cCount.getString("photos_count"),
-													cCount.getString("comments_count")));
-											// progressList2.addAll(progressList);
-											// Log.d("","Size="+progressList2.size()+"Body="+progressList2.get(m).body);
-										}
-
-									}
-									checkall.addAll(checkItemList);
-									progressList2.addAll(progressList);
-
-									if (activeCheckItemList.size() > 0) {
-										activeSubCatList.add(new SubCategories(
-												uCount.getString("name"),
-												uCount.getString("completed_date"),
-												uCount.getString("milestone_date"),
-												uCount.getString("progress_percentage"),
-												activeCheckItemList));
-									}
-
-									if (completeCheckItemList.size() > 0) {
-										completeSubCatList.add(new SubCategories(
-												uCount.getString("name"),
-												uCount.getString("completed_date"),
-												uCount.getString("milestone_date"),
-												uCount.getString("progress_percentage"),
-												completeCheckItemList));
-									}
-
-									subCatList.add(new SubCategories(
-											uCount.getString("name"),
-											uCount.getString("completed_date"),
-											uCount.getString("milestone_date"),
-											uCount.getString("progress_percentage"),
-											checkItemList));
-
-									psubCatList.add(new SubCategories(
-											uCount.getString("name"),
-											uCount.getString("completed_date"),
-											uCount.getString("milestone_date"),
-											uCount.getString("progress_percentage"),
-											progressList));
-								}
-								Log.d("checkall",
-										"size of checkall" + checkall.size());
-								categList.add(new Categories(count
-										.getString("name"), count
-										.getString("completed_date"), count
-										.getString("milestone_date"), count
-										.getString("progress_percentage"),
-										subCatList));
-
-								pcategList.add(new Categories(count
-										.getString("name"), count
-										.getString("completed_date"), count
-										.getString("milestone_date"), count
-										.getString("progress_percentage"),
-										psubCatList));
-
-								if (activeSubCatList.size() > 0) {
-									activelist.add(new Categories(count
-											.getString("name"), count
-											.getString("completed_date"), count
-											.getString("milestone_date"), count
-											.getString("progress_percentage"),
-											activeSubCatList));
-
-								}
-
-								if (completeSubCatList.size() > 0) {
-									completelist.add(new Categories(count
-											.getString("name"), count
-											.getString("completed_date"), count
-											.getString("milestone_date"), count
-											.getString("progress_percentage"),
-											completeSubCatList));
-									// Log.d("ActiveList",""+activelist.size());
-								}
-
-							}
-
-							checkList.add(new CheckList(checklist
-									.getString("id"), checklist
-									.getString("name"), categList));
-
-							// for(int a=0; a < checkall.size(); a++)
-							// {
-							// if(!checkall.get(a).status.equals("Completed") &&
-							// !checkall.get(a).status.equals("Not Applicable"))
-							// {
-							// activeCheckItemList.addAll(checkall);
-							// }
-							// else
-							// if(checkall.get(a).status.equals("Completed"))
-							// {
-							// completeCheckItemList.addAll(checkall);
-							// }
-							// else
-							// if(checkall.get(a).status.equals("In-Progress"))
-							// {
-							// progressList.addAll(checkall);
-							// }
-							//
-							// }
-							// progressList2.addAll(progressList);
-							//
-							// for(int b=0;b<subCatList.size();b++)
-							// {
-							// if(activeCheckItemList.size()>0)
-							// {
-							// activeSubCatList.add(new
-							// SubCategories(subCatList.get(b).name,
-							// subCatList.get(b).completedDate,
-							// subCatList.get(b).milestoneDate
-							// , subCatList.get(b).progPerc,
-							// activeCheckItemList));
-							// }
-							// if(completeCheckItemList.size()>0)
-							// {
-							// completeSubCatList.add(new
-							// SubCategories(subCatList.get(b).name,
-							// subCatList.get(b).completedDate,
-							// subCatList.get(b).milestoneDate
-							// , subCatList.get(b).progPerc,
-							// completeCheckItemList));
-							// }
-							// PsubCatList.add(new
-							// SubCategories(subCatList.get(b).name,
-							// subCatList.get(b).completedDate,
-							// subCatList.get(b).milestoneDate
-							// , subCatList.get(b).progPerc, progressList));
-							//
-							// }
-							//
-							// for(int c=0;c<categList.size();c++)
-							// {
-							// if(activeSubCatList.size()>0)
-							// {
-							// activelist.add(new
-							// Categories(categList.get(c).name,
-							// categList.get(c).completedDate,
-							// categList.get(c).milestoneDate
-							// , categList.get(c).progPerc, activeSubCatList));
-							//
-							// }
-							// if(completeSubCatList.size()>0)
-							// {
-							// completelist.add(new
-							// Categories(categList.get(c).name,
-							// categList.get(c).completedDate,
-							// categList.get(c).milestoneDate
-							// , categList.get(c).progPerc,
-							// completeSubCatList));
-							// //Log.d("ActiveList",""+activelist.size());
-							// }
-							// PcategList.add(new
-							// Categories(categList.get(c).name,
-							// categList.get(c).completedDate,
-							// categList.get(c).milestoneDate
-							// , categList.get(c).progPerc, PsubCatList));
-							// }
-
-							Log.d("project adapter ", "Progress List size = "
-									+ progressList2.size());
-							// for(int i=0;i<progressList2.size();i++)
-							Log.d("project adapter ",
-									"body" + progressList2.size());
-							// activity.startActivity(new Intent(activity,
-							// ProjectDetail.class));
-							// activity.overridePendingTransition(R.anim.slide_in_right,
-							// R.anim.slide_out_left);
-
-							listDataHeader = categList;
-							activeHeader = activelist;
-							completeHeader = completelist;
-							progressarr = progressList2;
-
-							ParentLevel listAdapter = new ParentLevel(con,
-									listDataHeader);
-							// checkListView.setAdapter(listAdapter);
-							actualListview.setAdapter(listAdapter);
-							checkadapter = new checkAdapter(con);
-							searchlist.setAdapter(checkadapter);
-							searchlist.setVisibility(View.GONE);
-
-							// final ListView lv = list.getRefreshableView();
-							// lv.addFooterView(footerView);
-							// // list.setAdapter(adpter);
-							//
-							// list.setAdapter(checkadapter);
-							// list.setVisibility(View.VISIBLE);
-							if (pull == true) {
-								pull = false;
-								expandlist.setVisibility(View.VISIBLE);
-								progressList.setVisibility(View.GONE);
-								active.setBackgroundResource(R.color.white);
-								progress.setBackgroundResource(R.color.white);
-								all.setBackgroundResource(R.drawable.all_black_background);
-								complete.setBackgroundResource(R.drawable.complete_white_background);
-
-								active.setTextColor(Color.BLACK);
-								complete.setTextColor(Color.BLACK);
-								all.setTextColor(Color.WHITE);
-								progress.setTextColor(Color.BLACK);
-								expandlist.onRefreshComplete();
-							}
-
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+						fillServerData(response);
+						Editor editor = sharedpref.edit();
+						editor.putString("checklistfragment", response);
+						editor.commit();
 						Prefrences.dismissLoadingDialog();
 					}
 
@@ -1485,10 +1373,441 @@ public class ChecklistFragment extends Fragment {
 						if (pull == true) {
 							pull = false;
 							expandlist.onRefreshComplete();
+							progressList.onRefreshComplete();
 						}
 					}
 				});
 
+	}
+	
+	public void fillServerData(String response){
+		checkall.clear();
+		JSONObject res = null;
+		try {
+			res = new JSONObject(response);
+			
+			
+			Prefrences.checklist_s = response;
+			Prefrences.checklist_bool=true;
+
+			JSONObject checklist = res.getJSONObject("checklist");
+			Log.v("checklist value", checklist.toString());
+
+			JSONArray categories = checklist.getJSONArray("phases");   //Phase contains categories array and phase info like name id etc.
+			
+			
+			categList.clear();
+			pcategList.clear();
+			activelist.clear();
+			completelist.clear();
+			checkList.clear();
+			checkall.clear();
+
+			progressList2.clear();// = new
+									// ArrayList<CheckItems>();
+
+			for (int i = 0; i < categories.length(); i++)
+
+			{
+
+				JSONObject count = categories.getJSONObject(i);
+
+				JSONArray subCategories = count.getJSONArray("categories");
+
+				subCatList = new ArrayList<SubCategories>();
+
+				psubCatList = new ArrayList<SubCategories>();
+				activeSubCatList = new ArrayList<SubCategories>();
+				completeSubCatList = new ArrayList<SubCategories>();
+
+				for (int j = 0; j < subCategories.length(); j++) {
+					JSONObject uCount = subCategories
+							.getJSONObject(j);
+
+					JSONArray checkItem = uCount.getJSONArray("checklist_items");
+
+					ArrayList<CheckItems> checkItemList = new ArrayList<CheckItems>();
+
+					ArrayList<CheckItems> activeCheckItemList = new ArrayList<CheckItems>();
+					ArrayList<CheckItems> completeCheckItemList = new ArrayList<CheckItems>();
+					ArrayList<CheckItems> progressList = new ArrayList<CheckItems>();
+
+					for (int m = 0; m < checkItem.length(); m++) {
+						JSONObject cCount = checkItem
+								.getJSONObject(m);
+						
+						String state;
+						try{
+						 state = cCount.getString("state");
+						 if(state.equalsIgnoreCase(null)){
+							 state = "";
+						 }
+						}catch(NullPointerException e){
+							state = "";
+						}
+						
+						
+						
+						
+						//Log.e("ids.....", count.getString("id")+" "+ uCount.getString("id")+" "+cCount.getString("id"));
+						checkItemList.add(new CheckItems(count.getString("id"), uCount.getString("id"),
+								cCount.getString("id"),
+								cCount.getString("body"),
+								state,
+								cCount.getString("item_type"),
+								cCount.getString("photos_count"),
+								cCount.getString("comments_count")));
+
+						if (!checkItemList.get(m).status
+								.equals("1")
+								&& !checkItemList.get(m).status
+										.equals("-1")) {
+							activeCheckItemList.add(new CheckItems(count.getString("id"), uCount.getString("id"),
+									cCount.getString("id"),
+									cCount.getString("body"),
+									state,
+									cCount.getString("item_type"),
+									cCount.getString("photos_count"),
+									cCount.getString("comments_count")));
+						}
+
+						if (checkItemList.get(m).status
+								.equals("1")) {
+							completeCheckItemList.add(new CheckItems(count.getString("id"), uCount.getString("id"),
+									cCount.getString("id"),
+									cCount.getString("body"),
+									state,
+									cCount.getString("item_type"),
+									cCount.getString("photos_count"),
+									cCount.getString("comments_count")));
+						}
+
+						if (checkItemList.get(m).status
+								.equals("0")) {
+
+							progressList.add(new CheckItems(count.getString("id"), uCount.getString("id"),
+									cCount.getString("id"),
+									cCount.getString("body"),
+									state,
+									cCount.getString("item_type"),
+									cCount.getString("photos_count"),
+									cCount.getString("comments_count")));
+							
+						}
+
+					}
+					checkall.addAll(checkItemList);
+					progressList2.addAll(progressList);
+
+					if (activeCheckItemList.size() > 0) {
+						activeSubCatList.add(new SubCategories(uCount.getString("id"),
+								uCount.getString("name"),
+								uCount.getString("completed_date"),
+								uCount.getString("milestone_date"),
+								uCount.getString("progress_percentage"),
+								activeCheckItemList));
+					}
+
+					if (completeCheckItemList.size() > 0) {
+						completeSubCatList.add(new SubCategories(uCount.getString("id"),
+								uCount.getString("name"),
+								uCount.getString("completed_date"),
+								uCount.getString("milestone_date"),
+								uCount.getString("progress_percentage"),
+								completeCheckItemList));
+					}
+
+					subCatList.add(new SubCategories(uCount.getString("id"),
+							uCount.getString("name"),
+							uCount.getString("completed_date"),
+							uCount.getString("milestone_date"),
+							uCount.getString("progress_percentage"),
+							checkItemList));
+
+					psubCatList.add(new SubCategories(uCount.getString("id"),
+							uCount.getString("name"),
+							uCount.getString("completed_date"),
+							uCount.getString("milestone_date"),
+							uCount.getString("progress_percentage"),
+							progressList));
+				}
+				Log.d("checkall",
+						"size of checkall" + checkall.size());
+				categList.add(new Categories(count.getString("id"),count
+						.getString("name"), count
+						.getString("completed_date"), count
+						.getString("milestone_date"), count
+						.getString("progress_percentage"),
+						subCatList));
+
+				pcategList.add(new Categories(count.getString("id"),count
+						.getString("name"), count
+						.getString("completed_date"), count
+						.getString("milestone_date"), count
+						.getString("progress_percentage"),
+						psubCatList));
+
+				if (activeSubCatList.size() > 0) {
+					activelist.add(new Categories(count.getString("id"),count
+							.getString("name"), count
+							.getString("completed_date"), count
+							.getString("milestone_date"), count
+							.getString("progress_percentage"),
+							activeSubCatList));
+
+				}
+
+				if (completeSubCatList.size() > 0) {
+					completelist.add(new Categories(count.getString("id"),count
+							.getString("name"), count
+							.getString("completed_date"), count
+							.getString("milestone_date"), count
+							.getString("progress_percentage"),
+							completeSubCatList));
+					
+				}
+
+			}
+
+			checkList.add(new CheckList(checklist
+					.getString("id"), checklist
+					.getString("name"), categList));
+			
+			
+
+			
+
+			Log.d("project adapter ", "Progress List size = "
+					+ progressList2.size());
+			// for(int i=0;i<progressList2.size();i++)
+			Log.d("project adapter ",
+					"body" + progressList2.size());
+			
+			if(Prefrences.checklisttypes==1)
+			{
+			 listAdapter = new ParentLevel(con,
+					categList);
+			// checkListView.setAdapter(listAdapter);
+			actualListview.setAdapter(listAdapter);
+			checkadapter = new checkAdapter(con);
+			searchlist.setAdapter(checkadapter);
+			searchlist.setVisibility(View.GONE);
+			
+			tv_active.setBackgroundResource(R.color.white);
+			tv_progress.setBackgroundResource(R.color.white);
+			tv_all.setBackgroundResource(R.drawable.all_black_background);
+			tv_complete.setBackgroundResource(R.drawable.complete_white_background);
+
+			tv_active.setTextColor(Color.BLACK);
+			tv_complete.setTextColor(Color.BLACK);
+			tv_all.setTextColor(Color.WHITE);
+			tv_progress.setTextColor(Color.BLACK);
+			}
+			else if(Prefrences.checklisttypes==2)
+			{
+				 listAdapter = new ParentLevel(con, activelist);
+
+				actualListview.setAdapter(listAdapter);
+				expandlist.setVisibility(View.VISIBLE);
+				checkadapter = new checkAdapter(con);
+				searchlist.setAdapter(checkadapter);
+				searchlist.setVisibility(View.GONE);
+
+				progressList.setVisibility(View.GONE);
+				tv_active.setBackgroundResource(R.color.black);
+				tv_all.setBackgroundResource(R.drawable.all_white_background);
+				tv_progress.setBackgroundResource(R.color.white);
+				tv_complete.setBackgroundResource(R.drawable.complete_white_background);
+
+				tv_active.setTextColor(Color.WHITE);
+				tv_complete.setTextColor(Color.BLACK);
+				tv_all.setTextColor(Color.BLACK);
+				tv_progress.setTextColor(Color.BLACK);
+			}
+			else if(Prefrences.checklisttypes==3){
+				expandlist.setVisibility(View.GONE);
+				 adapter = new progressAdapter(con, progressList2);
+				progressList.setAdapter(adapter);
+				progressList.setVisibility(View.VISIBLE);
+				
+				checkadapter = new checkAdapter(con);
+				searchlist.setAdapter(checkadapter);
+				searchlist.setVisibility(View.GONE);
+				
+				tv_active.setBackgroundResource(R.color.white);
+				tv_complete.setBackgroundResource(R.drawable.complete_white_background);
+				tv_all.setBackgroundResource(R.drawable.all_white_background);
+				tv_progress.setBackgroundResource(R.color.black);
+
+				tv_active.setTextColor(Color.BLACK);
+				tv_complete.setTextColor(Color.BLACK);
+				tv_all.setTextColor(Color.BLACK);
+				tv_progress.setTextColor(Color.WHITE);
+			}
+			else if(Prefrences.checklisttypes==4){
+				 listAdapter = new ParentLevel(con, completelist);
+				actualListview.setAdapter(listAdapter);
+				expandlist.setVisibility(View.VISIBLE);
+				progressList.setVisibility(View.GONE);
+				
+				checkadapter = new checkAdapter(con);
+				searchlist.setAdapter(checkadapter);
+				searchlist.setVisibility(View.GONE);
+				
+				tv_progress.setBackgroundResource(R.color.white);
+				tv_active.setBackgroundResource(R.color.white);
+				tv_all.setBackgroundResource(R.drawable.all_white_background);
+				tv_complete.setBackgroundResource(R.drawable.complete_black_background);
+
+				tv_active.setTextColor(Color.BLACK);
+				tv_complete.setTextColor(Color.WHITE);
+				tv_all.setTextColor(Color.BLACK);
+				tv_progress.setTextColor(Color.BLACK);
+			}
+			// final ListView lv = list.getRefreshableView();
+			// lv.addFooterView(footerView);
+			// // list.setAdapter(adpter);
+			//
+			// list.setAdapter(checkadapter);
+			// list.setVisibility(View.VISIBLE);
+			if (pull == true) {
+				pull = false;
+				
+//				expandlist.setVisibility(View.VISIBLE);
+//				progressList.setVisibility(View.GONE);
+//				active.setBackgroundResource(R.color.white);
+//				progress.setBackgroundResource(R.color.white);
+//				all.setBackgroundResource(R.drawable.all_black_background);
+//				complete.setBackgroundResource(R.drawable.complete_white_background);
+//
+//				active.setTextColor(Color.BLACK);
+//				complete.setTextColor(Color.BLACK);
+//				all.setTextColor(Color.WHITE);
+//				progress.setTextColor(Color.BLACK);
+				expandlist.onRefreshComplete();
+				progressList.onRefreshComplete();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void fillServerDataItem(String response, CheckItems check){
+		JSONObject res = null;
+
+		try {
+			Log.e("response", "msg: "+response);
+			checklistitemdata.clear();
+			comments.clear();
+			photos.clear();
+			res = new JSONObject(response);
+			Log.v("response ", "" + res.toString(2));
+			JSONObject punchlists = res
+					.getJSONObject("checklist_item");// chexklist
+
+			JSONArray phot = punchlists.getJSONArray("photos");// categ
+
+			JSONArray personel = punchlists
+					.getJSONArray("comments");
+
+			for (int j = 0; j < phot.length(); j++) {
+				JSONObject ccount = phot.getJSONObject(j);
+
+				photos.add(new PhotosCheckListItem(ccount
+						.getString("id"), ccount
+						.getString("url_large"), ccount
+						.getString("original"), ccount
+						.getString("url_small"), ccount
+						.getString("url_thumb"), ccount
+						.getString("image_file_size"), ccount
+						.getString("image_content_type"),
+						ccount.getString("source"), ccount
+								.getString("phase"), ccount
+								.getString("created_at"),
+						ccount.getString("user_name"), ccount
+								.getString("name"), ccount
+								.getString("description"),
+						ccount.getString("created_date")));
+
+			}
+			// Prefrences.pho.addAll(photos);
+			// Log.v("%%%%%%%%%","photooooooossss sssiizzee "+CheckItemClick.pho.size());
+			// comments = new
+			// ArrayList<CommentsChecklistItem>();
+
+			for (int m = 0; m < personel.length(); m++) {
+				JSONObject count = personel.getJSONObject(m);
+
+				JSONObject cmpny = count.getJSONObject("user");
+
+				ArrayList<CommentsUserChecklistItem> cuser = new ArrayList<CommentsUserChecklistItem>();
+				cuser.add(new CommentsUserChecklistItem(cmpny
+						.getString("first_name"), cmpny
+						.getString("full_name"), cmpny
+						.getString("email"), cmpny
+						.getString("formatted_phone"), cmpny
+						.getString("id")));
+
+				comments.add(new CommentsChecklistItem(count
+						.getString("id"), count
+						.getString("body"), cuser, count
+						.getString("created_at")));
+
+			}
+			// Prefrences.comm.addAll(comments);
+			// for(int k=0;k<comments.size();k++)
+			// {
+			// CheckItemClick.comm.add(k,comments.get(k));
+			// }
+
+			// Log.v("%%%%%%%%%","photooooooossss sssiizzee "+CheckItemClick.comm.size());
+			Log.d("comments", "Size" + comments.size());
+			// Log.d("","commentbody "+comments.get(0).body.toString());
+//			"id": 38246,
+//			"body": "Construction docs/direction should have: Full Set of Working Drawings - Permit Application",
+//			"status": "Not Applicable",
+//			"item_type": "S&C",
+//			"photos_count": 1,
+//			"comments_count": 2,
+//			"activities": [],
+//			"reminders": [],
+//			"project_id": 37
+			
+			
+			checklistitemdata.add(new DataCheckListItems(
+					punchlists.getString("id"), punchlists
+							.getString("body"), punchlists
+							.getString("state"), punchlists
+							.getString("item_type"), punchlists
+							.getString("photos_count"),
+					punchlists.getString("comments_count"),
+					photos, comments, 
+					punchlists
+							.getString("phase_name"),
+					punchlists.getString("project_id")));
+
+			// Log.d("checklistfragment ",
+			// "lalalala"+CheckItemClick.comm.size());
+
+			Intent intent = new Intent(con,
+					CheckItemClick.class);
+			
+			intent.putExtra("body", punchlists.getString("body"));
+			intent.putExtra("itemtype", punchlists.getString("item_type"));
+			intent.putExtra("status", punchlists.getString("state"));
+			intent.putExtra("item_id", punchlists.getString("id"));
+			intent.putExtra("cat_id", check.getcat_id().toString());
+			intent.putExtra("subcat_id", check.getsubCat_id().toString());
+			// Log.d("111111","********----------"+childPosition+groupPosition);
+			con.startActivity(intent);
+			((Activity) con).overridePendingTransition(
+					R.anim.slide_in_right,
+					R.anim.slide_out_left);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

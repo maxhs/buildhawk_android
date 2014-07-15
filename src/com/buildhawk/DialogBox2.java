@@ -6,7 +6,9 @@ import rmn.androidscreenlibrary.ASSL;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.sax.StartElementListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,6 +76,9 @@ public class DialogBox2 extends Dialog {
 		btnAddCLicked.setTypeface(Prefrences.helveticaNeuelt(activity));
 		btnCancel.setTypeface(Prefrences.helveticaNeuelt(activity));
 
+		
+		if(Prefrences.text==5)
+		{
 		btnAddCLicked.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -122,17 +127,19 @@ public class DialogBox2 extends Dialog {
 					public void onClick(View view) {
 						if (!location.getText().toString().equals("")) {
 							if (Prefrences.text == 5) {
-								WorkItemClick.locs.add(location.getText()
-										.toString());
-								WorkItemClick.btnS_location.setText(location
-										.getText().toString());
+								
+								String output = Character.toUpperCase(location.getText()
+										.toString().charAt(0)) + location.getText()
+										.toString().substring(1);
+								Log.d("output","output"+output);
+								WorkItemClick.locs.add(output);
+								Prefrences.location_str=output;
+								WorkItemClick.btnS_location.setText("Location: "+Prefrences.location_str);
 							}
 
 							else if (Prefrences.text == 4) {
-								WorkItemClick.asss.add(location.getText()
-										.toString());
-								WorkItemClick.btnS_assigned.setText(location
-										.getText().toString());
+								WorkItemClick.asss.add(Prefrences.assignee_str);//location.getText().toString());
+								WorkItemClick.btnS_assigned.setText("Assignee: "+Prefrences.assignee_str);
 
 							}
 
@@ -193,6 +200,20 @@ public class DialogBox2 extends Dialog {
 				//
 			}
 		});
+		
+	}
+	else if(Prefrences.text==4){
+		btnAddCLicked.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+				Intent intent = new Intent(activity,AddUser.class);
+				activity.startActivity(intent);
+			}
+		});
+	}
 
 		btnCancel.setOnClickListener(new View.OnClickListener() {
 
@@ -290,13 +311,12 @@ public class DialogBox2 extends Dialog {
 					// Toast.makeText(c, ""+Prefrences.selectedlocation,
 					// Toast.LENGTH_SHORT).show();
 					if (Prefrences.text == 5) {
-						WorkItemClick.btnS_location.setText(""
-								+ array.get(position).toString());
+						Prefrences.location_str = array.get(position).toString();
+						WorkItemClick.btnS_location.setText("Location: " + Prefrences.location_str);
 					} else if (Prefrences.text == 4) {
-						WorkItemClick.btnS_assigned.setText(""
-								+ array.get(position).toString());
-						Prefrences.assigneename = array.get(position)
-								.toString();
+						
+						Prefrences.assignee_str = array.get(position).toString();
+						WorkItemClick.btnS_assigned.setText("Assignee: "+Prefrences.assignee_str);
 					}
 
 					dismiss();

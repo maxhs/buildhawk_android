@@ -18,16 +18,19 @@ public class Report {
 	public String wind; 
 	public String humidity;
 	public ArrayList<Author> author;
-	public ArrayList<String> possible_types;
-	public ArrayList<Comments> comments;
+//	public ArrayList<String> possible_types;
+//	public ArrayList<Comments> comments;
 	public ArrayList<ProjectPhotos> photos;
 	public ArrayList<ReportPersonnel>personnel;
+	public ArrayList<ReportCompanies>companies;
+	public ArrayList<ReportTopics>topic;
 
 	public Report(String report_id, String epoch_time, String created_at,
 			String updated_at, String created_date, String title,
 			String report_type, String body, String weather, String weather_icon,
 			String precip, String temp, String wind, String humidity,
-			ArrayList<Author> author,ArrayList<ProjectPhotos> photos,ArrayList<ReportPersonnel>personnel) {
+			ArrayList<Author> author,ArrayList<ProjectPhotos> photos,ArrayList<ReportPersonnel>personnel,
+			ArrayList<ReportCompanies>companies,ArrayList<ReportTopics>topic) {
 
 		this.report_id = report_id;
 		this.epoch_time = epoch_time;
@@ -46,6 +49,8 @@ public class Report {
 		this.author = author;
 		this.photos=photos;
 		this.personnel=personnel;
+		this.companies=companies;
+		this.topic=topic;
 
 	}
 }

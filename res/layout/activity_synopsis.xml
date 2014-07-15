@@ -22,6 +22,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:gravity="center"
+            android:textColor="@color/white"
             	android:textStyle="bold"
             android:text="Medium Text"
             android:textSize="36px" />
@@ -47,7 +48,7 @@
         </RelativeLayout>
     </RelativeLayout>
     
-         <com.handmark.pulltorefresh.library.PullToRefreshScrollView
+          <com.handmark.pulltorefresh.library.PullToRefreshScrollView
             xmlns:ptr="http://schemas.android.com/apk/res-auto"
             android:id="@+id/scrollView1"
             android:layout_width="match_parent"
@@ -55,7 +56,7 @@
             android:background="@color/white"
             android:divider="@null"
             android:dividerHeight="0px"
-            android:visibility="visible" >
+            android:visibility="visible" > 
         
 
 <!--     <ScrollView -->
@@ -133,7 +134,7 @@
             <HorizontalScrollView
                 android:id="@+id/horizontalScrollView1"
                 android:layout_width="wrap_content"
-                android:layout_height="200px" >
+                android:layout_height="match_parent" >
 
                 <LinearLayout
                     android:id="@+id/scrolllayout"
@@ -195,6 +196,7 @@
                 android:layout_height="150px"
                 android:textSize="36px"
                 android:text="Go to Project"
+                
                 android:background="@color/black" />
 
         </LinearLayout>

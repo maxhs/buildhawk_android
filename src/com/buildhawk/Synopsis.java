@@ -10,6 +10,8 @@ import rmn.androidscreenlibrary.ASSL;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Bundle;
@@ -53,9 +55,10 @@ public class Synopsis extends Activity {
 
 	ListView syncatlist, synupitemlist, syncomplist;
 	Context con;
-	TextView addres;
+	TextView tv_addres;
 	LinearLayout lin;
-
+	ConnectionDetector connDect;
+	Boolean isInternetPresent = false;
 	ArrayList<SynopsisProject> SynProject = new ArrayList<SynopsisProject>();
 	ArrayList<SynopsisCategories> SynCateg = new ArrayList<SynopsisCategories>();
 	ArrayList<SynopsisUpcomingItems> SynItems = new ArrayList<SynopsisUpcomingItems>();
@@ -78,17 +81,18 @@ public class Synopsis extends Activity {
 	static final int DRAG = 1;
 	static final int ZOOM = 2;
 
-	TextView proName;
+	TextView tv_proName;
 	int mode = NONE;
 	Activity act;
 	HorizontalScrollView hScrollView;
 	RelativeLayout back;
 	LinearLayout relLay;
 	PullToRefreshScrollView scrollView;
-	Button Goto;
-	TextView headerProjSynopsis, headerprogress, headerRecentDocs,
-			headerUpcomingItems, headerRecentItems;
-	ImageView ladder_page2;
+	Button btn_Goto;
+	TextView tv_headerProjSynopsis, tv_headerprogress, tv_headerRecentDocs,
+			tv_headerUpcomingItems, tv_headerRecentItems;
+	ImageView img_ladder_page2;
+	 SharedPreferences sharedpref;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +101,9 @@ public class Synopsis extends Activity {
 		// Prefrences.dismissLoadingDialog();
 		relLay = (LinearLayout) findViewById(R.id.LinearLayoutSynopsis);
 		new ASSL(this, relLay, 1134, 720, false);
-
+		sharedpref = Synopsis.this.getSharedPreferences("MyPref", 0); // 0 - for private mode
+		
+		
 		act = this;
 		back = (RelativeLayout) findViewById(R.id.back);
 		con = Synopsis.this;
@@ -109,32 +115,32 @@ public class Synopsis extends Activity {
 		// synoupitem = ProjectsAdapter.SynItems;
 		// synopdoc=ProjectsAdapter.SynDoc;
 		// syncomp = ProjectsAdapter.Syncomp;
-		addres = (TextView) findViewById(R.id.addres);
-		proName = (TextView) findViewById(R.id.proName);
-		proName.setText(Prefrences.selectedProName);
-		Goto = (Button) findViewById(R.id.GotoProject);
+		tv_addres = (TextView) findViewById(R.id.addres);
+		tv_proName = (TextView) findViewById(R.id.proName);
+		tv_proName.setText(Prefrences.selectedProName);
+		btn_Goto = (Button) findViewById(R.id.GotoProject);
 
-		headerProjSynopsis = (TextView) findViewById(R.id.textView1);
-		headerprogress = (TextView) findViewById(R.id.textView2);
-		headerRecentDocs = (TextView) findViewById(R.id.textView3);
-		headerUpcomingItems = (TextView) findViewById(R.id.textView4);
-		headerRecentItems = (TextView) findViewById(R.id.textView5);
-		headerProjSynopsis.setTypeface(Prefrences
+		tv_headerProjSynopsis = (TextView) findViewById(R.id.textView1);
+		tv_headerprogress = (TextView) findViewById(R.id.textView2);
+		tv_headerRecentDocs = (TextView) findViewById(R.id.textView3);
+		tv_headerUpcomingItems = (TextView) findViewById(R.id.textView4);
+		tv_headerRecentItems = (TextView) findViewById(R.id.textView5);
+		tv_headerProjSynopsis.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		headerprogress.setTypeface(Prefrences
+		tv_headerprogress.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		headerRecentDocs.setTypeface(Prefrences
+		tv_headerRecentDocs.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		headerUpcomingItems.setTypeface(Prefrences
+		tv_headerUpcomingItems.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		headerRecentItems.setTypeface(Prefrences
+		tv_headerRecentItems.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
 
-		addres.setText(Homepage.projectsList.get(0).address.formattedAddress); // get(position)
+		tv_addres.setText(Homepage.projectsList.get(0).address.formattedAddress); // get(position)
 
-		addres.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		proName.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		Goto.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		tv_addres.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		tv_proName.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		btn_Goto.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
 
 		scrollView = (PullToRefreshScrollView) findViewById(R.id.scrollView1);
 
@@ -148,7 +154,7 @@ public class Synopsis extends Activity {
 		scrollView.scrollBy(0, 0);
 
 		lin = (LinearLayout) findViewById(R.id.scrolllayout);
-		ladder_page2 = new ImageView(Synopsis.this);
+		img_ladder_page2 = new ImageView(Synopsis.this);
 
 		scrollView.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
 
@@ -156,7 +162,7 @@ public class Synopsis extends Activity {
 			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
 				// TODO Auto-generated method stub
 				pull = true;
-				SynopsisHit();
+				synopsisHit();
 
 			}
 
@@ -179,7 +185,7 @@ public class Synopsis extends Activity {
 		//
 		// });
 
-		Goto.setOnClickListener(new OnClickListener() {
+		btn_Goto.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -214,10 +220,21 @@ public class Synopsis extends Activity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		Prefrences.pageFlag = 0;
+		connDect = new ConnectionDetector(Synopsis.this);
+		isInternetPresent = connDect.isConnectingToInternet();
 		if (Prefrences.stopingHit == 1) {
-
 			Prefrences.stopingHit = 0;
-			SynopsisHit();
+			if (isInternetPresent) {
+				synopsisHit();
+			}else{
+				String response;
+				response = sharedpref.getString("projectSynopsis", "");
+				if(response.equalsIgnoreCase("")){
+					Toast.makeText(Synopsis.this,"No internet connection.", Toast.LENGTH_SHORT).show();
+				}else{
+					fillServerData(response);
+				}
+			}
 		}
 	}
 
@@ -464,7 +481,7 @@ public class Synopsis extends Activity {
 
 				@Override
 				public void onClick(View v) {
-					Prefrences.selectedCheckitem = 0;
+//					Prefrences.selectedCheckitem = 0;
 					Intent intent = new Intent(con, CheckItemClick.class);
 					intent.putExtra("body", syitem.body.toString());
 					intent.putExtra("itemtype", syitem.itemType.toString());
@@ -569,7 +586,7 @@ public class Synopsis extends Activity {
 
 				@Override
 				public void onClick(View v) {
-					Prefrences.selectedCheckitem = 1;
+//					Prefrences.selectedCheckitem = 1;
 					Intent intent = new Intent(con, CheckItemClick.class);
 					intent.putExtra("body", sycomp.body.toString());
 					intent.putExtra("itemtype", sycomp.itemType.toString());
@@ -586,7 +603,7 @@ public class Synopsis extends Activity {
 
 	}
 
-	public void SynopsisHit() {
+	public void synopsisHit() {
 		Prefrences.showLoadingDialog(Synopsis.this, "Loading...");
 
 		RequestParams params = new RequestParams();
@@ -604,183 +621,7 @@ public class Synopsis extends Activity {
 					public void onSuccess(String response) {
 						Log.i("request succesfull", "response = " + response);
 
-						JSONObject res = null;
-						try {
-							res = new JSONObject(response);
-							SynCateg.clear();
-							Syncomp.clear();
-							SynDoc.clear();
-							SynItems.clear();
-							SynProject.clear();
-							JSONObject project = res.getJSONObject("project");
-							Log.v("Synopsis value", project.toString());
-
-							JSONArray Syncategories = project
-									.getJSONArray("categories");
-							JSONArray Syncompl = project
-									.getJSONArray("recently_completed");
-							JSONArray Syndocs = project
-									.getJSONArray("recent_documents");
-							JSONArray Synitems = project
-									.getJSONArray("upcoming_items");
-							for (int i = 0; i < Syncategories.length(); i++) {
-
-								JSONObject count = Syncategories
-										.getJSONObject(i);
-
-								SynCateg.add(new SynopsisCategories(count
-										.getString("name"), count
-										.getString("item_count"), count
-										.getString("completed_count"), count
-										.getString("progress_count"), count
-										.getString("order_index")));
-
-							}
-							for (int j = 0; j < Syncompl.length(); j++) {
-								JSONObject count2 = Syncompl.getJSONObject(j);
-								Syncomp.add(new SynopsisRecentlyCompleted(
-										count2.getString("id"), count2
-												.getString("body"), count2
-												.getString("status"), count2
-												.getString("item_type"), count2
-												.getString("photos_count"),
-										count2.getString("comments_count")));
-
-								Log.d("Syncomp", "Syncomp"
-										+ Syncomp.get(j).itemType);
-							}
-							for (int k = 0; k < Syndocs.length(); k++) {
-								JSONObject count = Syndocs.getJSONObject(k);
-								SynDoc.add(new SynopsisRecentDocuments(count
-										.getString("id"), count
-										.getString("url_large"), count
-										.getString("original"), count
-										.getString("url_small"), count
-										.getString("url_thumb"), count
-										.getString("image_file_size"), count
-										.getString("image_content_type"), count
-										.getString("source"), count
-										.getString("phase"), count
-										.getString("created_at"), count
-										.getString("user_name"), count
-										.getString("name"), count
-										.getString("created_date")));
-
-							}
-							for (int l = 0; l < Synitems.length(); l++) {
-								JSONObject count = Synitems.getJSONObject(l);
-								SynItems.add(new SynopsisUpcomingItems(count
-										.getString("id"), count
-										.getString("body"), count
-										.getString("critical_date"), count
-										.getString("completed_date"), count
-										.getString("status"), count
-										.getString("item_type"), count
-										.getString("photos_count"), count
-										.getString("comments_count")));
-
-								Log.d("SynItems", "SynItems"
-										+ SynItems.get(l).itemType);
-
-							}
-
-							SynProject.add(new SynopsisProject(project
-									.getString("progress"), SynItems, Syncomp,
-									SynDoc, SynCateg));
-							for (int j = 0; j < SynProject.size(); j++) {
-								Log.d("",
-										"cate"
-												+ SynProject.get(j).categories
-														.size());
-								Log.d("",
-										"comp"
-												+ SynProject.get(j).recentlyCompleted
-														.size());
-								Log.d("",
-										"items"
-												+ SynProject.get(j).upcomingItems
-														.size());
-								Log.d("",
-										"docs"
-												+ SynProject.get(j).recentDocuments
-														.size());
-							}
-
-							adapter adp = new adapter(con, SynCateg);
-							syncatlist.setAdapter(adp);
-
-							adapter2 adp2 = new adapter2(con, SynItems);
-							synupitemlist.setAdapter(adp2);
-
-							adapter3 adp3 = new adapter3(con, Syncomp);
-							syncomplist.setAdapter(adp3);
-							setlist(syncatlist, adp, 100);
-							setlist(synupitemlist, adp2, 100);
-							setlist(syncomplist, adp3, 100);
-
-							arr.clear();
-							ids.clear();
-							lin.removeAllViews();
-							lin = (LinearLayout) findViewById(R.id.scrolllayout);
-							for (int i = 0; i < SynDoc.size(); i++) {
-
-								arr.add(SynDoc.get(i).urlLarge);
-								ids.add(SynDoc.get(i).id);
-								ladder_page2 = new ImageView(Synopsis.this);
-
-								LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-										(int) (200), (int) (200));
-								lp.setMargins(10, 10, 10, 10);
-
-								ladder_page2.setTag(i);
-								ladder_page2.setLayoutParams(lp);
-								// Picasso.with(con).load(arr.get(i).toString()).into(ladder_page2);
-
-								// File file = new File(SynDoc.get(i).urlSmall);
-								Picasso.with(con)
-										.load(SynDoc.get(i).urlSmall.toString())
-										.resize((int) (200 * ASSL.Xscale()),
-												(int) (200 * ASSL.Yscale()))
-										.into(ladder_page2);
-								// ladder_page2.setImageBitmap(myBitmap);
-								lin.addView(ladder_page2);
-								ladder_page2
-										.setOnClickListener(new OnClickListener() {
-
-											@Override
-											public void onClick(View v) {
-												Prefrences.selectedPic = (Integer) v
-														.getTag();
-												Log.i("Tag Value",
-														""
-																+ Prefrences.selectedPic);
-
-												Intent intent = new Intent(
-														Synopsis.this,
-														MainActivity1.class);
-												intent.putExtra("array", arr);
-												intent.putExtra("ids", ids);
-												intent.putExtra(
-														"id",
-														SynDoc.get(Prefrences.selectedPic).id);
-												startActivity(intent);
-												overridePendingTransition(
-														R.anim.slide_in_right,
-														R.anim.slide_out_left);
-												// finish();
-											}
-										});
-
-							}
-
-							if (pull == true) {
-								pull = false;
-								scrollView.onRefreshComplete();
-							}
-
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+						fillServerData(response);
 						Prefrences.dismissLoadingDialog();
 					}
 
@@ -797,6 +638,189 @@ public class Synopsis extends Activity {
 						}
 					}
 				});
+	}
+	
+	public void fillServerData(String response){
+		JSONObject res = null;
+		Editor editor = sharedpref.edit();
+		editor.putString("projectSynopsis", response);
+		editor.commit();
+		try {
+			res = new JSONObject(response);
+			SynCateg.clear();
+			Syncomp.clear();
+			SynDoc.clear();
+			SynItems.clear();
+			SynProject.clear();
+			JSONObject project = res.getJSONObject("project");
+			Log.v("Synopsis value", project.toString());
+
+			JSONArray Syncategories = project
+					.getJSONArray("categories");
+			JSONArray Syncompl = project
+					.getJSONArray("recently_completed");
+			JSONArray Syndocs = project
+					.getJSONArray("recent_documents");
+			JSONArray Synitems = project
+					.getJSONArray("upcoming_items");
+			for (int i = 0; i < Syncategories.length(); i++) {
+
+				JSONObject count = Syncategories
+						.getJSONObject(i);
+
+				SynCateg.add(new SynopsisCategories(count
+						.getString("name"), count
+						.getString("item_count"), count
+						.getString("completed_count"), count
+						.getString("progress_count"), count
+						.getString("order_index")));
+
+			}
+			for (int j = 0; j < Syncompl.length(); j++) {
+				JSONObject count2 = Syncompl.getJSONObject(j);
+				Syncomp.add(new SynopsisRecentlyCompleted(
+						count2.getString("id"), count2
+								.getString("body"), count2
+								.getString("status"), count2
+								.getString("item_type"), count2
+								.getString("photos_count"),
+						count2.getString("comments_count")));
+
+				Log.d("Syncomp", "Syncomp"
+						+ Syncomp.get(j).itemType);
+			}
+			for (int k = 0; k < Syndocs.length(); k++) {
+				JSONObject count = Syndocs.getJSONObject(k);
+				SynDoc.add(new SynopsisRecentDocuments(count
+						.getString("id"), count
+						.getString("url_large"), count
+						.getString("original"), count
+						.getString("url_small"), count
+						.getString("url_thumb"), count
+						.getString("image_file_size"), count
+						.getString("image_content_type"), count
+						.getString("source"), count
+						.getString("phase"), count
+						.getString("created_at"), count
+						.getString("user_name"), count
+						.getString("name"), count
+						.getString("created_date")));
+
+			}
+			for (int l = 0; l < Synitems.length(); l++) {
+				JSONObject count = Synitems.getJSONObject(l);
+				SynItems.add(new SynopsisUpcomingItems(count
+						.getString("id"), count
+						.getString("body"), count
+						.getString("critical_date"), count
+						.getString("completed_date"), count
+						.getString("status"), count
+						.getString("item_type"), count
+						.getString("photos_count"), count
+						.getString("comments_count")));
+
+				Log.d("SynItems", "SynItems"
+						+ SynItems.get(l).itemType);
+
+			}
+
+			SynProject.add(new SynopsisProject(project
+					.getString("progress"), SynItems, Syncomp,
+					SynDoc, SynCateg));
+			for (int j = 0; j < SynProject.size(); j++) {
+				Log.d("",
+						"cate"
+								+ SynProject.get(j).categories
+										.size());
+				Log.d("",
+						"comp"
+								+ SynProject.get(j).recentlyCompleted
+										.size());
+				Log.d("",
+						"items"
+								+ SynProject.get(j).upcomingItems
+										.size());
+				Log.d("",
+						"docs"
+								+ SynProject.get(j).recentDocuments
+										.size());
+			}
+
+			adapter adp = new adapter(con, SynCateg);
+			syncatlist.setAdapter(adp);
+
+			adapter2 adp2 = new adapter2(con, SynItems);
+			synupitemlist.setAdapter(adp2);
+
+			adapter3 adp3 = new adapter3(con, Syncomp);
+			syncomplist.setAdapter(adp3);
+			setlist(syncatlist, adp, 100);
+			setlist(synupitemlist, adp2, 100);
+			setlist(syncomplist, adp3, 100);
+
+			arr.clear();
+			ids.clear();
+			lin.removeAllViews();
+			lin = (LinearLayout) findViewById(R.id.scrolllayout);
+			for (int i = 0; i < SynDoc.size(); i++) {
+
+				arr.add(SynDoc.get(i).urlLarge);
+				ids.add(SynDoc.get(i).id);
+				img_ladder_page2 = new ImageView(Synopsis.this);
+
+				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+						(int) (200), (int) (200));
+				lp.setMargins(10, 10, 10, 10);
+
+				img_ladder_page2.setTag(i);
+				img_ladder_page2.setLayoutParams(lp);
+				// Picasso.with(con).load(arr.get(i).toString()).into(ladder_page2);
+
+				// File file = new File(SynDoc.get(i).urlSmall);
+				Picasso.with(con)
+						.load(SynDoc.get(i).urlSmall.toString())
+						.resize((int) (200 * ASSL.Xscale()),
+								(int) (200 * ASSL.Yscale()))
+						.into(img_ladder_page2);
+				// ladder_page2.setImageBitmap(myBitmap);
+				lin.addView(img_ladder_page2);
+				img_ladder_page2
+						.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								Prefrences.selectedPic = (Integer) v
+										.getTag();
+								Log.i("Tag Value",
+										""
+												+ Prefrences.selectedPic);
+
+								Intent intent = new Intent(
+										Synopsis.this,
+										SelectedImageView.class);
+								intent.putExtra("array", arr);
+								intent.putExtra("ids", ids);
+								intent.putExtra(
+										"id",
+										SynDoc.get(Prefrences.selectedPic).id);
+								startActivity(intent);
+								overridePendingTransition(
+										R.anim.slide_in_right,
+										R.anim.slide_out_left);
+								// finish();
+							}
+						});
+
+			}
+
+			if (pull == true) {
+				pull = false;
+				scrollView.onRefreshComplete();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

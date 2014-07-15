@@ -26,11 +26,12 @@
             android:gravity="center"
             android:text=""
             android:hint="Hours"
+            android:textCursorDrawable="@drawable/color_cursor"
             android:inputType="number|numberDecimal"
             android:textColor="#000"
             android:textSize="36px" >
 
-            <requestFocus />
+            
         </EditText>
         
         <EditText
@@ -43,13 +44,13 @@
             android:ems="10"
             android:gravity="center"
             android:text=""
-            
+            android:textCursorDrawable="@drawable/color_cursor"
             android:inputType="textCapSentences"
             android:textColor="#000"
             android:textSize="36px"
             >
 	
-            <requestFocus />
+            
         </EditText>
 
         <LinearLayout

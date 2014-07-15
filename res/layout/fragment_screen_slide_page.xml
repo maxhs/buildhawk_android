@@ -21,54 +21,58 @@
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/textView3"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:background="#242424"
-                android:gravity="center"
-                android:text="Report"
-                android:textColor="#fff"
-                
-                android:textSize="36px" />
+                android:orientation="vertical"
+                android:id="@+id/reportLayout" >
 
-            <RelativeLayout
-                android:id="@+id/relativeLayout3"
-                android:layout_width="match_parent"
-                android:layout_height="150px"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/textView3"
-                android:background="#fff" >
-
-                <Button
-                    android:id="@+id/button2"
-                    android:layout_width="300px"
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/button1"
-                    android:layout_alignBottom="@+id/button1"
-                    android:layout_marginLeft="110px"
-                    android:layout_marginTop="30px"
-                    android:layout_toRightOf="@+id/button1"
-                    android:background="@drawable/black_background"
-                    android:text="Date"
+                    android:background="#242424"
+                    android:gravity="center"
+                    android:text="Report"
+                    android:textColor="#fff"
                     android:textSize="36px" />
 
-                <Button
-                    android:id="@+id/button1"
-                    android:layout_width="200px"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="54px"
-                    android:layout_marginTop="30px"
-                    android:background="@drawable/black_background"
-                    android:text="Daily"
-                    android:textSize="36px" />
-            </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/relativeLayout3"
+                    android:layout_width="match_parent"
+                    android:layout_height="150px"
+                    android:background="#fff" >
+
+                    <Button
+                        android:id="@+id/button2"
+                        android:layout_width="300px"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/button1"
+                        android:layout_alignBottom="@+id/button1"
+                        android:layout_marginLeft="110px"
+                        android:layout_marginTop="30px"
+                        android:layout_toRightOf="@+id/button1"
+                        android:background="@drawable/black_background"
+                        android:text="Date"
+                        android:textSize="36px" />
+
+                    <Button
+                        android:id="@+id/button1"
+                        android:layout_width="200px"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="54px"
+                        android:layout_marginTop="30px"
+                        android:background="@drawable/black_background"
+                        android:text="Daily"
+                        android:textSize="36px" />
+                </RelativeLayout>
+
+            </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/linearLayout1"
+                android:id="@+id/weatherlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/textView1"
@@ -196,18 +200,6 @@
                     </RelativeLayout>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/linearLayout1"
-                android:background="#242424"
-                android:gravity="center"
-                android:text="Personnel on site"
-                android:textColor="#fff"
-                android:textSize="36px" />
-
             <LinearLayout
                 android:id="@+id/linearLayout2"
                 android:layout_width="match_parent"
@@ -217,6 +209,16 @@
                 android:background="#fff"
                 android:gravity="center"
                 android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#242424"
+                    android:gravity="center"
+                    android:text="Personnel on site"
+                    android:textColor="#fff"
+                    android:textSize="36px" />
 
                 <Button
                     android:id="@+id/button3"
@@ -289,6 +291,58 @@
                     </ListView>
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/onsite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone" >
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="100px" >
+
+                        <TextView
+                            android:id="@+id/TextView08"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:gravity="center"
+                            android:padding="20px"
+                            android:text="Personnel"
+                            android:textColor="@color/black"
+                            android:textSize="36px" />
+
+                        <TextView
+                            android:id="@+id/TextView06"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center"
+                            android:padding="20px"
+                            android:text="# Counts"
+                            android:textColor="@color/black"
+                            android:textSize="36px" />
+
+                        <TextView
+                            android:id="@+id/TextView07"
+                            android:layout_width="wrap_content"
+                            android:layout_height="80px"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:gravity="center"
+                            android:textSize="36px" />
+                    </RelativeLayout>
+
+                    <ListView
+                        android:id="@+id/companieslist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+                    </ListView>
+                </LinearLayout>
+
             </LinearLayout>
             
             
@@ -323,7 +377,11 @@
                         android:textColor="@color/white"
                         android:textSize="36px" />
                     
-                    
+                    <ListView
+                        android:id="@+id/safetylist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+                    </ListView>
                     
                     
                     
@@ -394,6 +452,7 @@
                 android:background="#fff"
                 android:textColor="@color/black"
                 android:singleLine="false"
+                android:padding="20px"
                 android:minLines="3"
                 android:hint="Notes"
                 android:gravity="top|left"

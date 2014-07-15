@@ -28,19 +28,31 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"
+            android:textColor="@color/white"
            	android:textStyle="bold"
             android:layout_centerVertical="true"
             android:text="Medium Text"
             android:textSize="36px" />
     </RelativeLayout>
     
-    <ListView 
-        android:id="@+id/projectList"
-        android:layout_width="match_parent"
-        android:layout_height="827px"
-        android:divider="@color/grey"
-        android:dividerHeight="2px"
-        android:layout_below="@+id/topBar"/>
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/projectList"
+            android:layout_width="match_parent"
+            android:layout_height="827px"
+            android:divider="@color/grey"
+            android:dividerHeight="2px"
+        android:layout_below="@+id/topBar"
+        >
+        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+        
+<!--     <ListView  -->
+<!--          android:id="@+id/projectList" --> 
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="827px" -->
+<!--         android:divider="@color/grey" -->
+<!--         android:dividerHeight="2px" -->
+<!--         android:layout_below="@+id/topBar"/> -->
 
     <ListView
         android:id="@+id/lvsearch"

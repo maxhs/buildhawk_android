@@ -6,6 +6,7 @@ import rmn.androidscreenlibrary.ASSL;
 
 //import com.buildhawk.ReportItemClick.ScreenSlidePageFragment.personelListAdapter;
 import com.buildhawk.ReportItemCreate.personelListAdapterCreate;
+import com.buildhawk.utils.Report;
 import com.buildhawk.utils.Users;
 
 import android.app.Activity;
@@ -34,14 +35,17 @@ public class UsersList extends Activity {
 	ListView lstvw;
 	ArrayList<Users> array;
 	InputMethodManager imm;
-	TextView back;
+	TextView tv_back;
 	Context con;
 	LinearLayout relLay;
 	Dialog popup;
-	Button Submit, Cancel;
-	EditText hours, location;
-	TextView expiry_alert;
+	Button btn_Submit, btn_Cancel;
+	EditText txt_hours, txt_location;
+	TextView tv_expiry_alert;
 	RelativeLayout list_outside;
+//	ArrayList<String>personelnamesArray= new ArrayList<String>();
+//	ArrayList<String>personelIdArrayList= new ArrayList<String>();
+//	ArrayList<String>personelHoursArray= new ArrayList<String>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,18 +55,31 @@ public class UsersList extends Activity {
 		new ASSL(this, relLay, 1134, 720, false);
 
 		con = UsersList.this;
-		back = (TextView) findViewById(R.id.back);
+		tv_back = (TextView) findViewById(R.id.back);
 
 		lstvw = (ListView) findViewById(R.id.userslist);
 
-		back.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		tv_back.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 
-		array = Homepage.user2;
-		back.setOnClickListener(new OnClickListener() {
+		array = ProjectsAdapter.user2;
+		tv_back.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				try {
+
+					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+					imm.hideSoftInputFromWindow(getCurrentFocus()
+
+					.getWindowToken(), 0);
+
+				} catch (Exception exception) {
+
+					exception.printStackTrace();
+
+				}
 				finish();
 				overridePendingTransition(R.anim.slide_in_left,
 						R.anim.slide_out_right);
@@ -190,15 +207,8 @@ public class UsersList extends Activity {
 						Prefrences.text = 0;
 						startActivity(new Intent(Intent.ACTION_VIEW, Uri
 								.fromParts("sms", body.uPhone.toString(), null)));
-					} else {
-						// Toast.makeText(getApplicationContext(),
-						// ""+body.uFullName.toString(),
-						// Toast.LENGTH_SHORT).show();
-						// Prefrences.personelName = new
-						// String[Prefrences.sizeofname +1];
-						// Prefrences.personelHours = new
-						// String[Prefrences.sizeofname +1];
-						// Prefrences.personelName[Prefrences.sizeofname]=body.uFullName.toString();
+					} else if(Prefrences.text == 11){
+						Prefrences.text = 0;
 						Prefrences.personelName = body.uFullName.toString();
 
 						popup = new Dialog(UsersList.this,
@@ -210,22 +220,22 @@ public class UsersList extends Activity {
 						RelativeLayout expiry_main = (RelativeLayout) popup
 								.findViewById(R.id.list_outside);
 						// expiry_main.setInAnimation(R.anim.slide_in_from_top);
-						Submit = (Button) popup.findViewById(R.id.submit);
-						hours = (EditText) popup.findViewById(R.id.hours);
-						location = (EditText) popup.findViewById(R.id.location);
-						hours.setVisibility(View.VISIBLE);
-						location.setVisibility(View.GONE);
-						hours.setHint("Hours");
+						btn_Submit = (Button) popup.findViewById(R.id.submit);
+						txt_hours = (EditText) popup.findViewById(R.id.hours);
+						txt_location = (EditText) popup.findViewById(R.id.location);
+						txt_hours.setVisibility(View.VISIBLE);
+						txt_location.setVisibility(View.GONE);
+						txt_hours.setHint("Hours");
 						((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
 								.toggleSoftInput(
 										InputMethodManager.SHOW_FORCED,
 										InputMethodManager.HIDE_IMPLICIT_ONLY);
-						Cancel = (Button) popup.findViewById(R.id.cancel);
-						Submit.setTypeface(Prefrences
+						btn_Cancel = (Button) popup.findViewById(R.id.cancel);
+						btn_Submit.setTypeface(Prefrences
 								.helveticaNeuelt(getApplicationContext()));
-						Cancel.setTypeface(Prefrences
+						btn_Cancel.setTypeface(Prefrences
 								.helveticaNeuelt(getApplicationContext()));
-						hours.setTypeface(Prefrences
+						txt_hours.setTypeface(Prefrences
 								.helveticaNeuelt(getApplicationContext()));
 						// expiry_alert.setTypeface(Prefrences.HelveticaNeueLt(getApplicationContext()));
 						// expiry_alert =
@@ -236,24 +246,9 @@ public class UsersList extends Activity {
 								.findViewById(R.id.list_outside);
 						new ASSL(UsersList.this, expiry_main, 1134, 720, false);
 
-						// list_outside.setOnClickListener(new OnClickListener()
-						// {
-						// @Override
-						// public void onClick(View v) {
-						// if(popup.isShowing())
-						// {
-						// ReportItemCreate.personelnamesArray.remove(body.uFullName.toString());
-						// ReportItemCreate.personelIdArrayList.remove(body.uId.toString());
-						// Log.d("aaaja","aaaja"+ReportItemCreate.personelIdArrayList);
-						// Log.d("aaaja","aaaja"+ReportItemCreate.personelnamesArray);
-						// popup.dismiss();
-						// //overridePendingTransition(R.anim.slide_in_bottom,
-						// R.anim.slide_out_to_top);
-						// }
-						// }
-						// });
+						
 
-						Submit.setOnClickListener(new OnClickListener() {
+						btn_Submit.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
 								Prefrences.reportTypeDialog = 1;
@@ -268,15 +263,12 @@ public class UsersList extends Activity {
 										+ ReportItemCreate.personelIdArrayList);
 								Log.d("aaaja", "aaaja"
 										+ ReportItemCreate.personelnamesArray);
-								ReportItemCreate.personelHoursArray.add(hours
+								ReportItemCreate.personelHoursArray.add(txt_hours
 										.getText().toString());
-								// Prefrences.personelHours =
-								// hours.getText().toString();
-								// Prefrences.sizeofname++;
-								// Log.d("huhuh","huhuh"+Prefrences.sizeofname);
+								
 								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 								imm.hideSoftInputFromWindow(
-										hours.getWindowToken(), 0);
+										txt_hours.getWindowToken(), 0);
 								popup.dismiss();
 								finish();
 								overridePendingTransition(R.anim.slide_in_left,
@@ -285,30 +277,112 @@ public class UsersList extends Activity {
 							}
 						});
 
-						Cancel.setOnClickListener(new OnClickListener() {
+						btn_Cancel.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
 								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 								imm.hideSoftInputFromWindow(
-										hours.getWindowToken(), 0);
+										txt_hours.getWindowToken(), 0);
 								popup.dismiss();
-								// ReportItemCreate.personelnamesArray.remove(body.uFullName.toString());
-								// ReportItemCreate.personelIdArrayList.remove(body.uId.toString());
-								// Log.d("aaaja","aaaja"+ReportItemCreate.personelIdArrayList);
-								// Log.d("aaaja","aaaja"+ReportItemCreate.personelnamesArray);
+								
 							}
 						});
 						popup.show();
 
 					}
-					// WorkItemClick.btnS_assigned.setText(""+body.uFullName.toString());
+					else if(Prefrences.text == 12){
+						Prefrences.text = 0;
+						Prefrences.personelName = body.uFullName.toString();
 
-					//
-					// startActivity(emailIntent);
-					//
-					// Intent mail= new Intent(UsersList.this,SendEmail.class);
-					// mail.putExtra("emailId",body.uEmail);
-					// startActivity(mail);
+						popup = new Dialog(UsersList.this,
+								android.R.style.Theme_Dialog);
+						// expiry_popup.setCancelable(false);
+
+						popup.setContentView(R.layout.dialogreportuser);
+						// popup.getWindow().setWindowAnimations(R.anim.slide_in_from_bottom);
+						RelativeLayout expiry_main = (RelativeLayout) popup
+								.findViewById(R.id.list_outside);
+						// expiry_main.setInAnimation(R.anim.slide_in_from_top);
+						btn_Submit = (Button) popup.findViewById(R.id.submit);
+						txt_hours = (EditText) popup.findViewById(R.id.hours);
+						txt_location = (EditText) popup.findViewById(R.id.location);
+						txt_hours.setVisibility(View.VISIBLE);
+						txt_location.setVisibility(View.GONE);
+						txt_hours.setHint("Hours");
+						((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+								.toggleSoftInput(
+										InputMethodManager.SHOW_FORCED,
+										InputMethodManager.HIDE_IMPLICIT_ONLY);
+						btn_Cancel = (Button) popup.findViewById(R.id.cancel);
+						btn_Submit.setTypeface(Prefrences
+								.helveticaNeuelt(getApplicationContext()));
+						btn_Cancel.setTypeface(Prefrences
+								.helveticaNeuelt(getApplicationContext()));
+						txt_hours.setTypeface(Prefrences
+								.helveticaNeuelt(getApplicationContext()));
+						// expiry_alert.setTypeface(Prefrences.HelveticaNeueLt(getApplicationContext()));
+						// expiry_alert =
+						// (TextView)popup.findViewById(R.id.alert_text);
+						// expiry_alert.setText("# of Hours ");
+						popup.setTitle("# of hours");
+						list_outside = (RelativeLayout) popup
+								.findViewById(R.id.list_outside);
+						new ASSL(UsersList.this, expiry_main, 1134, 720, false);
+
+						
+
+						btn_Submit.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								Prefrences.reportTypeDialog = 1;
+								Prefrences.resumeflag = 1;
+								// Prefrences.personelHours[Prefrences.sizeofname]=
+								// hours.getText().toString();
+//								personelnamesArray
+//										.add(body.uFullName.toString());
+//								personelIdArrayList
+//										.add(body.uId.toString());
+//								Log.d("aaaja", "aaaja"
+//										+ personelIdArrayList);
+//								Log.d("aaaja", "aaaja"
+//										+ personelnamesArray);
+//								personelHoursArray.add(hours
+//										.getText().toString());
+								Prefrences.stopingHit=1;
+								ReportItemClick.personelnamesArray
+								.add(body.uFullName.toString());
+								ReportItemClick.personelIdArrayList
+								.add(body.uId.toString());
+								ReportItemClick.personelHoursArray.add(txt_hours
+										.getText().toString());
+								
+								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+								imm.hideSoftInputFromWindow(
+										txt_hours.getWindowToken(), 0);
+								popup.dismiss();
+								finish();
+								overridePendingTransition(R.anim.slide_in_left,
+										R.anim.slide_out_right);
+
+							}
+						});
+
+						btn_Cancel.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+								imm.hideSoftInputFromWindow(
+										txt_hours.getWindowToken(), 0);
+								popup.dismiss();
+								
+							}
+						});
+						popup.show();
+
+					
+						
+					}
+					
 				}
 			});
 			return convertView;

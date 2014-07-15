@@ -15,7 +15,9 @@ public class DataCheckListItems {
 	public String category_name;
 	public String project_id;
 	
-	public DataCheckListItems(String id, String body, String status, String itemType, String photosCount, String commentsCount, ArrayList<PhotosCheckListItem>photo, ArrayList<CommentsChecklistItem>comments,  String category_name,String project_id )
+	public DataCheckListItems(String id, String body, String status, String itemType, String photosCount, 
+			String commentsCount,ArrayList<PhotosCheckListItem>photo, ArrayList<CommentsChecklistItem>comments, 
+			String category_name, String project_id ) 
 	{
 		this.id = id;
 		this.body = body;
@@ -28,4 +30,10 @@ public class DataCheckListItems {
 		this.category_name=category_name;
 		this.project_id=project_id;
 	}
+	
+	
+
+	public String getid() {
+		return id;
+}
 }

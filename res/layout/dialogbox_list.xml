@@ -13,6 +13,8 @@
   	android:gravity="center"
   	android:layout_gravity="center"
     android:background="#1E1E1E"
+    android:layout_marginTop="115px"
+    android:layout_marginBottom="120px"
     android:orientation="vertical" >
 
     <TextView
@@ -43,8 +45,11 @@
         <ListView
             android:id="@+id/dialoglist"
             android:layout_width="500px"
+            
             android:layout_height="wrap_content"
-             android:layout_marginBottom="10px"
+             android:layout_marginBottom="30px"
+             android:layout_marginTop="50px"
+             
              
              >
         </ListView>

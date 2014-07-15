@@ -22,8 +22,9 @@
             android:layout_height="90px"
             android:gravity="center_vertical"
             android:text=" Back"
+            android:textColor="@color/white"
             	android:textStyle="bold"
-            android:textSize="34px" />
+            android:textSize="36px" />
     </LinearLayout>
 
     <LinearLayout

@@ -19,37 +19,39 @@
             <Button
                 android:id="@+id/back"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginLeft="10px"
                 android:background="@color/black"
                 android:text="Back"
-                android:textSize="28px"
+                android:textSize="36px"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/save"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginRight="10px"
                 android:background="@color/black"
                 android:text="Create"
-                android:textSize="28px"
+                android:textSize="36px"
                 android:textStyle="bold" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true" >
+                android:layout_centerVertical="true" 
+                android:gravity="center">
 
                 <TextView
                     android:id="@+id/texttype"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
                     android:text="texttype"
                     android:textSize="36px"
                     android:textStyle="bold" />
@@ -59,6 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/texttype"
+                    android:textColor="@color/white"
                     android:text="textdate"
                     android:textSize="36px"
                     android:textStyle="bold" />
@@ -424,6 +427,13 @@
                         android:text="Tap to add Topics"
                         android:textColor="@color/white"
                         android:textSize="36px" />
+
+                    <ListView
+                        android:id="@+id/safetylist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+                    </ListView>
+
                 </LinearLayout>
 
                 <TextView

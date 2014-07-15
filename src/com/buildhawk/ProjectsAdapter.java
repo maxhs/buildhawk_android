@@ -3,17 +3,22 @@ package com.buildhawk;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import rmn.androidscreenlibrary.ASSL;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.LayoutInflater.Filter;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filterable;
@@ -36,6 +41,7 @@ import com.buildhawk.utils.SynopsisRecentDocuments;
 import com.buildhawk.utils.SynopsisRecentlyCompleted;
 import com.buildhawk.utils.SynopsisUpcomingItems;
 import com.buildhawk.utils.Users;
+import com.buildhawk.utils.subcontractors;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -50,6 +56,12 @@ public class ProjectsAdapter extends BaseAdapter {
 	ViewHolder holder;
 	ConnectionDetector connDect;
 	Boolean isInternetPresent = false;
+	public static ArrayList<Users> user2 = new ArrayList<Users>();
+//	public static ArrayList<subcontractors> sub2 = new ArrayList<subcontractors>();
+	public static ArrayList<String> usr = new ArrayList<String>();
+	public static ArrayList<String> compny = new ArrayList<String>();
+	public static ArrayList<String> compnyId = new ArrayList<String>();
+	public static ArrayList<String> userid = new ArrayList<String>();
 	// public static ArrayList<Categories> categList = new
 	// ArrayList<Categories>();
 	//
@@ -144,17 +156,12 @@ public class ProjectsAdapter extends BaseAdapter {
 				Prefrences.selectedProName = Homepage.projectsList
 						.get(position).name;
 				Prefrences.stopingHit = 1;
-				// v.post(new Runnable() {
-				//
-				// @Override
-				// public void run() {
-				// // TODO Auto-generated method stub
-				//
-				// }
-				// });
-				// Synopsis();.
+				
 				Prefrences.companyId = Homepage.projectsList.get(position).users
 						.get(position).company.coId;
+				
+				GetUsers();
+				
 				activity.startActivity(new Intent(activity, Synopsis.class));
 				activity.overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);
@@ -171,15 +178,8 @@ public class ProjectsAdapter extends BaseAdapter {
 				Prefrences.selectedProId = Homepage.projectsList.get(position).id;
 				Prefrences.selectedProName = Homepage.projectsList
 						.get(position).name;
-				// .makeText(activity,
-				// ""+Homepage.projectsList.get(position).name, 500).show();
-				if (isInternetPresent) {
-					// if(Prefrences.clear == 1){
-					// ChecklistFragment.activeHeader.clear();
-					// ChecklistFragment.completeHeader.clear();
-					// ChecklistFragment.listDataHeader.clear();
-					// ChecklistFragment.progressarr.clear();
-					// }
+				GetUsers();
+				
 					Prefrences.stopingHit = 1;
 					Prefrences.companyId = Homepage.projectsList.get(position).users
 							.get(position).company.coId;
@@ -188,12 +188,60 @@ public class ProjectsAdapter extends BaseAdapter {
 							ProjectDetail.class));
 					activity.overridePendingTransition(R.anim.slide_in_right,
 							R.anim.slide_out_left);
-					// projectDetail(activity);
+			}
+		});
+		
+		holder.selectedPro.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO Auto-generated method stub
+				Prefrences.selectedProId = Homepage.projectsList.get(position).id;
 
-				} else {
-					Toast.makeText(activity, "No internet connection.",
-							Toast.LENGTH_SHORT);
-				}
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+						activity);
+
+				// set title
+				//alertDialogBuilder.setTitle("Archive Project");
+
+				// set dialog message
+				alertDialogBuilder
+						.setMessage(
+								"Are you sure you want to Archive this Project?")
+						.setCancelable(false)
+						.setPositiveButton("Yes",
+								new DialogInterface.OnClickListener() {
+									public void onClick(
+											DialogInterface dialog,
+											int id) {
+										// if this button is clicked,
+										// close
+										// current activity
+
+										archive(Prefrences.selectedProId);
+										//notifyDataSetChanged();
+
+									}
+								})
+						.setNegativeButton("No",
+								new DialogInterface.OnClickListener() {
+									public void onClick(
+											DialogInterface dialog,
+											int id) {
+										// if this button is clicked,
+										// just close
+										// the dialog box and do nothing
+										Log.d("Dialog", "No");
+										dialog.cancel();
+									}
+								});
+
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+
+				// show it
+				alertDialog.show();
+				return false;
 			}
 		});
 
@@ -226,6 +274,157 @@ public class ProjectsAdapter extends BaseAdapter {
 
 	}
 
+	public void archive(String projectId) {
+
+		 Prefrences.showLoadingDialog(activity, "Loading...");
+		//JSONObject json = new JSONObject();
+		RequestParams params = new RequestParams();
+		params.put("user_id", Prefrences.userId);
+
+		AsyncHttpClient client = new AsyncHttpClient();
+		client.addHeader("Content-type", "application/json");
+		client.addHeader("Accept", "application/json");
+
+		client.post(Prefrences.url + "/projects/" +projectId+"/archive" ,params,
+				new AsyncHttpResponseHandler() {
+					@Override
+					public void onSuccess(String response) {
+						JSONObject res = null;
+						try {
+							res = new JSONObject(response);
+							Log.v("response ---- ",
+									"---*****----" + res.toString(2));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						// WorkListCompleteAdapter.punchlst_item(id_punchlist_item,
+						// WorkListCompleteAdapter.data, pos);
+						 Prefrences.dismissLoadingDialog();
+					}
+
+					@Override
+					public void onFailure(Throwable arg0) {
+						Toast.makeText(activity, "Server Issue",
+								Toast.LENGTH_LONG).show();
+
+						Log.e("request fail", arg0.toString());
+						 Prefrences.dismissLoadingDialog();
+					}
+				});
+
+	}
+	
+	public void GetUsers() {
+
+		RequestParams params = new RequestParams();
+
+		params.put("id", Prefrences.selectedProId);
+		
+//		Editor editor =  sharedpref.edit();
+//		editor.putString("regId", regId);
+//		editor.commit();
+		AsyncHttpClient client = new AsyncHttpClient();
+
+		client.addHeader("Content-type", "application/json");
+		client.addHeader("Accept", "application/json");
+		client.setTimeout(100000);
+		client.get(Prefrences.url + "/projects/"+Prefrences.selectedProId, params,
+				new AsyncHttpResponseHandler() {
+
+					@Override
+					public void onSuccess(String response) {
+						Log.i("request succesfull", "response = " + response);
+//						fillServerData(response);
+						JSONObject res;
+						try {
+							res = new JSONObject(response);
+							Log.d("RESPONSE","RESPONSE"+res.toString(2));
+																		
+								JSONObject project = res.getJSONObject("project");
+						user2.clear();
+						usr.clear();
+						compny.clear();
+						compnyId.clear();
+						userid.clear();
+						
+							JSONArray users = project.getJSONArray("users");
+
+							ArrayList<Users> user = new ArrayList<Users>();
+							ArrayList<String> cmpny = new ArrayList<String>();
+							ArrayList<String> cmpnyid = new ArrayList<String>();
+							ArrayList<String> usrid = new ArrayList<String>();
+							
+							ArrayList<Company> CompaniesArray = new ArrayList<Company>();
+
+							for (int j = 0; j < users.length(); j++) {
+								JSONObject uCount = users.getJSONObject(j);
+								JSONObject uCompany = uCount
+										.getJSONObject("company");
+
+								user.add(new Users(
+										uCount.getString("id"),
+										uCount.getString("first_name"),
+										uCount.getString("last_name"),
+										uCount.getString("full_name"),
+										uCount.getString("email"),
+										uCount.getString("formatted_phone"),
+//										uCount.getString("authentication_token"),
+										uCount.getString("url_thumb"),
+										uCount.getString("url_small"),
+										new Company(uCompany
+												.getString("id"), uCompany
+												.getString("name"))));
+								// if(!uCount.getString("full_name").equals("null"))
+								usr.add(uCount.getString("full_name"));
+
+								usrid.add(user.get(j).uId.toString());
+								
+								Log.d("USERS", "USERS... "
+										+ user.get(j).uId+"names "+user.get(j).uFullName);
+
+							}
+							JSONArray company = project
+									.getJSONArray("companies");
+							for(int j=0;j<company.length();j++)
+							{
+								JSONObject uCount = company.getJSONObject(j);
+								
+								CompaniesArray.add(new Company(uCount.getString("id"), uCount.getString("name")));
+								
+								cmpny.add(CompaniesArray.get(j).coName.toString());
+								cmpnyid.add(CompaniesArray.get(j).coId.toString());
+								Log.d("companieeeesss", "companiess... "
+										+ CompaniesArray.get(j).coId);
+							}
+							user2.addAll(user);
+							compny.addAll(cmpny);
+							compnyId.addAll(cmpnyid);
+							userid.addAll(usrid);
+							
+							Log.d("usssrrsrsrsrsr",
+									"sizeeee" + compny.size());
+
+							Log.d("usssrrsrsrsrsr",
+									"sizeeee" + compnyId.size());
+							
+							
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable arg0) {
+						Log.e("request fail", arg0.toString());
+						
+					}
+				});
+
+	}
+	
+}	
+	
 	// ************ API for Synopsis Details. *************//
 
 	// public void Synopsis(){
@@ -518,4 +717,3 @@ public class ProjectsAdapter extends BaseAdapter {
 	//
 	// }
 
-}
