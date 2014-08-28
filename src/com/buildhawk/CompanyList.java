@@ -33,46 +33,49 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+/*
+ *  It shows the list of companies only.
+ * 
+ */
 public class CompanyList extends Activity {
 
 	ListView listview;
-	ArrayList<String> array, array2, arrayID, arrayID2;
-	TextView tv_back;
+	ArrayList<String> arrayArrayList, array2ArrayList, arrayIDArrayList, arrayID2ArrayList;
+	TextView textviewBack;
 	Context con;
-	LinearLayout relLay;
+	LinearLayout linearlayoutRoot;
 	Dialog popup;
-	Button btn_submit, tv_cancel;
-	EditText txt_hours, txt_location;
-	TextView tv_expiryAlert;
-	RelativeLayout listOutside;
+	Button buttonSubmit, buttonCancel;
+	EditText edittextHours, edittextLocation;
+	TextView textviewExpiryAlert;
+	RelativeLayout relativelayoutListOutside;
 	InputMethodManager imm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_company_list);
-		relLay = (LinearLayout) findViewById(R.id.LinearLayoutuserlist);
-		new ASSL(this, relLay, 1134, 720, false);
+		linearlayoutRoot = (LinearLayout) findViewById(R.id.LinearLayoutuserlist);
+		new ASSL(this, linearlayoutRoot, 1134, 720, false);
 
 		con = CompanyList.this;
-		tv_back = (TextView) findViewById(R.id.back);
+		textviewBack = (TextView) findViewById(R.id.relativeLayoutBack);
 
 		listview = (ListView) findViewById(R.id.userslist);
-		array2 = ProjectsAdapter.compny;
-		LinkedHashSet<String> listToSet = new LinkedHashSet<String>(array2);
-		array = new ArrayList<String>(listToSet);
+		array2ArrayList = ProjectsAdapter.compnyArrayList;
+		LinkedHashSet<String> listToSet = new LinkedHashSet<String>(array2ArrayList);
+		arrayArrayList = new ArrayList<String>(listToSet);
 
-		arrayID2 = ProjectsAdapter.compnyId;
-		LinkedHashSet<String> listToSet2 = new LinkedHashSet<String>(arrayID2);
-		arrayID = new ArrayList<String>(listToSet2);
+		arrayID2ArrayList = ProjectsAdapter.compnyIdArrayList;
+		LinkedHashSet<String> listToSet2 = new LinkedHashSet<String>(arrayID2ArrayList);
+		arrayIDArrayList = new ArrayList<String>(listToSet2);
 
-		tv_back.setOnClickListener(new OnClickListener() {
+		textviewBack.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				
+
 				try {
 
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -91,7 +94,7 @@ public class CompanyList extends Activity {
 						R.anim.slide_out_right);
 			}
 		});
-		adapter adp = new adapter(con, array);
+		adapter adp = new adapter(con, arrayArrayList);
 		listview.setAdapter(adp);
 	}
 
@@ -174,72 +177,7 @@ public class CompanyList extends Activity {
 				@Override
 				public void onClick(View view) {
 					// TODO Auto-generated method stub
-					if(Prefrences.text==11)
-					{
-					popup = new Dialog(CompanyList.this,
-							android.R.style.Theme_Dialog);
-					// expiry_popup.setCancelable(false);
-
-					popup.setContentView(R.layout.dialogreportuser);
-					// popup.getWindow().setWindowAnimations(R.anim.slide_in_from_bottom);
-					RelativeLayout expiryMain = (RelativeLayout) popup
-							.findViewById(R.id.list_outside);
-					// expiry_main.setInAnimation(R.anim.slide_in_from_top);
-					btn_submit = (Button) popup.findViewById(R.id.submit);
-					txt_hours = (EditText) popup.findViewById(R.id.hours);
-					txt_hours.setHint("Counts");
-					txt_location = (EditText) popup.findViewById(R.id.location);
-					txt_location.setVisibility(View.GONE);
-					((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-							.toggleSoftInput(InputMethodManager.SHOW_FORCED,
-									InputMethodManager.HIDE_IMPLICIT_ONLY);
-					tv_cancel = (Button) popup.findViewById(R.id.cancel);
-					
-					popup.setTitle("# of counts");
-					listOutside = (RelativeLayout) popup
-							.findViewById(R.id.list_outside);
-					new ASSL(CompanyList.this, expiryMain, 1134, 720, false);
-
-					
-					btn_submit.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View view) {
-							Prefrences.reportTypeDialog = 1;
-							Prefrences.resumeflag = 1;
-							// Prefrences.personelHours[Prefrences.sizeofname]=
-							// hours.getText().toString();
-							ReportItemCreate.OnsiteArray.add(txt_hours.getText()
-									.toString());
-							ReportItemCreate.CompaniesArray.add(array.get(
-									position).toString());
-							ReportItemCreate.CompanyIdArrayList.add(arrayID
-									.get(position).toString());
-//							Prefrences.personelHours = hours.getText()
-//									.toString();
-//							
-//							 Prefrences.sizeofname++;
-							Log.d("huhuh", "huhuh" + Prefrences.sizeofname);
-							imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-							imm.hideSoftInputFromWindow(txt_hours.getWindowToken(),0);
-							popup.dismiss();
-							finish();
-							overridePendingTransition(R.anim.slide_in_left,
-									R.anim.slide_out_right);
-
-						}
-					});
-
-					tv_cancel.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View view) {
-							popup.dismiss();
-							// ReportItemCreate.CompaniesArray.remove(array.get(position).toString());
-						}
-					});
-					popup.show();
-					}
-					else if(Prefrences.text==12)
-					{
+					if (Prefrences.text == 11) {
 						popup = new Dialog(CompanyList.this,
 								android.R.style.Theme_Dialog);
 						// expiry_popup.setCancelable(false);
@@ -249,46 +187,46 @@ public class CompanyList extends Activity {
 						RelativeLayout expiryMain = (RelativeLayout) popup
 								.findViewById(R.id.list_outside);
 						// expiry_main.setInAnimation(R.anim.slide_in_from_top);
-						btn_submit = (Button) popup.findViewById(R.id.submit);
-						txt_hours = (EditText) popup.findViewById(R.id.hours);
-						txt_hours.setHint("Counts");
-						txt_location = (EditText) popup.findViewById(R.id.location);
-						txt_location.setVisibility(View.GONE);
+						buttonSubmit = (Button) popup.findViewById(R.id.buttonSubmit);
+						edittextHours = (EditText) popup.findViewById(R.id.edittextHours);
+						edittextHours.setHint("Personnel onsite");
+						edittextLocation = (EditText) popup
+								.findViewById(R.id.edittextLocation);
+						edittextLocation.setVisibility(View.GONE);
 						((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-								.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+								.toggleSoftInput(
+										InputMethodManager.SHOW_FORCED,
 										InputMethodManager.HIDE_IMPLICIT_ONLY);
-						tv_cancel = (Button) popup.findViewById(R.id.cancel);
-						
+						buttonCancel = (Button) popup.findViewById(R.id.cancel);
+
 						popup.setTitle("# of counts");
-						listOutside = (RelativeLayout) popup
+						relativelayoutListOutside = (RelativeLayout) popup
 								.findViewById(R.id.list_outside);
 						new ASSL(CompanyList.this, expiryMain, 1134, 720, false);
 
-						
-						btn_submit.setOnClickListener(new OnClickListener() {
+						buttonSubmit.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View view) {
 								Prefrences.reportTypeDialog = 1;
 								Prefrences.resumeflag = 1;
 								// Prefrences.personelHours[Prefrences.sizeofname]=
 								// hours.getText().toString();
-								ReportItemClick.OnsiteArray.add(txt_hours.getText()
-										.toString());
-								ReportItemClick.CompaniesArray.add(array.get(
+								ReportItemCreate.OnsiteArray.add(edittextHours
+										.getText().toString());
+								ReportItemCreate.CompaniesArray.add(array.get(
 										position).toString());
-								ReportItemClick.CompanyIdArrayList.add(arrayID
+								ReportItemCreate.CompanyIdArrayList.add(arrayIDArrayList
 										.get(position).toString());
-//								ReportFragment.reportdata.add(0, new Report("", "", "", "", "", "", "", "", "", "", "", "", "", "", null,null, null,
-//												new ReportCompanies("", txt_hours.getText().toString(), 
-//												new ReportCompany(arrayID.get(position).toString(),array.get(position).toString(),null,null)),null));
-								Prefrences.stopingHit=1;
-//								Prefrences.personelHours = hours.getText()
-//										.toString();
-//								// Prefrences.sizeofname++;
-//								Log.d("huhuh", "huhuh" + Prefrences.sizeofname);
+								// Prefrences.personelHours = hours.getText()
+								// .toString();
+								//
+								// Prefrences.sizeofname++;
+								Log.d("huhuh", "huhuh" + Prefrences.sizeofname);
 								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-								imm.hideSoftInputFromWindow(txt_hours.getWindowToken(),0);
+								imm.hideSoftInputFromWindow(
+										edittextHours.getWindowToken(), 0);
 								popup.dismiss();
+								
 								finish();
 								overridePendingTransition(R.anim.slide_in_left,
 										R.anim.slide_out_right);
@@ -296,7 +234,7 @@ public class CompanyList extends Activity {
 							}
 						});
 
-						tv_cancel.setOnClickListener(new OnClickListener() {
+						buttonCancel.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View view) {
 								popup.dismiss();
@@ -304,6 +242,111 @@ public class CompanyList extends Activity {
 							}
 						});
 						popup.show();
+					} else if (Prefrences.text == 12) {
+						popup = new Dialog(CompanyList.this,
+								android.R.style.Theme_Dialog);
+						// expiry_popup.setCancelable(false);
+
+						popup.setContentView(R.layout.dialogreportuser);
+						// popup.getWindow().setWindowAnimations(R.anim.slide_in_from_bottom);
+						RelativeLayout expiryMain = (RelativeLayout) popup
+								.findViewById(R.id.list_outside);
+						// expiry_main.setInAnimation(R.anim.slide_in_from_top);
+						buttonSubmit = (Button) popup.findViewById(R.id.buttonSubmit);
+						edittextHours = (EditText) popup.findViewById(R.id.edittextHours);
+						edittextHours.setHint("Personnel onsites");
+						edittextLocation = (EditText) popup
+								.findViewById(R.id.edittextLocation);
+						edittextLocation.setVisibility(View.GONE);
+						((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+								.toggleSoftInput(
+										InputMethodManager.SHOW_FORCED,
+										InputMethodManager.HIDE_IMPLICIT_ONLY);
+						buttonCancel = (Button) popup.findViewById(R.id.cancel);
+
+						popup.setTitle("# of personnel onsites");
+						relativelayoutListOutside = (RelativeLayout) popup
+								.findViewById(R.id.list_outside);
+						new ASSL(CompanyList.this, expiryMain, 1134, 720, false);
+
+						buttonSubmit.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View view) {
+								
+								String safetyTopicId ="";
+								for (int i = 0; i < ReportItemClick.CompanyIdArrayList.size(); i++) 
+								{
+									if (ReportItemClick.CompanyIdArrayList.get(i).toString().equals(arrayIDArrayList
+											.get(position).toString()))										
+									{
+										Log.d("Safety ID","Safety ID"+arrayIDArrayList
+												.get(position).toString());
+										safetyTopicId = arrayIDArrayList
+												.get(position).toString();
+									}
+								}
+								if (safetyTopicId.toString().equals("")) 
+								{
+								
+								
+								Prefrences.reportTypeDialog = 1;
+								Prefrences.resumeflag = 1;
+								// Prefrences.personelHours[Prefrences.sizeofname]=
+								// hours.getText().toString();
+
+								ReportItemClick.OnsiteArrayList.add(edittextHours
+										.getText().toString());
+								ReportItemClick.CompaniesArrayList.add(array.get(
+										position).toString());
+								ReportItemClick.CompanyIdArrayList.add(arrayIDArrayList
+										.get(position).toString());
+								// ReportFragment.reportdata.add(0, new
+								// Report("", "", "", "", "", "", "", "", "",
+								// "", "", "", "", "", null,null, null,
+								// new ReportCompanies("",
+								// txt_hours.getText().toString(),
+								// new
+								// ReportCompany(arrayID.get(position).toString(),array.get(position).toString(),null,null)),null));
+//								Prefrences.stopingHit = 1;
+								// Prefrences.personelHours = hours.getText()
+								// .toString();
+								// // Prefrences.sizeofname++;
+								// Log.d("huhuh", "huhuh" +
+								// Prefrences.sizeofname);
+								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+								imm.hideSoftInputFromWindow(
+										edittextHours.getWindowToken(), 0);
+								popup.dismiss();
+								Intent intent = new Intent(CompanyList.this,
+										ReportItemClick.class);
+								intent.putExtra("id", arrayIDArrayList.get(position)
+										.toString());
+								intent.putExtra("name", array.get(position)
+										.toString());
+								intent.putExtra("hours", edittextHours.getText()
+										.toString());
+								setResult(RESULT_OK, intent);
+								}
+								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+								imm.hideSoftInputFromWindow(
+										edittextHours.getWindowToken(), 0);
+								finish();
+								overridePendingTransition(R.anim.slide_in_left,
+										R.anim.slide_out_right);
+
+							}
+						});
+
+						buttonCancel.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View view) {
+								popup.dismiss();
+								// ReportItemCreate.CompaniesArray.remove(array.get(position).toString());
+							}
+						});
+						popup.show();
+					} else {
+
 					}
 
 				}

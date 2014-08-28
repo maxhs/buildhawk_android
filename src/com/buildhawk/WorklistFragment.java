@@ -1,5 +1,9 @@
 package com.buildhawk;
 
+/*
+ *  This file shows all worklist of selected project.
+ */
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
@@ -57,11 +61,11 @@ public class WorklistFragment extends Fragment {
 	Dialog dialog;
 	ArrayList<String> loc = new ArrayList<String>();
 	ArrayList<String> ass = new ArrayList<String>();
-	public static ArrayList<String> locss;
-	public static ArrayList<String> asss;
+	public  ArrayList<String> locss;
+	public  ArrayList<String> asss;
 //	String selected_location;
 
-	public static ArrayList<String> locs = new ArrayList<String>();
+	public static ArrayList<String> locs ;
 	ArrayList<PunchList> punchList = new ArrayList<PunchList>();
 	public static ArrayList<PunchListsItem> punchListItem = new ArrayList<PunchListsItem>();
 	ArrayList<Personnel> personnel = new ArrayList<Personnel>();
@@ -72,12 +76,12 @@ public class WorklistFragment extends Fragment {
 	public static ArrayList<PunchListsItem> worklist_complted;
 	ArrayList<PunchListsItem> slectedLocs;
 	public static ArrayList<PunchListsItem> worklist_Active;
-	public static ArrayList<String> assignees = new ArrayList<String>();
+	public static ArrayList<String> assignees;
 	Boolean pull = false;
 	RelativeLayout relLay;
 	static Context con;
 	WorkListCompleteAdapter workComAdp;
-SharedPreferences sharedpref;
+	SharedPreferences sharedpref;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -102,426 +106,26 @@ SharedPreferences sharedpref;
 
 		connDect = new ConnectionDetector(getActivity());
 		isInternetPresent = connDect.isConnectingToInternet();
-		if(Prefrences.worklist_s.equalsIgnoreCase("")){
-			Prefrences.worklist_bool=false;
-		}
-		if(Prefrences.worklist_bool==false){
-		if (isInternetPresent) {
-			punchlst();
-
-		} else {
-			String response = sharedpref.getString("worklistfragment", "");
-			if(response.equalsIgnoreCase("")){
-				Toast.makeText(getActivity(),"No internet connection.", Toast.LENGTH_SHORT).show();
-			}else{
-				fillServerData(response);
+		
+		
+//		if(Prefrences.worklist_s.equalsIgnoreCase("")){
+//			Prefrences.worklist_bool=false;
+//		}
+		if(Prefrences.selectedProId.equalsIgnoreCase(Prefrences.LastSelectedProId))
+		{
+			if(!Prefrences.LastWorklist_s.equalsIgnoreCase(""))
+//				Prefrences.document_bool = true;
+//			else
+			{
+				Prefrences.worklist_s=Prefrences.LastWorklist_s;			
+				Prefrences.worklist_bool = true;
 			}
 		}
-		}else{
-	
-			punchListItem.clear();
-			JSONObject res = null;
-			try {
-				res = new JSONObject(Prefrences.worklist_s);
-				Log.v("response ", "" + res.toString(2));
-				JSONObject punchlists = null;
-				JSONArray punchlistitem = null;
-
-				// if (res.has("punchlist")) {
-				// punchlists = res.getJSONObject("punchlist");//
-				// chexklist
-				// punchlistitem = punchlists
-				// .getJSONArray("punchlist_items");
-				// } else {
-				punchlists = res.getJSONObject("punchlist");
-				punchlistitem = punchlists
-						.getJSONArray("worklist_items");
-				// }
-
-				JSONArray personel = punchlists
-						.getJSONArray("personnel");
-				worklist_complted = new ArrayList<PunchListsItem>();
-				worklist_Active = new ArrayList<PunchListsItem>();
-				slectedLocs = new ArrayList<PunchListsItem>();
-				ArrayList<String> sub = new ArrayList<String>();
-				for (int i = 0; i < punchlistitem.length(); i++) {
-					Log.d("", "i=====" + i);
-					JSONObject count = punchlistitem
-							.getJSONObject(i);
-					if (!count.isNull("sub_assignee")) {
-						JSONObject subasigne = count
-								.getJSONObject("sub_assignee");
-						sub.add((String) subasigne.get("name"));
-						assignees.add(subasigne.getString("name"));
-					}
-					assigne = new ArrayList<Assignee>();
-					if (!count.isNull("assignee")) {
-						JSONObject asigne = count
-								.getJSONObject("assignee");// subcateg
-						Log.i("asigneees", "" + asigne);
-
-						// commnt = new ArrayList<Comments>();
-						JSONObject company = asigne
-								.getJSONObject("company");// checkitem
-
-						ArrayList<Company> compny = new ArrayList<Company>();
-						compny.add(new Company(company
-								.getString("id"), company
-								.getString("name")));
-						assigne.add(new Assignee(asigne
-								.getString("id"), asigne
-								.getString("first_name"), asigne
-								.getString("last_name"), asigne
-								.getString("full_name"), asigne
-//								.getString("admin"), asigne
-//								.getString("company_admin"), asigne
-//								.getString("uber_admin"), asigne
-								.getString("email"), asigne
-								.getString("phone"), asigne
-//								.getString("authentication_token"),
-//								asigne
-								.getString("url_thumb"),
-								asigne.getString("url_small"),
-								compny));
-						assignees.add(asigne.getString("full_name"));
-					} else {
-
-						assigne.add(new Assignee( "",
-								 "", "", "", "", "", "", "",
-								null));
-					}
-
-//					JSONArray phot = count.getJSONArray("photos");
-//					punchlistphoto = new ArrayList<PunchListsPhotos>();
-//					for (int j = 0; j < phot.length(); j++) {
-//						JSONObject ccount = phot.getJSONObject(j);
-//
-//						Log.d("", "j=====" + j);
-//						punchlistphoto.add(new PunchListsPhotos(
-//								ccount.getString("id"),
-//								ccount.getString("url_large"),
-//								ccount.getString("original"),
-//								ccount.getString("epoch_time"),
-//								ccount.getString("url_small"),
-//								ccount.getString("url_thumb"),
-//								ccount.getString("image_file_size"),
-//								ccount.getString("image_content_type"),
-//								ccount.getString("source"), ccount
-//										.getString("phase"), ccount
-//										.getString("created_at"),
-//								ccount.getString("user_name"),
-//								ccount.getString("name"), ccount
-//										.getString("description"),
-//								ccount.getString("created_date")));
-//						// ccount.getString("assignee")
-//
-//						Log.i("photos", "" + phot);
-//					}
-//					JSONArray comm = count.getJSONArray("comments");
-
-//					for (int k = 0; k < comm.length(); k++) {
-//
-//						JSONObject ccount = comm.getJSONObject(k);
-//
-//						JSONObject cuser = ccount
-//								.getJSONObject("user");
-//						Log.i("comment user", "" + cuser);
-//
-//						commnt = new ArrayList<Comments>();
-//						cusr = new ArrayList<CommentUser>();
-//						JSONObject company = cuser
-//								.getJSONObject("company");
-//
-//						ArrayList<Company> compny = new ArrayList<Company>();
-//						compny.add(new Company(company
-//								.getString("id"), company
-//								.getString("name")));
-//						// Log.i("ddddddd", "" + company);
-//						cusr.add(new CommentUser(cuser
-//								.getString("id"), cuser
-//								.getString("first_name"), cuser
-//								.getString("last_name"), cuser
-//								.getString("full_name"), cuser
-////								.getString("admin"), cuser
-////								.getString("company_admin"), cuser
-////								.getString("uber_admin"), cuser
-//								.getString("email"), cuser
-//								.getString("phone"), cuser
-////								.getString("authentication_token"),
-////								cuser
-//								.getString("url_thumb"), cuser
-//										.getString("url_small"),
-//								compny));
-//
-//						commnt.add(new Comments(ccount
-//								.getString("id"), ccount
-//								.getString("body"), cusr, ccount
-//								.getString("created_at")));
-//						Log.d("comments", "size==" + commnt.size());
-//					}
-					punchListItem.add(new PunchListsItem(count
-							.getString("id"), count
-							.getString("body"), assigne, count
-					// .getString("sub_assignee"), count
-							.getString("location"), count
-							.getString("completed_at"), count
-							.getString("completed"),
-							punchlistphoto, count
-									.getString("created_at"),
-							commnt, count.getString("epoch_time")));
-
-					if (!count.getString("location").equals("null")) {
-						locs.add(count.getString("location"));
-					}
-					// if(!count.getString("sub_assignee").equals("null"))
-					// assignees.add(
-					// count.getString("sub_assignee"));
-
-					Log.d("asssigneeeeeee",
-							"sizee" + assignees.size());
-
-					if (punchListItem.get(i).completed
-							.equals("true")) {
-						worklist_complted.add(new PunchListsItem(
-								count.getString("id"), count
-										.getString("body"),
-								assigne, count
-								// .getString("sub_assignee"), count
-										.getString("location"),
-								count.getString("completed_at"),
-								count.getString("completed"),
-								punchlistphoto, count
-										.getString("created_at"),
-								commnt, count
-										.getString("epoch_time")));
-						Log.i("true",
-								"--------Completed-------------"
-										+ punchListItem.get(i).body
-												.toString());
-					} else if (!punchListItem.get(i).completed
-							.equals("true")) {
-						worklist_Active.add(new PunchListsItem(
-								count.getString("id"), count
-										.getString("body"),
-								assigne, count
-								// .getString("sub_assignee"), count
-										.getString("location"),
-								count.getString("completed_at"),
-								count.getString("completed"),
-								punchlistphoto, count
-										.getString("created_at"),
-								commnt, count
-										.getString("epoch_time")));
-						Log.i("true",
-								"--------Active-------------"
-										+ punchListItem.get(i).body
-												.toString());
-					}
-
-				}
-				Log.d("loc", "sizeeee" + locs.size());
-				Log.d("punchlist_item",
-						"Size" + punchListItem.size());
-				ArrayList<Company> compny = null;
-				for (int m = 0; m < personel.length(); m++) {
-					JSONObject count = personel.getJSONObject(m);
-					if (!count.isNull("company")) {
-						JSONObject cmpny = count
-								.getJSONObject("company");
-
-						compny = new ArrayList<Company>();
-						compny.add(new Company(cmpny
-								.getString("id"), cmpny
-								.getString("name")));
-
-						personnel.add(new Personnel(count
-								.getString("id"), count
-								.getString("first_name"), count
-								.getString("last_name"), count
-								.getString("full_name"), count
-//								.getString("admin"), count
-//								.getString("company_admin"), count
-//								.getString("uber_admin"), count
-								.getString("email"), count
-								.getString("phone"), count
-//								.getString("authentication_token"),
-//								count
-								.getString("url_thumb"), count
-										.getString("url_small"),
-								compny));
-					} else {
-						personnel.add(new Personnel(count
-								.getString("id"), "", "", "", 
-								count.getString("email"), count
-										.getString("phone"),
-								 "", "", null));
-					}
-
-				}
-				Log.d("punchlist_item", "Size" + personnel.size());
-
-				punchList.add(new PunchList(punchListItem,
-						personnel));
-				Log.d("punchlist", "--------" + personnel);
-				// totalCount = Integer.toString(punchList.size());
-				// Log.i("value..",""+punchList.size());
-				
-				if(Prefrences.worklisttypes==0)
-				{
-				workComAdp = new WorkListCompleteAdapter(
-						ProjectDetail.activity, punchListItem);
-				listview.setAdapter(workComAdp);
-				}
-				else if(Prefrences.worklisttypes==1)
-				{
-				workComAdp = new WorkListCompleteAdapter(
-						ProjectDetail.activity, worklist_Active);
-				listview.setAdapter(workComAdp);
-				}
-				else if(Prefrences.worklisttypes==4)
-				{
-				workComAdp = new WorkListCompleteAdapter(
-						ProjectDetail.activity, worklist_complted);
-				listview.setAdapter(workComAdp);
-				}
-				else if(Prefrences.worklisttypes==2)
-				{
-					for (int i = 0; i < punchListItem.size(); i++) {
-						if (punchListItem.get(i).location.toString()
-								.equalsIgnoreCase(
-										Prefrences.selected_location.toString())) {
-							Log.d("$$$$$$",
-									"selsected lovcsa ="
-											+ Prefrences.selected_location
-											+ ",array"
-											+ punchListItem.get(i).location
-													.toString());
-							slectedLocs.add(punchListItem.get(i));
-						}
-					workComAdp = new WorkListCompleteAdapter(
-							ProjectDetail.activity, slectedLocs);
-					listview.setAdapter(workComAdp);
-				}
-				}
-					else if(Prefrences.worklisttypes==3){
-						for (int i = 0; i < punchListItem.size(); i++) {
-							if (!punchListItem.get(i).assignee.equals("null")) {
-								Log.d("ans---",
-										"aaagya----"
-												+ punchListItem.get(i).id
-														.toString());
-								if (punchListItem.get(i).assignee.get(0).fullName
-										.toString().equalsIgnoreCase(
-												Prefrences.selected_location.toString()))// ||
-																				// punchListItem.get(i).subAssignee.toString().equals(selected_location.toString())
-																				// )
-								{
-									Log.d("$$$$$$",
-											"selsected lovcsa ="
-													+ Prefrences.selected_location
-													+ ",array"
-													+ punchListItem.get(i).assignee
-															.get(0).fullName
-															.toString());
-									slectedLocs.add(punchListItem.get(i));
-								}
-								workComAdp = new WorkListCompleteAdapter(
-										ProjectDetail.activity, slectedLocs);
-								listview.setAdapter(workComAdp);
-							}
-						}
-					}
-				workComAdp.notifyDataSetChanged();
-
-				loc.addAll(WorklistFragment.locs);
-				ass.addAll(WorklistFragment.assignees);
-				Log.d("loc", "sizeeee" + loc.size());
-				Log.d("user", "sizeeee" + ass.size());
-				LinkedHashSet<String> listToSet = new LinkedHashSet<String>(
-						loc);
-				LinkedHashSet<String> listToSet2 = new LinkedHashSet<String>(
-						ass);
-				locss = new ArrayList<String>(listToSet);
-				asss = new ArrayList<String>(listToSet2);
-				Log.d("locssss", "sizeeee" + locss.size());
-				Log.d("usrs", "sizeeee" + asss.size());
-
-				if (pull == true) {
-					pull = false;
-					if(Prefrences.worklisttypes==0)
-					{
-					tv_active.setBackgroundResource(R.drawable.all_white_background);
-					tv_completed.setBackgroundResource(R.drawable.complete_white_background);
-					tv_assignee.setBackgroundResource(R.color.white);
-					tv_location.setBackgroundResource(R.color.white);
-
-					tv_completed.setTextColor(Color.BLACK);
-					tv_active.setTextColor(Color.BLACK);
-					tv_assignee.setTextColor(Color.BLACK);
-					tv_location.setTextColor(Color.BLACK);
-					listview.onRefreshComplete();
-					}
-					else if(Prefrences.worklisttypes==1)
-					{
-					tv_active.setBackgroundResource(R.drawable.all_black_background);
-					tv_completed.setBackgroundResource(R.drawable.complete_white_background);
-					tv_assignee.setBackgroundResource(R.color.white);
-					tv_location.setBackgroundResource(R.color.white);
-
-					tv_completed.setTextColor(Color.BLACK);
-					tv_active.setTextColor(Color.WHITE);
-					tv_assignee.setTextColor(Color.BLACK);
-					tv_location.setTextColor(Color.BLACK);
-					listview.onRefreshComplete();
-					}
-					else if(Prefrences.worklisttypes==2)
-					{
-						tv_active.setBackgroundResource(R.drawable.all_white_background);
-						tv_completed
-								.setBackgroundResource(R.drawable.complete_white_background);
-						tv_assignee.setBackgroundResource(R.color.white);
-						tv_location.setBackgroundResource(R.color.black);
-
-						tv_completed.setTextColor(Color.BLACK);
-						tv_active.setTextColor(Color.BLACK);
-						tv_assignee.setTextColor(Color.BLACK);
-						tv_location.setTextColor(Color.WHITE);
-					listview.onRefreshComplete();
-					}
-					else if(Prefrences.worklisttypes==3)
-					{
-						tv_active.setBackgroundResource(R.drawable.all_white_background);
-						tv_completed
-								.setBackgroundResource(R.drawable.complete_white_background);
-						tv_assignee.setBackgroundResource(R.color.black);
-						tv_location.setBackgroundResource(R.color.white);
-
-						tv_completed.setTextColor(Color.BLACK);
-						tv_active.setTextColor(Color.BLACK);
-						tv_assignee.setTextColor(Color.WHITE);
-						tv_location.setTextColor(Color.BLACK);
-					listview.onRefreshComplete();
-					}
-					else if(Prefrences.worklisttypes==4)
-					{
-						tv_active.setBackgroundResource(R.drawable.all_white_background);
-						tv_location.setBackgroundResource(R.color.white);
-						tv_completed
-								.setBackgroundResource(R.drawable.complete_black_background);
-						tv_assignee.setBackgroundResource(R.color.white);
-
-						tv_completed.setTextColor(Color.WHITE);
-						tv_active.setTextColor(Color.BLACK);
-						tv_assignee.setTextColor(Color.BLACK);
-						tv_location.setTextColor(Color.BLACK);
-					listview.onRefreshComplete();
-					}
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
+		else
+		{
+			if (Prefrences.worklist_s.equalsIgnoreCase("")) {
+				Prefrences.worklist_bool = false;
 			}
-	
 		}
 
 		listview.setOnRefreshListener(new OnRefreshListener<ListView>() {
@@ -532,7 +136,7 @@ SharedPreferences sharedpref;
 
 				if (isInternetPresent) {
 					pull = true;
-					
+//					listview.onRefreshComplete();
 					punchlst();
 				} else {
 					Toast.makeText(getActivity(), "No internet connection.",
@@ -638,7 +242,7 @@ SharedPreferences sharedpref;
 					dialog = new Dialog(getActivity(),
 							android.R.style.Theme_Translucent_NoTitleBar);
 					// dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					dialog.setContentView(R.layout.dialogbox_list);
+					dialog.setContentView(R.layout.dialgllist_safety);
 					ArrayList<String> array = new ArrayList<String>();
 
 					Window window = dialog.getWindow();
@@ -744,7 +348,7 @@ SharedPreferences sharedpref;
 					dialog = new Dialog(getActivity(),
 							android.R.style.Theme_Translucent_NoTitleBar);
 					// dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					dialog.setContentView(R.layout.dialogbox_list);
+					dialog.setContentView(R.layout.dialgllist_safety);
 					ArrayList<String> array = new ArrayList<String>();
 
 					Window window = dialog.getWindow();
@@ -857,7 +461,426 @@ SharedPreferences sharedpref;
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		if(Prefrences.worklist_bool==false){
+			if (isInternetPresent) {
+				punchlst();
 
+			} else {
+				String response = sharedpref.getString("worklistfragment", "");
+				if(response.equalsIgnoreCase("")){
+					Toast.makeText(getActivity(),"No internet connection.", Toast.LENGTH_SHORT).show();
+				}else{
+					fillServerData(response);
+				}
+			}
+			}else{
+		
+				punchListItem.clear();
+				JSONObject res = null;
+				try {
+					res = new JSONObject(Prefrences.worklist_s);
+					Log.v("response ", "" + res.toString(2));
+					JSONObject punchlists = null;
+					JSONArray punchlistitem = null;
+
+					// if (res.has("punchlist")) {
+					// punchlists = res.getJSONObject("punchlist");//
+					// chexklist
+					// punchlistitem = punchlists
+					// .getJSONArray("punchlist_items");
+					// } else {
+					punchlists = res.getJSONObject("punchlist");
+					punchlistitem = punchlists
+							.getJSONArray("worklist_items");
+					// }
+
+					JSONArray personel = punchlists
+							.getJSONArray("personnel");
+					worklist_complted = new ArrayList<PunchListsItem>();
+					worklist_Active = new ArrayList<PunchListsItem>();
+					slectedLocs = new ArrayList<PunchListsItem>();
+					ArrayList<String> sub = new ArrayList<String>();
+					assignees = new ArrayList<String>();
+					locs = new ArrayList<String>();
+					for (int i = 0; i < punchlistitem.length(); i++) {
+						Log.d("", "i=====" + i);
+						JSONObject count = punchlistitem
+								.getJSONObject(i);
+						if (!count.isNull("sub_assignee")) {
+							JSONObject subasigne = count
+									.getJSONObject("sub_assignee");
+							sub.add((String) subasigne.get("name"));
+							assignees.add(subasigne.getString("name"));
+						}
+						assigne = new ArrayList<Assignee>();
+						if (!count.isNull("assignee")) {
+							JSONObject asigne = count
+									.getJSONObject("assignee");// subcateg
+							Log.i("asigneees", "" + asigne);
+
+							// commnt = new ArrayList<Comments>();
+							JSONObject company = asigne
+									.getJSONObject("company");// checkitem
+
+							ArrayList<Company> compny = new ArrayList<Company>();
+							compny.add(new Company(company
+									.getString("id"), company
+									.getString("name")));
+							assigne.add(new Assignee(asigne
+									.getString("id"), asigne
+									.getString("first_name"), asigne
+									.getString("last_name"), asigne
+									.getString("full_name"), asigne
+//									.getString("admin"), asigne
+//									.getString("company_admin"), asigne
+//									.getString("uber_admin"), asigne
+									.getString("email"), asigne
+									.getString("phone"), asigne
+//									.getString("authentication_token"),
+//									asigne
+									.getString("url_thumb"),
+									asigne.getString("url_small"),
+									compny));
+							assignees.add(asigne.getString("full_name"));
+						} else {
+
+							assigne.add(new Assignee( "",
+									 "", "", "", "", "", "", "",
+									null));
+						}
+
+						JSONArray phot = count.getJSONArray("photos");
+						punchlistphoto = new ArrayList<PunchListsPhotos>();
+						for (int j = 0; j < phot.length(); j++) {
+							JSONObject ccount = phot.getJSONObject(j);
+
+							Log.d("", "j=====" + j);
+							punchlistphoto.add(new PunchListsPhotos(
+									ccount.getString("id"),
+									ccount.getString("url_large"),
+									ccount.getString("original"),
+									ccount.getString("epoch_time"),
+									ccount.getString("url_small"),
+									ccount.getString("url_thumb"),
+									ccount.getString("image_file_size"),
+									ccount.getString("image_content_type"),
+									ccount.getString("source"), ccount
+											.getString("phase"), ccount
+											.getString("created_at"),
+									ccount.getString("user_name"),
+									ccount.getString("name"), ccount
+											.getString("description"),
+									ccount.getString("created_date")));
+							// ccount.getString("assignee")
+
+							Log.i("photos", "" + phot);
+						}
+//						JSONArray comm = count.getJSONArray("comments");
+
+//						for (int k = 0; k < comm.length(); k++) {
+	//
+//							JSONObject ccount = comm.getJSONObject(k);
+	//
+//							JSONObject cuser = ccount
+//									.getJSONObject("user");
+//							Log.i("comment user", "" + cuser);
+	//
+//							commnt = new ArrayList<Comments>();
+//							cusr = new ArrayList<CommentUser>();
+//							JSONObject company = cuser
+//									.getJSONObject("company");
+	//
+//							ArrayList<Company> compny = new ArrayList<Company>();
+//							compny.add(new Company(company
+//									.getString("id"), company
+//									.getString("name")));
+//							// Log.i("ddddddd", "" + company);
+//							cusr.add(new CommentUser(cuser
+//									.getString("id"), cuser
+//									.getString("first_name"), cuser
+//									.getString("last_name"), cuser
+//									.getString("full_name"), cuser
+////									.getString("admin"), cuser
+////									.getString("company_admin"), cuser
+////									.getString("uber_admin"), cuser
+//									.getString("email"), cuser
+//									.getString("phone"), cuser
+////									.getString("authentication_token"),
+////									cuser
+//									.getString("url_thumb"), cuser
+//											.getString("url_small"),
+//									compny));
+	//
+//							commnt.add(new Comments(ccount
+//									.getString("id"), ccount
+//									.getString("body"), cusr, ccount
+//									.getString("created_at")));
+//							Log.d("comments", "size==" + commnt.size());
+//						}
+						punchListItem.add(new PunchListsItem(count
+								.getString("id"), count
+								.getString("body"), assigne, count
+						// .getString("sub_assignee"), count
+								.getString("location"), count
+								.getString("completed_at"), count
+								.getString("completed"),
+								punchlistphoto, count
+										.getString("created_at"),
+								commnt, count.getString("epoch_time")));
+
+						if (!count.getString("location").equals("null")) {
+							locs.add(count.getString("location"));
+						}
+						// if(!count.getString("sub_assignee").equals("null"))
+						// assignees.add(
+						// count.getString("sub_assignee"));
+
+						Log.d("asssigneeeeeee",
+								"sizee" + assignees.size());
+
+						if (punchListItem.get(i).completed
+								.equals("true")) {
+							worklist_complted.add(new PunchListsItem(
+									count.getString("id"), count
+											.getString("body"),
+									assigne, count
+									// .getString("sub_assignee"), count
+											.getString("location"),
+									count.getString("completed_at"),
+									count.getString("completed"),
+									punchlistphoto, count
+											.getString("created_at"),
+									commnt, count
+											.getString("epoch_time")));
+							Log.i("true",
+									"--------Completed-------------"
+											+ punchListItem.get(i).body
+													.toString());
+						} else if (!punchListItem.get(i).completed
+								.equals("true")) {
+							worklist_Active.add(new PunchListsItem(
+									count.getString("id"), count
+											.getString("body"),
+									assigne, count
+									// .getString("sub_assignee"), count
+											.getString("location"),
+									count.getString("completed_at"),
+									count.getString("completed"),
+									punchlistphoto, count
+											.getString("created_at"),
+									commnt, count
+											.getString("epoch_time")));
+							Log.i("true",
+									"--------Active-------------"
+											+ punchListItem.get(i).body
+													.toString());
+						}
+
+					}
+					Log.d("loc", "sizeeee" + locs.size());
+					Log.d("punchlist_item",
+							"Size" + punchListItem.size());
+					ArrayList<Company> compny = null;
+					for (int m = 0; m < personel.length(); m++) {
+						JSONObject count = personel.getJSONObject(m);
+						if (!count.isNull("company")) {
+							JSONObject cmpny = count
+									.getJSONObject("company");
+
+							compny = new ArrayList<Company>();
+							compny.add(new Company(cmpny
+									.getString("id"), cmpny
+									.getString("name")));
+
+							personnel.add(new Personnel(count
+									.getString("id"), count
+									.getString("first_name"), count
+									.getString("last_name"), count
+									.getString("full_name"), count
+//									.getString("admin"), count
+//									.getString("company_admin"), count
+//									.getString("uber_admin"), count
+									.getString("email"), count
+									.getString("phone"), count
+//									.getString("authentication_token"),
+//									count
+									.getString("url_thumb"), count
+											.getString("url_small"),
+									compny));
+						} else {
+							personnel.add(new Personnel(count
+									.getString("id"), "", "", "", 
+									count.getString("email"), count
+											.getString("phone"),
+									 "", "", null));
+						}
+
+					}
+					Log.d("punchlist_item", "Size" + personnel.size());
+
+					punchList.add(new PunchList(punchListItem,
+							personnel));
+					Log.d("punchlist", "--------" + personnel);
+					// totalCount = Integer.toString(punchList.size());
+					// Log.i("value..",""+punchList.size());
+					
+					if(Prefrences.worklisttypes==0)
+					{
+					workComAdp = new WorkListCompleteAdapter(
+							ProjectDetail.activity, punchListItem);
+					listview.setAdapter(workComAdp);
+					}
+					else if(Prefrences.worklisttypes==1)
+					{
+					workComAdp = new WorkListCompleteAdapter(
+							ProjectDetail.activity, worklist_Active);
+					listview.setAdapter(workComAdp);
+					}
+					else if(Prefrences.worklisttypes==4)
+					{
+					workComAdp = new WorkListCompleteAdapter(
+							ProjectDetail.activity, worklist_complted);
+					listview.setAdapter(workComAdp);
+					}
+					else if(Prefrences.worklisttypes==2)
+					{
+						for (int i = 0; i < punchListItem.size(); i++) {
+							if (punchListItem.get(i).location.toString()
+									.equalsIgnoreCase(
+											Prefrences.selected_location.toString())) {
+								Log.d("$$$$$$",
+										"selsected lovcsa ="
+												+ Prefrences.selected_location
+												+ ",array"
+												+ punchListItem.get(i).location
+														.toString());
+								slectedLocs.add(punchListItem.get(i));
+							}
+						workComAdp = new WorkListCompleteAdapter(
+								ProjectDetail.activity, slectedLocs);
+						listview.setAdapter(workComAdp);
+					}
+					}
+						else if(Prefrences.worklisttypes==3){
+							for (int i = 0; i < punchListItem.size(); i++) {
+								if (!punchListItem.get(i).assignee.equals("null")) {
+									Log.d("ans---",
+											"aaagya----"
+													+ punchListItem.get(i).id
+															.toString());
+									if (punchListItem.get(i).assignee.get(0).fullName
+											.toString().equalsIgnoreCase(
+													Prefrences.selected_location.toString()))// ||
+																					// punchListItem.get(i).subAssignee.toString().equals(selected_location.toString())
+																					// )
+									{
+										Log.d("$$$$$$",
+												"selsected lovcsa ="
+														+ Prefrences.selected_location
+														+ ",array"
+														+ punchListItem.get(i).assignee
+																.get(0).fullName
+																.toString());
+										slectedLocs.add(punchListItem.get(i));
+									}
+									workComAdp = new WorkListCompleteAdapter(
+											ProjectDetail.activity, slectedLocs);
+									listview.setAdapter(workComAdp);
+								}
+							}
+						}
+					workComAdp.notifyDataSetChanged();
+
+					loc.addAll(locs);
+					ass.addAll(assignees);
+					Log.d("loc", "sizeeee" + loc.size());
+					Log.d("user", "sizeeee" + ass.size());
+					LinkedHashSet<String> listToSet = new LinkedHashSet<String>(
+							loc);
+					LinkedHashSet<String> listToSet2 = new LinkedHashSet<String>(
+							ass);
+					locss = new ArrayList<String>(listToSet);
+					asss = new ArrayList<String>(listToSet2);
+					Log.d("locssss", "sizeeee" + locss.size());
+					Log.d("usrs", "sizeeee" + asss.size());
+
+					if (pull == true) {
+						pull = false;
+						if(Prefrences.worklisttypes==0)
+						{
+						tv_active.setBackgroundResource(R.drawable.all_white_background);
+						tv_completed.setBackgroundResource(R.drawable.complete_white_background);
+						tv_assignee.setBackgroundResource(R.color.white);
+						tv_location.setBackgroundResource(R.color.white);
+
+						tv_completed.setTextColor(Color.BLACK);
+						tv_active.setTextColor(Color.BLACK);
+						tv_assignee.setTextColor(Color.BLACK);
+						tv_location.setTextColor(Color.BLACK);
+						listview.onRefreshComplete();
+						}
+						else if(Prefrences.worklisttypes==1)
+						{
+						tv_active.setBackgroundResource(R.drawable.all_black_background);
+						tv_completed.setBackgroundResource(R.drawable.complete_white_background);
+						tv_assignee.setBackgroundResource(R.color.white);
+						tv_location.setBackgroundResource(R.color.white);
+
+						tv_completed.setTextColor(Color.BLACK);
+						tv_active.setTextColor(Color.WHITE);
+						tv_assignee.setTextColor(Color.BLACK);
+						tv_location.setTextColor(Color.BLACK);
+						listview.onRefreshComplete();
+						}
+						else if(Prefrences.worklisttypes==2)
+						{
+							tv_active.setBackgroundResource(R.drawable.all_white_background);
+							tv_completed
+									.setBackgroundResource(R.drawable.complete_white_background);
+							tv_assignee.setBackgroundResource(R.color.white);
+							tv_location.setBackgroundResource(R.color.black);
+
+							tv_completed.setTextColor(Color.BLACK);
+							tv_active.setTextColor(Color.BLACK);
+							tv_assignee.setTextColor(Color.BLACK);
+							tv_location.setTextColor(Color.WHITE);
+						listview.onRefreshComplete();
+						}
+						else if(Prefrences.worklisttypes==3)
+						{
+							tv_active.setBackgroundResource(R.drawable.all_white_background);
+							tv_completed
+									.setBackgroundResource(R.drawable.complete_white_background);
+							tv_assignee.setBackgroundResource(R.color.black);
+							tv_location.setBackgroundResource(R.color.white);
+
+							tv_completed.setTextColor(Color.BLACK);
+							tv_active.setTextColor(Color.BLACK);
+							tv_assignee.setTextColor(Color.WHITE);
+							tv_location.setTextColor(Color.BLACK);
+						listview.onRefreshComplete();
+						}
+						else if(Prefrences.worklisttypes==4)
+						{
+							tv_active.setBackgroundResource(R.drawable.all_white_background);
+							tv_location.setBackgroundResource(R.color.white);
+							tv_completed
+									.setBackgroundResource(R.drawable.complete_black_background);
+							tv_assignee.setBackgroundResource(R.color.white);
+
+							tv_completed.setTextColor(Color.WHITE);
+							tv_active.setTextColor(Color.BLACK);
+							tv_assignee.setTextColor(Color.BLACK);
+							tv_location.setTextColor(Color.BLACK);
+						listview.onRefreshComplete();
+						}
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		
+			}
 		Prefrences.selected_location="";
 		if(Prefrences.worklisttypes==0)
 		{
@@ -927,6 +950,7 @@ SharedPreferences sharedpref;
 			tv_location.setTextColor(Color.BLACK);
 		listview.onRefreshComplete();
 		}
+		
 		if(Prefrences.worklisttypes==0)
 		{
 		workComAdp = new WorkListCompleteAdapter(
@@ -950,7 +974,7 @@ SharedPreferences sharedpref;
 		}
 		else if(Prefrences.worklisttypes==2)
 		{
-			slectedLocs.clear();
+			slectedLocs = new ArrayList<PunchListsItem>();
 			for (int i = 0; i < punchListItem.size(); i++) {
 				if (punchListItem.get(i).location.toString()
 						.equalsIgnoreCase(
@@ -970,7 +994,7 @@ SharedPreferences sharedpref;
 		}
 		}
 			else if(Prefrences.worklisttypes==3){
-				slectedLocs.clear();
+				slectedLocs = new ArrayList<PunchListsItem>();
 				for (int i = 0; i < punchListItem.size(); i++) {
 					if (!punchListItem.get(i).assignee.equals("null")) {
 						Log.d("ans---",
@@ -1158,12 +1182,14 @@ SharedPreferences sharedpref;
 
 	public void punchlst() {
 
+		if(pull!=true)
 		Prefrences.showLoadingDialog(getActivity(), "Loading...");
 
 		RequestParams params = new RequestParams();
 
 		params.put("id", Prefrences.selectedProId);
 
+		Log.d("----------------","---------------"+Prefrences.url + "/worklists/" + Prefrences.selectedProId);
 		AsyncHttpClient client = new AsyncHttpClient();
 
 		client.addHeader("Content-type", "application/json");
@@ -1179,6 +1205,7 @@ SharedPreferences sharedpref;
 						editor.putString("worklistfragment", response);
 						editor.commit();
 						fillServerData(response);
+						if(pull!=true)
 						Prefrences.dismissLoadingDialog();
 					}
 
@@ -1189,6 +1216,7 @@ SharedPreferences sharedpref;
 								Toast.LENGTH_LONG).show();
 
 						Prefrences.text = 10;
+						if(pull!=true)
 						Prefrences.dismissLoadingDialog();
 						if (pull == true) {
 							pull = false;
@@ -1230,6 +1258,8 @@ SharedPreferences sharedpref;
 			worklist_Active = new ArrayList<PunchListsItem>();
 			slectedLocs = new ArrayList<PunchListsItem>();
 			ArrayList<String> sub = new ArrayList<String>();
+			assignees = new ArrayList<String>();
+			locs = new ArrayList<String>();
 			for (int i = 0; i < punchlistitem.length(); i++) {
 				Log.d("", "i=====" + i);
 				JSONObject count = punchlistitem
@@ -1277,32 +1307,32 @@ SharedPreferences sharedpref;
 				}
 				//****************************** API change ****************************
 
-//				JSONArray phot = count.getJSONArray("photos");
-//				punchlistphoto = new ArrayList<PunchListsPhotos>();
-//				for (int j = 0; j < phot.length(); j++) {
-//					JSONObject ccount = phot.getJSONObject(j);
-//
-//					Log.d("", "j=====" + j);
-//					punchlistphoto.add(new PunchListsPhotos(
-//							ccount.getString("id"),
-//							ccount.getString("url_large"),
-//							ccount.getString("original"),
-//							ccount.getString("epoch_time"),
-//							ccount.getString("url_small"),
-//							ccount.getString("url_thumb"),
-//							ccount.getString("image_file_size"),
-//							ccount.getString("image_content_type"),
-//							ccount.getString("source"), ccount
-//									.getString("phase"), ccount
-//									.getString("created_at"),
-//							ccount.getString("user_name"),
-//							ccount.getString("name"), ccount
-//									.getString("description"),
-//							ccount.getString("created_date")));
-//					// ccount.getString("assignee")
-//
-//					Log.i("photos", "" + phot);
-//				}
+				JSONArray phot = count.getJSONArray("photos");
+				punchlistphoto = new ArrayList<PunchListsPhotos>();
+				for (int j = 0; j < phot.length(); j++) {
+					JSONObject ccount = phot.getJSONObject(j);
+
+					Log.d("", "j=====" + j);
+					punchlistphoto.add(new PunchListsPhotos(
+							ccount.getString("id"),
+							ccount.getString("url_large"),
+							ccount.getString("original"),
+							ccount.getString("epoch_time"),
+							ccount.getString("url_small"),
+							ccount.getString("url_thumb"),
+							ccount.getString("image_file_size"),
+							ccount.getString("image_content_type"),
+							ccount.getString("source"), ccount
+									.getString("phase"), ccount
+									.getString("created_at"),
+							ccount.getString("user_name"),
+							ccount.getString("name"), ccount
+									.getString("description"),
+							ccount.getString("created_date")));
+					// ccount.getString("assignee")
+
+					Log.i("photos", "" + phot);
+				}
 //				JSONArray comm = count.getJSONArray("comments");
 //
 //				for (int k = 0; k < comm.length(); k++) {
@@ -1517,8 +1547,8 @@ SharedPreferences sharedpref;
 					}
 				}
 
-			loc.addAll(WorklistFragment.locs);
-			ass.addAll(WorklistFragment.assignees);
+			loc.addAll(locs);
+			ass.addAll(assignees);
 			Log.d("loc", "sizeeee" + loc.size());
 			Log.d("user", "sizeeee" + ass.size());
 			LinkedHashSet<String> listToSet = new LinkedHashSet<String>(

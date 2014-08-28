@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_outside"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@drawable/transparent_image" >
+    
+<LinearLayout 
+    android:layout_width="520px"
+    android:layout_height="wrap_content"
+    android:id="@+id/db"
+  	android:gravity="center"
+  	android:layout_gravity="center"
+    android:background="#1E1E1E"
+    android:layout_marginTop="115px"
+    android:layout_marginBottom="120px"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/txt_who"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="20px"
+        android:paddingRight="25px"
+        
+        android:text=""
+        android:textColor="@android:color/white"
+        android:textSize="30px"
+        android:textStyle="bold" >
+    </TextView>
+
+    <LinearLayout
+        android:layout_width="520px"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#0000"
+        android:gravity="center"
+
+        android:orientation="vertical" >
+
+        <ListView
+            android:id="@+id/dialoglist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/cancel"
+            android:layout_gravity="center" >
+
+        </ListView>
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+			android:layout_marginRight="10px"
+			android:layout_marginLeft="10px"
+            android:background="@drawable/edittext_background_click"
+          	android:layout_marginTop="10px"
+          	android:layout_marginBottom="10px"
+          	android:layout_alignParentBottom="true"
+          	android:textSize="36px"
+            android:text="Cancel"
+            android:textColor="#000" />
+
+    </LinearLayout>
+
+            
+        
+
+</LinearLayout>
+</RelativeLayout>

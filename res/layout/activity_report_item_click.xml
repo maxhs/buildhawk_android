@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/flipper"
+    android:id="@+id/relativelayoutReportClickRoot"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" >
 
@@ -16,7 +16,7 @@
             android:gravity="center" >
 
             <Button
-                android:id="@+id/back"
+                android:id="@+id/buttonBack"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
@@ -28,7 +28,7 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/save"
+                android:id="@+id/buttonSave"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
@@ -47,7 +47,7 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/texttype"
+                    android:id="@+id/textviewType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
@@ -56,10 +56,10 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textdate"
+                    android:id="@+id/textviewDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/texttype"
+                    android:layout_toRightOf="@+id/textviewType"
                     android:text="textdate"
                     android:textColor="@color/white"
                     android:textSize="36px"

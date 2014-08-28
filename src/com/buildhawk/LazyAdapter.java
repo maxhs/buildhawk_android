@@ -52,22 +52,22 @@ public class LazyAdapter extends BaseAdapter {
 
 		vi = inflater.inflate(R.layout.list_item, null);
 		vi.setTag(holder);
-		holder.coName = (TextView) vi.findViewById(R.id.co_name);
-		holder.coPhone = (TextView) vi.findViewById(R.id.co_phone);
-		holder.coEmail = (TextView) vi.findViewById(R.id.co_email);
-		holder.relativeLay = (RelativeLayout) vi.findViewById(R.id.rv);
-		holder.coName.setTypeface(Prefrences.helveticaNeuelt(activity));
-		holder.coPhone.setTypeface(Prefrences.helveticaNeuelt(activity));
-		holder.coEmail.setTypeface(Prefrences.helveticaNeuelt(activity));
-		holder.coName.setText(Prefrences.coworkrName[position]);
-		holder.coPhone.setText(Prefrences.coworkrForPhone[position]);
-		holder.coEmail.setText(Prefrences.coworkrEmail[position]);
-		holder.relativeLay.setLayoutParams(new ListView.LayoutParams(
+		holder.textviewCoName = (TextView) vi.findViewById(R.id.textviewCoName);
+		holder.textviewCoPhone = (TextView) vi.findViewById(R.id.textviewCoPhone);
+		holder.textviewCoEmail = (TextView) vi.findViewById(R.id.textviewCoEmail);
+		holder.relativelayout = (RelativeLayout) vi.findViewById(R.id.relativelayout);
+		holder.textviewCoName.setTypeface(Prefrences.helveticaNeuelt(activity));
+		holder.textviewCoPhone.setTypeface(Prefrences.helveticaNeuelt(activity));
+		holder.textviewCoEmail.setTypeface(Prefrences.helveticaNeuelt(activity));
+		holder.textviewCoName.setText(Prefrences.coworkrName[position]);
+		holder.textviewCoPhone.setText(Prefrences.coworkrForPhone[position]);
+		holder.textviewCoEmail.setText(Prefrences.coworkrEmail[position]);
+		holder.relativelayout.setLayoutParams(new ListView.LayoutParams(
 				ListView.LayoutParams.MATCH_PARENT, 200));
 
-		ASSL.DoMagic(holder.relativeLay);
+		ASSL.DoMagic(holder.relativelayout);
 
-		holder.relativeLay.setOnClickListener(new OnClickListener() {
+		holder.relativelayout.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -89,8 +89,8 @@ public class LazyAdapter extends BaseAdapter {
 
 	class ViewHolder {
 
-		private TextView coName, coPhone, coEmail;
-		RelativeLayout relativeLay;
+		private TextView textviewCoName, textviewCoPhone, textviewCoEmail;
+		RelativeLayout relativelayout;
 
 	}
 

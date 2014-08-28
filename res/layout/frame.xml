@@ -4,10 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical" 
     android:background="#000"
-    android:id="@+id/rellay1">
+    android:id="@+id/relativelayoutRootFrame">
     
     <Button
-        android:id="@+id/username"
+        android:id="@+id/buttonUserName"
         android:layout_width="405px"
         android:layout_height="200px"
         android:gravity="center"
@@ -17,24 +17,24 @@
         android:background="#0000" />
     
     <ListView
-        android:id="@+id/list"
+        android:id="@+id/listviewMembers"
         android:layout_width="560px"
         android:layout_height="800px"
-        android:layout_below="@+id/username"
+        android:layout_below="@+id/buttonUserName"
         android:layout_marginLeft="20px" />
 
     <Button
-        android:id="@+id/logout"
+        android:id="@+id/buttonLogout"
         android:layout_width="580px"
         android:layout_height="150px"
         android:textSize="28px"
-        android:layout_alignRight="@+id/list"
-        android:layout_below="@+id/list"
+        android:layout_alignRight="@+id/listviewMembers"
+        android:layout_below="@+id/listviewMembers"
         android:background="#0000"
         android:text="Logout" />
 
     <ImageView
-        android:id="@+id/user_pic"
+        android:id="@+id/imageviewUserPic"
         android:layout_width="150px"
         android:layout_height="150px"
         android:layout_marginLeft="20px"

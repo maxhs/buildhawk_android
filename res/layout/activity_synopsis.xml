@@ -16,7 +16,7 @@
         android:gravity="center_vertical" >
 
         <TextView
-            android:id="@+id/proName"
+            android:id="@+id/textViewProName"
             android:layout_width="300px"
             android:layout_height="90px"
             android:layout_centerHorizontal="true"
@@ -28,7 +28,7 @@
             android:textSize="36px" />
 
         <RelativeLayout
-            android:id="@+id/back"
+            android:id="@+id/relativeLayoutBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -50,7 +50,7 @@
     
           <com.handmark.pulltorefresh.library.PullToRefreshScrollView
             xmlns:ptr="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/scrollView1"
+            android:id="@+id/pullToRefreshScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
@@ -76,7 +76,7 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/textView1"
+                    android:id="@+id/textviewHeaderProjSynopsis"
                     android:layout_width="match_parent"
                     android:layout_height="70px"
                     android:layout_gravity="center"
@@ -89,7 +89,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/addres"
+                    android:id="@+id/textviewAddres"
                     android:layout_width="match_parent"
                     android:layout_height="140px"
                     android:gravity="center"
@@ -104,7 +104,7 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/textviewHeaderprogress"
                     android:layout_width="match_parent"
                     android:layout_height="70px"
                     android:background="@color/shaded_gray"
@@ -113,7 +113,7 @@
                     android:textSize="36px" />
 
                 <ListView
-                    android:id="@+id/syncatlist"
+                    android:id="@+id/listviewSyncat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="@color/grey"
@@ -123,7 +123,7 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/textviewHeaderRecentDocs"
                 android:layout_width="match_parent"
                 android:layout_height="70px"
                 android:background="@color/shaded_gray"
@@ -137,7 +137,7 @@
                 android:layout_height="match_parent" >
 
                 <LinearLayout
-                    android:id="@+id/scrolllayout"
+                    android:id="@+id/linearlayoutHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal" >
@@ -150,7 +150,7 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/textviewHeaderUpcomingItems"
                     android:layout_width="match_parent"
                     android:layout_height="70px"
                     android:background="@color/shaded_gray"
@@ -159,7 +159,7 @@
                     android:textSize="36px" />
 
                 <ListView
-                    android:id="@+id/synupitems"
+                    android:id="@+id/listviewSynupItem"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" 
                     android:divider="@color/grey"
@@ -173,7 +173,7 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/textviewHeaderRecentItems"
                     android:layout_width="match_parent"
                     android:layout_height="70px"
                     android:background="@color/shaded_gray"
@@ -182,7 +182,7 @@
                     android:textSize="36px" />
 
                 <ListView
-                    android:id="@+id/syncomplist"
+                    android:id="@+id/listviewSynComp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:divider="@color/grey"
@@ -191,7 +191,7 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/GotoProject"
+                android:id="@+id/buttonGotoProject"
                 android:layout_width="720px"
                 android:layout_height="150px"
                 android:textSize="36px"

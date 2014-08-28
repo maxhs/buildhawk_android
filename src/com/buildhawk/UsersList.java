@@ -7,6 +7,8 @@ import rmn.androidscreenlibrary.ASSL;
 //import com.buildhawk.ReportItemClick.ScreenSlidePageFragment.personelListAdapter;
 import com.buildhawk.ReportItemCreate.personelListAdapterCreate;
 import com.buildhawk.utils.Report;
+import com.buildhawk.utils.ReportTopics;
+import com.buildhawk.utils.SafetyTopics;
 import com.buildhawk.utils.Users;
 
 import android.app.Activity;
@@ -32,17 +34,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class UsersList extends Activity {
-	ListView lstvw;
-	ArrayList<Users> array;
+	ListView listviewUsers;
+	ArrayList<Users> arrayArrayList;
 	InputMethodManager imm;
-	TextView tv_back;
+	TextView textviewBack;
 	Context con;
-	LinearLayout relLay;
+	LinearLayout linearlayoutRoot;
 	Dialog popup;
-	Button btn_Submit, btn_Cancel;
-	EditText txt_hours, txt_location;
-	TextView tv_expiry_alert;
-	RelativeLayout list_outside;
+	Button buttonSubmit, buttonCancel;
+	EditText edittextHours, edittextLocation;
+	TextView textviewExpiryAlert;
+	RelativeLayout relativelayoutListOutside;
 //	ArrayList<String>personelnamesArray= new ArrayList<String>();
 //	ArrayList<String>personelIdArrayList= new ArrayList<String>();
 //	ArrayList<String>personelHoursArray= new ArrayList<String>();
@@ -51,18 +53,18 @@ public class UsersList extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_users_list);
-		relLay = (LinearLayout) findViewById(R.id.LinearLayoutuserlist);
-		new ASSL(this, relLay, 1134, 720, false);
+		linearlayoutRoot = (LinearLayout) findViewById(R.id.linearlayoutRoot);
+		new ASSL(this, linearlayoutRoot, 1134, 720, false);
 
 		con = UsersList.this;
-		tv_back = (TextView) findViewById(R.id.back);
+		textviewBack = (TextView) findViewById(R.id.textviewBack);
 
-		lstvw = (ListView) findViewById(R.id.userslist);
+		listviewUsers = (ListView) findViewById(R.id.listviewUsers);
 
-		tv_back.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		textviewBack.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 
-		array = ProjectsAdapter.user2;
-		tv_back.setOnClickListener(new OnClickListener() {
+		arrayArrayList = ProjectsAdapter.user2ArrayList;
+		textviewBack.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -85,8 +87,8 @@ public class UsersList extends Activity {
 						R.anim.slide_out_right);
 			}
 		});
-		adapter adp = new adapter(con, array);
-		lstvw.setAdapter(adp);
+		adapter adp = new adapter(con, arrayArrayList);
+		listviewUsers.setAdapter(adp);
 	}
 
 	@Override
@@ -106,26 +108,26 @@ public class UsersList extends Activity {
 
 	public class adapter extends BaseAdapter {
 
-		ArrayList<Users> array;
+		ArrayList<Users> array2ArrayList;
 		Context con;
 
-		public adapter(Context con, ArrayList<Users> array) {
+		public adapter(Context con, ArrayList<Users> arrayArrayList) {
 			// TODO Auto-generated constructor stub
-			this.array = array;
+			this.array2ArrayList = arrayArrayList;
 			this.con = con;
 		}
 
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			Log.d("userlist", "Size=========" + array.size());
-			return array.size();
+			Log.d("userlist", "Size=========" + array2ArrayList.size());
+			return array2ArrayList.size();
 		}
 
 		@Override
 		public Object getItem(int position) {
 			// TODO Auto-generated method stub
-			return array.get(position);
+			return array2ArrayList.get(position);
 		}
 
 		@Override
@@ -149,21 +151,21 @@ public class UsersList extends Activity {
 				LayoutInflater inflater = (LayoutInflater) con
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = inflater.inflate(R.layout.user_list_item, null);
-				holder.linearLay = (LinearLayout) convertView
+				holder.linearlayout = (LinearLayout) convertView
 						.findViewById(R.id.rv);
-				holder.linearLay.setLayoutParams(new ListView.LayoutParams(
+				holder.linearlayout.setLayoutParams(new ListView.LayoutParams(
 						ListView.LayoutParams.MATCH_PARENT,
 						ListView.LayoutParams.MATCH_PARENT));
-				ASSL.DoMagic(holder.linearLay);
+				ASSL.DoMagic(holder.linearlayout);
 				convertView.setTag(holder);
 			} else {
 				holder = (viewholder) convertView.getTag();
 			}
-			holder.txtview = (TextView) convertView.findViewById(R.id.array);
-			holder.txtview.setTypeface(Prefrences
+			holder.textview = (TextView) convertView.findViewById(R.id.array);
+			holder.textview.setTypeface(Prefrences
 					.helveticaNeuelt(getApplicationContext()));
-			holder.txtview.setText(body.uFullName.toString());
-			holder.txtview.setOnClickListener(new OnClickListener() {
+			holder.textview.setText(body.uFullName.toString());
+			holder.textview.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
@@ -220,35 +222,45 @@ public class UsersList extends Activity {
 						RelativeLayout expiry_main = (RelativeLayout) popup
 								.findViewById(R.id.list_outside);
 						// expiry_main.setInAnimation(R.anim.slide_in_from_top);
-						btn_Submit = (Button) popup.findViewById(R.id.submit);
-						txt_hours = (EditText) popup.findViewById(R.id.hours);
-						txt_location = (EditText) popup.findViewById(R.id.location);
-						txt_hours.setVisibility(View.VISIBLE);
-						txt_location.setVisibility(View.GONE);
-						txt_hours.setHint("Hours");
+						buttonSubmit = (Button) popup.findViewById(R.id.buttonSubmit);
+						edittextHours = (EditText) popup.findViewById(R.id.edittextHours);
+						edittextLocation = (EditText) popup.findViewById(R.id.edittextLocation);
+						edittextHours.setVisibility(View.VISIBLE);
+						edittextLocation.setVisibility(View.GONE);
+						edittextHours.setHint("Hours");
 						((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
 								.toggleSoftInput(
 										InputMethodManager.SHOW_FORCED,
 										InputMethodManager.HIDE_IMPLICIT_ONLY);
-						btn_Cancel = (Button) popup.findViewById(R.id.cancel);
-						btn_Submit.setTypeface(Prefrences
+						buttonCancel = (Button) popup.findViewById(R.id.cancel);
+						buttonSubmit.setTypeface(Prefrences
 								.helveticaNeuelt(getApplicationContext()));
-						btn_Cancel.setTypeface(Prefrences
+						buttonCancel.setTypeface(Prefrences
 								.helveticaNeuelt(getApplicationContext()));
-						txt_hours.setTypeface(Prefrences
+						edittextHours.setTypeface(Prefrences
 								.helveticaNeuelt(getApplicationContext()));
 						// expiry_alert.setTypeface(Prefrences.HelveticaNeueLt(getApplicationContext()));
 						// expiry_alert =
 						// (TextView)popup.findViewById(R.id.alert_text);
 						// expiry_alert.setText("# of Hours ");
 						popup.setTitle("# of hours");
-						list_outside = (RelativeLayout) popup
+						relativelayoutListOutside = (RelativeLayout) popup
 								.findViewById(R.id.list_outside);
 						new ASSL(UsersList.this, expiry_main, 1134, 720, false);
 
-						
+						expiry_main.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								// TODO Auto-generated method stub
+							popup.dismiss();
+							imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+							imm.hideSoftInputFromWindow(
+									edittextHours.getWindowToken(), 0);
+							}
+						});
 
-						btn_Submit.setOnClickListener(new OnClickListener() {
+						buttonSubmit.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
 								Prefrences.reportTypeDialog = 1;
@@ -263,12 +275,12 @@ public class UsersList extends Activity {
 										+ ReportItemCreate.personelIdArrayList);
 								Log.d("aaaja", "aaaja"
 										+ ReportItemCreate.personelnamesArray);
-								ReportItemCreate.personelHoursArray.add(txt_hours
+								ReportItemCreate.personelHoursArray.add(edittextHours
 										.getText().toString());
 								
 								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 								imm.hideSoftInputFromWindow(
-										txt_hours.getWindowToken(), 0);
+										edittextHours.getWindowToken(), 0);
 								popup.dismiss();
 								finish();
 								overridePendingTransition(R.anim.slide_in_left,
@@ -277,12 +289,12 @@ public class UsersList extends Activity {
 							}
 						});
 
-						btn_Cancel.setOnClickListener(new OnClickListener() {
+						buttonCancel.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
 								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 								imm.hideSoftInputFromWindow(
-										txt_hours.getWindowToken(), 0);
+										edittextHours.getWindowToken(), 0);
 								popup.dismiss();
 								
 							}
@@ -303,63 +315,103 @@ public class UsersList extends Activity {
 						RelativeLayout expiry_main = (RelativeLayout) popup
 								.findViewById(R.id.list_outside);
 						// expiry_main.setInAnimation(R.anim.slide_in_from_top);
-						btn_Submit = (Button) popup.findViewById(R.id.submit);
-						txt_hours = (EditText) popup.findViewById(R.id.hours);
-						txt_location = (EditText) popup.findViewById(R.id.location);
-						txt_hours.setVisibility(View.VISIBLE);
-						txt_location.setVisibility(View.GONE);
-						txt_hours.setHint("Hours");
+						buttonSubmit = (Button) popup.findViewById(R.id.buttonSubmit);
+						edittextHours = (EditText) popup.findViewById(R.id.edittextHours);
+						edittextLocation = (EditText) popup.findViewById(R.id.edittextLocation);
+						edittextHours.setVisibility(View.VISIBLE);
+						edittextLocation.setVisibility(View.GONE);
+						edittextHours.setHint("Hours");
 						((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
 								.toggleSoftInput(
 										InputMethodManager.SHOW_FORCED,
 										InputMethodManager.HIDE_IMPLICIT_ONLY);
-						btn_Cancel = (Button) popup.findViewById(R.id.cancel);
-						btn_Submit.setTypeface(Prefrences
+						buttonCancel = (Button) popup.findViewById(R.id.cancel);
+						buttonSubmit.setTypeface(Prefrences
 								.helveticaNeuelt(getApplicationContext()));
-						btn_Cancel.setTypeface(Prefrences
+						buttonCancel.setTypeface(Prefrences
 								.helveticaNeuelt(getApplicationContext()));
-						txt_hours.setTypeface(Prefrences
+						edittextHours.setTypeface(Prefrences
 								.helveticaNeuelt(getApplicationContext()));
 						// expiry_alert.setTypeface(Prefrences.HelveticaNeueLt(getApplicationContext()));
 						// expiry_alert =
 						// (TextView)popup.findViewById(R.id.alert_text);
 						// expiry_alert.setText("# of Hours ");
 						popup.setTitle("# of hours");
-						list_outside = (RelativeLayout) popup
+						relativelayoutListOutside = (RelativeLayout) popup
 								.findViewById(R.id.list_outside);
 						new ASSL(UsersList.this, expiry_main, 1134, 720, false);
 
-						
-
-						btn_Submit.setOnClickListener(new OnClickListener() {
+						expiry_main.setOnClickListener(new OnClickListener() {
+							
 							@Override
 							public void onClick(View v) {
-								Prefrences.reportTypeDialog = 1;
-								Prefrences.resumeflag = 1;
-								// Prefrences.personelHours[Prefrences.sizeofname]=
-								// hours.getText().toString();
-//								personelnamesArray
-//										.add(body.uFullName.toString());
-//								personelIdArrayList
-//										.add(body.uId.toString());
-//								Log.d("aaaja", "aaaja"
-//										+ personelIdArrayList);
-//								Log.d("aaaja", "aaaja"
-//										+ personelnamesArray);
-//								personelHoursArray.add(hours
-//										.getText().toString());
-								Prefrences.stopingHit=1;
-								ReportItemClick.personelnamesArray
-								.add(body.uFullName.toString());
-								ReportItemClick.personelIdArrayList
-								.add(body.uId.toString());
-								ReportItemClick.personelHoursArray.add(txt_hours
-										.getText().toString());
+								// TODO Auto-generated method stub
+							popup.dismiss();
+							imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+							imm.hideSoftInputFromWindow(
+									edittextHours.getWindowToken(), 0);
+							}
+						});
+
+						buttonSubmit.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								
+								
+								String safetyTopicId ="";
+								for (int i = 0; i < ReportItemClick.personelIdArrayList.size(); i++) 
+								{
+									if (ReportItemClick.personelIdArrayList.get(i).toString().equals(body.uId.toString()))										
+									{
+										Log.d("Safety ID","Safety ID"+body.uId.toString().toString());
+										safetyTopicId = body.uId.toString().toString();
+									}
+								}
+								if (safetyTopicId.toString().equals("")) 
+								{
+									Prefrences.reportTypeDialog = 1;
+									Prefrences.resumeflag = 1;
+									// Prefrences.personelHours[Prefrences.sizeofname]=
+									// hours.getText().toString();
+//									personelnamesArray
+//											.add(body.uFullName.toString());
+//									personelIdArrayList
+//											.add(body.uId.toString());
+//									Log.d("aaaja", "aaaja"
+//											+ personelIdArrayList);
+//									Log.d("aaaja", "aaaja"
+//											+ personelnamesArray);
+//									personelHoursArray.add(hours
+//											.getText().toString());
+//									Prefrences.stopingHit=1;
+									ReportItemClick.personelnamesArrayList
+									.add(body.uFullName.toString());
+									ReportItemClick.personelIdArrayList
+									.add(body.uId.toString());
+									ReportItemClick.personelHoursArrayList.add(edittextHours
+											.getText().toString());
+									
+									imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+									imm.hideSoftInputFromWindow(
+											edittextHours.getWindowToken(), 0);
+									popup.dismiss();
+									
+									Intent intent = new Intent(UsersList.this,
+											ReportItemClick.class);
+									intent.putExtra("id", body.uId.toString());
+									intent.putExtra("name", body.uFullName.toString());
+									intent.putExtra("hours", edittextHours.getText()
+											.toString());
+									setResult(RESULT_OK, intent);
+								}
+								
 								
 								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 								imm.hideSoftInputFromWindow(
-										txt_hours.getWindowToken(), 0);
-								popup.dismiss();
+										edittextHours.getWindowToken(), 0);
+								
+								
+								
 								finish();
 								overridePendingTransition(R.anim.slide_in_left,
 										R.anim.slide_out_right);
@@ -367,12 +419,12 @@ public class UsersList extends Activity {
 							}
 						});
 
-						btn_Cancel.setOnClickListener(new OnClickListener() {
+						buttonCancel.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
 								imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 								imm.hideSoftInputFromWindow(
-										txt_hours.getWindowToken(), 0);
+										edittextHours.getWindowToken(), 0);
 								popup.dismiss();
 								
 							}
@@ -391,7 +443,7 @@ public class UsersList extends Activity {
 	}
 
 	private static class viewholder {
-		TextView txtview;
-		LinearLayout linearLay;
+		TextView textview;
+		LinearLayout linearlayout;
 	}
 }

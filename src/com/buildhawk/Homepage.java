@@ -1,5 +1,9 @@
 package com.buildhawk;
 
+/*
+ *  This file is used to display the home screen of an app in this it display list of projects and users in left side. 
+ */
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,6 +19,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +31,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,6 +47,7 @@ import com.buildhawk.utils.Company;
 import com.buildhawk.utils.ProjectsFields;
 import com.buildhawk.utils.Users;
 import com.buildhawk.utils.subcontractors;
+import com.flurry.android.FlurryAgent;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -53,31 +60,31 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.squareup.picasso.Picasso;
 
 public class Homepage extends SlidingFragmentActivity {
-	Button btn_sliding, btn_logout, btn_userName;
-	ImageView img_userPic;
+	Button buttonSliding, buttonLogout, buttonUserName;
+	ImageView imageviewUserPic;
 	Model model;
-	ListView membersList, searchList;
-	PullToRefreshListView projectList;
-	Boolean pull = false;
+	ListView listviewMembers, listviewSearch;
+	PullToRefreshListView pullToRefreshListView;
+	Boolean pullBoolean = false;
 	LazyAdapter memberAdap;
 	ProjectsAdapter projectsAdap;
-	RelativeLayout relLay;
-	RelativeLayout relLay2, listOutside;
-	String currentDateandTime;
-	TextView tv_currTime;
-	Button btn_email, btn_text, btn_call, btn_cancel;
-	TextView tv_expiryAlert;
+	RelativeLayout relativelayoutRoot;
+	RelativeLayout relativelayoutRootFrame, relativelayoutListOutside;
+	String currentDateandTimeString;
+	TextView textviewCurrTime;
+	Button buttonEmail, buttonText, buttonCall, buttonCancel;
+	TextView textviewExpiryAlert;
 	Calendar cal;
 	ConnectionDetector connDect;
-	Boolean isInternetPresent = false;
-	EditText txt_listSearch;
-	public static ArrayList<ProjectsFields> projectsList = new ArrayList<ProjectsFields>();
-	public  ArrayList<Users> user2 = new ArrayList<Users>();
-	public  ArrayList<subcontractors> sub2 = new ArrayList<subcontractors>();
-	public  ArrayList<String> usr = new ArrayList<String>();
-	public  ArrayList<String> compny = new ArrayList<String>();
-	public  ArrayList<String> compnyId = new ArrayList<String>();
-	public  ArrayList<String> userid = new ArrayList<String>();
+	Boolean isInternetPresentBoolean = false;
+	EditText edittextListSearch;
+	public static ArrayList<ProjectsFields> projectsArrayList = new ArrayList<ProjectsFields>();
+	public  ArrayList<Users> user2ArrayList = new ArrayList<Users>();
+	public  ArrayList<subcontractors> sub2ArrayList = new ArrayList<subcontractors>();
+	public  ArrayList<String> usrArrayList = new ArrayList<String>();
+	public  ArrayList<String> compnyArrayList = new ArrayList<String>();
+	public  ArrayList<String> compnyIdArrayList = new ArrayList<String>();
+	public  ArrayList<String> useridArrayList = new ArrayList<String>();
 	static Dialog popup;
 	SharedPreferences sharedpref;
 
@@ -89,20 +96,20 @@ public class Homepage extends SlidingFragmentActivity {
 		setContentView(R.layout.homepage);
 
 		setBehindContentView(R.layout.frame);
-		relLay = (RelativeLayout) findViewById(R.id.rellay);
-		new ASSL(this, relLay, 1134, 720, false);
+		relativelayoutRoot = (RelativeLayout) findViewById(R.id.relativelayoutRootHome);
+		new ASSL(this, relativelayoutRoot, 1134, 720, false);
 
-		relLay2 = (RelativeLayout) findViewById(R.id.rellay1);
-		new ASSL(this, relLay2, 1134, 720, false);
-		btn_sliding = (Button) findViewById(R.id.sliding);
-		btn_userName = (Button) findViewById(R.id.username);
-		img_userPic = (ImageView) findViewById(R.id.user_pic);
-		membersList = (ListView) findViewById(R.id.list);
-		btn_logout = (Button) findViewById(R.id.logout);
-		tv_currTime = (TextView) findViewById(R.id.currTime);
-		projectList = (PullToRefreshListView) findViewById(R.id.projectList);
-		searchList = (ListView) findViewById(R.id.lvsearch);
-		txt_listSearch = (EditText) findViewById(R.id.search);
+		relativelayoutRootFrame = (RelativeLayout) findViewById(R.id.relativelayoutRootFrame);
+		new ASSL(this, relativelayoutRootFrame, 1134, 720, false);
+		buttonSliding = (Button) findViewById(R.id.buttonSliding);
+		buttonUserName = (Button) findViewById(R.id.buttonUserName);
+		imageviewUserPic = (ImageView) findViewById(R.id.imageviewUserPic);
+		listviewMembers = (ListView) findViewById(R.id.listviewMembers);
+		buttonLogout = (Button) findViewById(R.id.buttonLogout);
+		textviewCurrTime = (TextView) findViewById(R.id.textviewCurrTime);
+		pullToRefreshListView = (PullToRefreshListView) findViewById(R.id.pullToRefreshListView);
+		listviewSearch = (ListView) findViewById(R.id.listviewSearch);
+		edittextListSearch = (EditText) findViewById(R.id.edittextListSearch);
 
 		this.setSlidingActionBarEnabled(false);
 		getSlidingMenu().setShadowWidthRes(R.dimen.shadow_width);
@@ -117,30 +124,44 @@ public class Homepage extends SlidingFragmentActivity {
 		// if(!Prefrences.userPic.equals("null"))
 		// Picasso.with(getApplicationContext()).load(Prefrences.userPic).into(user_pic);
 
-		btn_userName.setText(Prefrences.fullName);
-		btn_userName.setTypeface(Prefrences
+		buttonUserName.setText(Prefrences.fullName);
+		buttonUserName.setTypeface(Prefrences
 				.helveticaNeuebd(getApplicationContext()));
 
 		connDect = new ConnectionDetector(getApplicationContext());
-		isInternetPresent = connDect.isConnectingToInternet();
+		isInternetPresentBoolean = connDect.isConnectingToInternet();
+//		try {
+//
+//			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//
+//			imm.hideSoftInputFromWindow(getCurrentFocus()
+//
+//			.getWindowToken(), 0);
+//
+//		} catch (Exception exception) {
+//
+//			exception.printStackTrace();
+//
+//		}
 
-		projectList.setOnRefreshListener(new OnRefreshListener<ListView>() {
+		pullToRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
 
 			@Override
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 				// TODO Auto-generated method stub
-				pull = true;
+				pullBoolean = true;
+//				pullToRefreshListView.onRefreshComplete();
 				projectData();
 			}
 		});
 		
 		memberAdap = new LazyAdapter(Homepage.this);
-		membersList.setAdapter(memberAdap);
+		listviewMembers.setAdapter(memberAdap);
 
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-		currentDateandTime = sdf.format(new Date());
-		tv_currTime.setText(currentDateandTime);
-		tv_currTime.setTypeface(Prefrences
+		currentDateandTimeString = sdf.format(new Date());
+		textviewCurrTime.setText(currentDateandTimeString);
+		textviewCurrTime.setTypeface(Prefrences
 				.helveticaNeuebd(getApplicationContext()));
 		sharedpref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
 		// popup start
@@ -150,20 +171,20 @@ public class Homepage extends SlidingFragmentActivity {
 
 		popup.setContentView(R.layout.bridge_expiry_popup);
 		// popup.getWindow().setWindowAnimations(R.anim.slide_in_from_bottom);
-		RelativeLayout expiryMain = (RelativeLayout) popup
-				.findViewById(R.id.list_outside);
+		RelativeLayout relativelayoutExpiryMain = (RelativeLayout) popup
+				.findViewById(R.id.relativelayoutExpiryMain);
 		// expiry_main.setInAnimation(R.anim.slide_in_from_top);
-		btn_email = (Button) popup.findViewById(R.id.Email);
-		btn_call = (Button) popup.findViewById(R.id.Call);
-		btn_text = (Button) popup.findViewById(R.id.Text);
-		btn_cancel = (Button) popup.findViewById(R.id.Cancel);
-		tv_expiryAlert = (TextView) popup.findViewById(R.id.alert_text);
+		buttonEmail = (Button) popup.findViewById(R.id.buttonEmail);
+		buttonCall = (Button) popup.findViewById(R.id.buttonCall);
+		buttonText = (Button) popup.findViewById(R.id.buttonText);
+		buttonCancel = (Button) popup.findViewById(R.id.buttonCancel);
+		textviewExpiryAlert = (TextView) popup.findViewById(R.id.textviewExpiryAlert);
 		// expiry_alert.setText("Contact "+Prefrences.ContactName.toString());
 
-		listOutside = (RelativeLayout) popup.findViewById(R.id.list_outside);
-		new ASSL(Homepage.this, expiryMain, 1134, 720, false);
+		relativelayoutListOutside = (RelativeLayout) popup.findViewById(R.id.relativelayoutExpiryMain);
+		new ASSL(Homepage.this, relativelayoutExpiryMain, 1134, 720, false);
 
-		listOutside.setOnClickListener(new OnClickListener() {
+		relativelayoutListOutside.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (popup.isShowing()) {
@@ -174,7 +195,7 @@ public class Homepage extends SlidingFragmentActivity {
 			}
 		});
 
-		btn_call.setOnClickListener(new OnClickListener() {
+		buttonCall.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				popup.dismiss();
@@ -185,7 +206,7 @@ public class Homepage extends SlidingFragmentActivity {
 			}
 		});
 
-		btn_email.setOnClickListener(new OnClickListener() {
+		buttonEmail.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 
@@ -209,7 +230,7 @@ public class Homepage extends SlidingFragmentActivity {
 			}
 		});
 
-		btn_text.setOnClickListener(new OnClickListener() {
+		buttonText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				popup.dismiss();
@@ -219,14 +240,14 @@ public class Homepage extends SlidingFragmentActivity {
 			}
 		});
 
-		btn_cancel.setOnClickListener(new OnClickListener() {
+		buttonCancel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				popup.dismiss();
 			}
 		});
 		String response = sharedpref.getString("projectData", "");
-		if (isInternetPresent) {
+		if (isInternetPresentBoolean) {
 			
 			if(response.equalsIgnoreCase("")){
 				projectData();
@@ -245,7 +266,7 @@ public class Homepage extends SlidingFragmentActivity {
 			}
 		}
 
-		txt_listSearch.addTextChangedListener(new TextWatcher() {
+		edittextListSearch.addTextChangedListener(new TextWatcher() {
 
 			@Override
 			public void onTextChanged(CharSequence cs, int arg1, int arg2,
@@ -263,18 +284,21 @@ public class Homepage extends SlidingFragmentActivity {
 			}
 		});
 
-		btn_sliding.setOnClickListener(new OnClickListener() {
+		buttonSliding.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				toggle();
 			}
 		});
 
-		btn_logout.setOnClickListener(new OnClickListener() {
+		buttonLogout.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Prefrences.saveAccessToken("454876423564",
-						"test@ristrettolabs.com", "password",
+				Prefrences.saveAccessToken(
+//						"454876423564",
+						"",
+						"","","",
+
 						getApplicationContext());
 				// Prefrences.authToken="";
 				// Prefrences.email="";
@@ -284,15 +308,30 @@ public class Homepage extends SlidingFragmentActivity {
 				 Editor editor = pref.edit();
 				 editor.clear();
 				 editor.commit();
-
-				finish();
+//				 FlurryAgent.onEvent("Logout button clicked");
+				
 				startActivity(new Intent(Homepage.this, MainActivity.class));
 				overridePendingTransition(R.anim.slide_in_left,
 						R.anim.slide_out_right);
+				finish();
 			}
 		});
 	}
 
+//	 @Override
+//	    protected void onStart() {
+//
+//	        super.onStart();
+//	        FlurryAgent.onStartSession(Homepage.this, Prefrences.flurryKey); 
+//	        FlurryAgent.onEvent("Dash board screen");
+//	    }
+//
+//	    @Override
+//	    protected void onStop() {
+//	        super.onStop();
+//	        FlurryAgent.onEndSession(this);
+//	        FlurryAgent.endTimedEvent("Article_Read");
+//	    }
 	// “punchlist_item” : {
 	// “id” : "208",
 	// “body” : “Worklist item”,
@@ -370,17 +409,19 @@ public class Homepage extends SlidingFragmentActivity {
 
 	public void projectData() {
 
+		if(pullBoolean!=true)
 		Prefrences.showLoadingDialog(Homepage.this, "Loading...");
 
 		RequestParams params = new RequestParams();
 
 		params.put("user_id", Prefrences.userId);
 
-		user2.clear();
-		sub2.clear();
+		user2ArrayList.clear();
+		sub2ArrayList.clear();
 
 		AsyncHttpClient client = new AsyncHttpClient();
 
+		client.setTimeout(100000);
 		client.addHeader("Content-type", "application/json");
 		client.addHeader("Accept", "application/json");
 
@@ -392,16 +433,19 @@ public class Homepage extends SlidingFragmentActivity {
 						Log.i("request succesfull", "response = " + response);
 						
 						fillServerData(response);
+						if(pullBoolean!=true)
 						Prefrences.dismissLoadingDialog();
+						
 					}
 
 					@Override
 					public void onFailure(Throwable arg0) {
 						Log.e("request fail", arg0.toString());
+						if(pullBoolean!=true)
 						Prefrences.dismissLoadingDialog();
-						if (pull == true) {
-							pull = false;
-							projectList.onRefreshComplete();
+						if (pullBoolean == true) {
+							pullBoolean = false;
+							pullToRefreshListView.onRefreshComplete();
 						}
 							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Homepage.this);
 				 
@@ -410,24 +454,24 @@ public class Homepage extends SlidingFragmentActivity {
 				 
 							// set dialog message
 							alertDialogBuilder
-								.setMessage("Click yes to exit!")
+								.setMessage("Something went wrong while downloading your project information")
 								.setCancelable(false)
-								.setPositiveButton("Reload",new DialogInterface.OnClickListener() {
+								.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,int id) {
 										// if this button is clicked, close
 										/// current activity
 										dialog.cancel();
 										projectData();
 									}
-								  })
-								.setNegativeButton("No thanks",new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,int id) {
-										// if this button is clicked, just close
-										// the dialog box and do nothing
-										dialog.cancel();
-										finish();
-									}
-								});
+								  });
+//								.setNegativeButton("No thanks",new DialogInterface.OnClickListener() {
+//									public void onClick(DialogInterface dialog,int id) {
+//										// if this button is clicked, just close
+//										// the dialog box and do nothing
+//										dialog.cancel();
+//										finish();
+//									}
+//								});
 				 
 								// create alert dialog
 								AlertDialog alertDialog = alertDialogBuilder.create();
@@ -452,7 +496,7 @@ public class Homepage extends SlidingFragmentActivity {
 			editor.putString("lat", ""+Prefrences.currentLatitude);
 			editor.putString("longi", ""+Prefrences.currentLongitude);
 			JSONArray projects = res.getJSONArray("projects");
-			projectsList.clear();
+			projectsArrayList.clear();
 
 			for (int i = 0; i < projects.length(); i++) {
 
@@ -461,20 +505,19 @@ public class Homepage extends SlidingFragmentActivity {
 				JSONObject address = count
 						.getJSONObject("address");
 
-				JSONObject company = count
-						.getJSONObject("company");
+				
 
 				JSONArray users = count.getJSONArray("users");
 
 //				JSONArray subs = count
 //						.getJSONArray("company_subs");
 
-				ArrayList<Users> user = new ArrayList<Users>();
+				ArrayList<Users> userArrayList = new ArrayList<Users>();
 //				ArrayList<subcontractors> sub = new ArrayList<subcontractors>();
 
-				ArrayList<String> cmpny = new ArrayList<String>();
-				ArrayList<String> cmpnyid = new ArrayList<String>();
-				ArrayList<String> usrid = new ArrayList<String>();
+				ArrayList<String> cmpnyArrayList = new ArrayList<String>();
+				ArrayList<String> cmpnyidArrayList = new ArrayList<String>();
+				ArrayList<String> usridArrayList = new ArrayList<String>();
 
 //				 for(int k=0;k<subs.length();k++)
 //				 {
@@ -495,7 +538,7 @@ public class Homepage extends SlidingFragmentActivity {
 					JSONObject uCompany = uCount
 							.getJSONObject("company");
 
-					user.add(new Users(
+					userArrayList.add(new Users(
 							uCount.getString("id"),
 							uCount.getString("first_name"),
 							uCount.getString("last_name"),
@@ -509,28 +552,32 @@ public class Homepage extends SlidingFragmentActivity {
 									.getString("id"), uCompany
 									.getString("name"))));
 					// if(!uCount.getString("full_name").equals("null"))
-					usr.add(uCount.getString("full_name"));
-					cmpny.add(user.get(j).company.coName
+					usrArrayList.add(uCount.getString("full_name"));
+					cmpnyArrayList.add(userArrayList.get(j).company.coName
 							.toString());
-					cmpnyid.add(user.get(j).company.coId
+					cmpnyidArrayList.add(userArrayList.get(j).company.coId
 							.toString());
-					usrid.add(user.get(j).uId.toString());
+					usridArrayList.add(userArrayList.get(j).uId.toString());
 					Log.d("companieeeesss", "companiess... "
-							+ user.get(j).company.coId);
+							+ userArrayList.get(j).company.coId);
 
 				}
-				user2.addAll(user);
-				compny.addAll(cmpny);
-				compnyId.addAll(cmpnyid);
-				userid.addAll(usrid);
+				user2ArrayList.addAll(userArrayList);
+				compnyArrayList.addAll(cmpnyArrayList);
+				compnyIdArrayList.addAll(cmpnyidArrayList);
+				useridArrayList.addAll(usridArrayList);
 
 				Log.d("usssrrsrsrsrsr",
-						"sizeeee" + compny.size());
+						"sizeeee" + compnyArrayList.size());
 
 				Log.d("usssrrsrsrsrsr",
-						"sizeeee" + compnyId.size());
-
-				projectsList.add(new ProjectsFields(count
+						"sizeeee" + compnyIdArrayList.size());
+				if(!count.isNull("company"))
+				{
+				JSONObject company = count
+						.getJSONObject("company");
+				
+				projectsArrayList.add(new ProjectsFields(count
 						.getString("id"), count
 						.getString("name"), count
 						.getString("active"), count
@@ -544,35 +591,53 @@ public class Homepage extends SlidingFragmentActivity {
 								.getString("phone"),
 						address.getString("formatted_address"),
 						address.getString("latitude"), address
-								.getString("longitude")), user,
+								.getString("longitude")), userArrayList,
 						new Company(company.getString("id"),
 								company.getString("name"))));
 				// compny.add(company.getInt("name"));
-
+				}
+				else{
+					projectsArrayList.add(new ProjectsFields(count
+							.getString("id"), count
+							.getString("name"), count
+							.getString("active"), count
+							.getString("core"), count
+							.getString("progress"), new Address(
+							address.getString("street1"), address
+									.getString("street2"), address
+									.getString("city"), address
+									.getString("zip"), address
+									.getString("country"), address
+									.getString("phone"),
+							address.getString("formatted_address"),
+							address.getString("latitude"), address
+									.getString("longitude")), userArrayList,
+							new Company("","")));
+				}
 			}
 
-			for (int i = 0; i < projectsList.size(); i++) {
-				Log.v("name = ", projectsList.get(i).name);
-				Log.v("id = ", projectsList.get(i).id);
+			for (int i = 0; i < projectsArrayList.size(); i++) {
+				Log.v("name = ", projectsArrayList.get(i).name);
+				Log.v("id = ", projectsArrayList.get(i).id);
 
-				for (int k = 0; k < projectsList.get(i).users
+				for (int k = 0; k < projectsArrayList.get(i).users
 						.size(); k++) {
 					Log.v("username = ",
-							projectsList.get(i).users.get(k).uId
+							projectsArrayList.get(i).users.get(k).uId
 									+ ", "
-									+ projectsList.get(i).users
+									+ projectsArrayList.get(i).users
 											.get(k).uFirstName);
 
 				}
 			}
 
 			projectsAdap = new ProjectsAdapter(Homepage.this);
-			projectList.setAdapter(projectsAdap);
-			if (pull == true)
+			pullToRefreshListView.setAdapter(projectsAdap);
+			if (pullBoolean == true)
 			{
-				pull = false;
+				pullBoolean = false;
 			}
-			projectList.onRefreshComplete();
+			pullToRefreshListView.onRefreshComplete();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

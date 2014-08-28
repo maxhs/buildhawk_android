@@ -24,10 +24,12 @@
     <color name="list_item_unselected">#E2E2E2</color>
     <color name="violet">#8B2252</color>
     <color name="deeppink">#8B0A50</color>
-     <color name="off_twenty">#525252</color>
- <color name="shaded_gray">#EFEFEF</color>
- <color name="light_black">#242424</color>
- <color name="dialog_color">#1E1E1E</color>
- <color name="markcomplete">#292929</color>
+    <color name="off_twenty">#525252</color>
+	<color name="shaded_gray">#EFEFEF</color>
+	<color name="light_black">#242424</color>
+	<color name="dialog_color">#1E1E1E</color>
+	<color name="markcomplete">#292929</color>
+	<color name="child_color">#558CC8</color>
+	<color name="subchild_color">#336699</color>
  
 </resources>

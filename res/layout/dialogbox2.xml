@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="520px"
     android:layout_height="wrap_content"
-    android:id="@+id/db"
+    android:id="@+id/linearlayoutRoot"
   android:gravity="center"
   android:layout_gravity="center"
     android:background="#0000" 
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/txt_who"
+        android:id="@+id/textviewWho"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -34,7 +34,7 @@
         
 
         <ListView
-            android:id="@+id/dialoglist"
+            android:id="@+id/listviewDialoglist"
             android:layout_width="match_parent"
             android:layout_gravity="center"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
         </ListView>
         
         <Button
-            android:id="@+id/addClicked"
+            android:id="@+id/buttonAddCLicked"
             android:layout_width="match_parent"
             android:layout_height="80px"
 			android:layout_marginRight="10px"
@@ -57,7 +57,7 @@
             android:textColor="#000" />
 
         <Button
-            android:id="@+id/cancel"
+            android:id="@+id/buttonCancelClicked"
             android:layout_width="match_parent"
             android:layout_height="80px"
 			android:layout_marginRight="10px"

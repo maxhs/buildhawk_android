@@ -1,4 +1,5 @@
-<!--     android:id="@+id/content"
+<!--
+     android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
@@ -9,454 +10,452 @@
         android:layout_height="wrap_content"
         android:text="hello" />
 </ScrollView>
-    <ScrollView -->
+    <ScrollView
+-->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/scrollView1"
+    android:id="@+id/pullToRefreshScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="115px" >
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:layout_marginTop="115px">
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
         <LinearLayout
+            android:id="@+id/reportLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textviewHeaderRecentDocs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#242424"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="Report"
+                android:textColor="#fff"
+                android:textSize="36px" />
+
+            <RelativeLayout
+                android:id="@+id/relativeLayout3"
+                android:layout_width="match_parent"
+                android:layout_height="150px"
+                android:background="#fff" >
+
+                <Button
+                    android:id="@+id/button2"
+                    android:layout_width="300px"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/button1"
+                    android:layout_alignBottom="@+id/button1"
+                    android:layout_marginLeft="110px"
+                    android:layout_marginTop="30px"
+                    android:layout_toRightOf="@+id/button1"
+                    android:background="@drawable/black_background"
+                    android:text="Date"
+                    android:textSize="36px" />
+
+                <Button
+                    android:id="@+id/button1"
+                    android:layout_width="200px"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="54px"
+                    android:layout_marginTop="30px"
+                    android:background="@drawable/black_background"
+                    android:text="Daily"
+                    android:textSize="36px" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearlayoutWeather"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textviewHeaderProjSynopsis"
+            android:layout_centerHorizontal="true"
+            android:background="#fff"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textviewHeaderProjSynopsis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#242424"
+                android:gravity="center"
+                android:text="Weather"
+                android:textColor="#fff"
+                android:textSize="36px" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/reportLayout" >
+                android:layout_height="wrap_content" >
 
                 <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="match_parent"
+                    android:id="@+id/TextView01"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#242424"
-                    android:gravity="center"
-                    android:text="Report"
-                    android:textColor="#fff"
-                    android:textSize="36px" />
+                    android:padding="10px"
+                    android:text="Wind : "
+                    android:textColor="@color/black"
+                    android:textSize="28px" />
+
+                <TextView
+                    android:id="@+id/textviewWind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10px"
+                    android:textColor="@color/black"
+                    android:textSize="28px" />
+
+                <TextView
+                    android:id="@+id/TextView04"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="150px"
+                    android:padding="10px"
+                    android:text="Temp : "
+                    android:textColor="@color/black"
+                    android:textSize="28px" />
+
+                <TextView
+                    android:id="@+id/textviewTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10px"
+                    android:textColor="@color/black"
+                    android:textSize="28px" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/textviewHeaderprogress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10px"
+                    android:text="Precip : "
+                    android:textColor="@color/black"
+                    android:textSize="28px" />
+
+                <TextView
+                    android:id="@+id/textviewPrecip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10px"
+                    android:textColor="@color/black"
+                    android:textSize="28px" />
+
+                <TextView
+                    android:id="@+id/textviewHeaderRecentItems"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="150px"
+                    android:padding="10px"
+                    android:text="Humidity : "
+                    android:textColor="@color/black"
+                    android:textSize="28px" />
+
+                <TextView
+                    android:id="@+id/textviewHumidity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10px"
+                    android:textColor="@color/black"
+                    android:textSize="28px" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/RelativeLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/body"
+                    android:layout_width="520px"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/imageviewWeatherIcon"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:padding="10px"
+                    android:singleLine="false"
+                    android:text="Light Rain until evening."
+                    android:textColor="@color/black"
+                    android:textSize="28px" />
+
+                <ImageView
+                    android:id="@+id/imageviewWeatherIcon"
+                    android:layout_width="100px"
+                    android:layout_height="100px"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginBottom="20px"
+                    android:layout_toRightOf="@+id/body"
+                    android:padding="20px" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView8"
+            android:layout_centerHorizontal="true"
+            android:background="#fff"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#242424"
+                android:gravity="center"
+                android:text="Personnel on site"
+                android:textColor="#fff"
+                android:textSize="36px" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="600px"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20px"
+                android:background="@drawable/black_background"
+                android:text="Tap to add personnel"
+                android:textColor="#fff"
+                android:textSize="36px" />
+
+            <Button
+                android:id="@+id/buttonPrefill"
+                android:layout_width="600px"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20px"
+                android:layout_marginTop="20px"
+                android:background="@drawable/black_border"
+                android:text="Prefill from last report"
+                android:textColor="#000"
+                android:textSize="36px" />
+
+            <LinearLayout
+                android:id="@+id/linearlayoutPersonel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
 
                 <RelativeLayout
-                    android:id="@+id/relativeLayout3"
                     android:layout_width="match_parent"
-                    android:layout_height="150px"
-                    android:background="#fff" >
+                    android:layout_height="100px" >
 
-                    <Button
-                        android:id="@+id/button2"
-                        android:layout_width="300px"
-                        android:layout_height="wrap_content"
-                        android:layout_alignBaseline="@+id/button1"
-                        android:layout_alignBottom="@+id/button1"
-                        android:layout_marginLeft="110px"
-                        android:layout_marginTop="30px"
-                        android:layout_toRightOf="@+id/button1"
-                        android:background="@drawable/black_background"
-                        android:text="Date"
-                        android:textSize="36px" />
-
-                    <Button
-                        android:id="@+id/button1"
-                        android:layout_width="200px"
+                    <TextView
+                        android:id="@+id/TextView03"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="54px"
-                        android:layout_marginTop="30px"
-                        android:background="@drawable/black_background"
-                        android:text="Daily"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center"
+                        android:padding="20px"
+                        android:text="PERSONNEL"
+                        android:textColor="@color/black"
+                        android:textSize="36px" />
+
+                    <TextView
+                        android:id="@+id/TextView02"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="20px"
+                        android:layout_toLeftOf="@+id/TextView05"
+                        android:gravity="center"
+                        android:padding="20px"
+                        android:text="# HOURS"
+                        android:textColor="@color/black"
+                        android:textSize="36px" />
+
+                    <TextView
+                        android:id="@+id/TextView05"
+                        android:layout_width="88px"
+                        android:layout_height="88px"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center"
                         android:textSize="36px" />
                 </RelativeLayout>
 
+                <ListView
+                    android:id="@+id/personellist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                </ListView>
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/weatherlayout"
+                android:id="@+id/linearlayoutOnsite"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textView1"
-                android:layout_centerHorizontal="true"
-                android:background="#fff"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:id="@+id/textView1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#242424"
-                    android:gravity="center"
-                    android:text="Weather"
-                    android:textColor="#fff"
-                    android:textSize="36px" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/TextView01"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="10px"
-                        android:textColor="@color/black"
-                        android:text="Wind : "
-                        android:textSize="28px" />
-
-                    <TextView
-                        android:id="@+id/wind"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:padding="10px"
-                        android:textSize="28px" />
-
-                    <TextView
-                        android:id="@+id/TextView04"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:layout_marginLeft="150px"
-                        android:padding="10px"
-                        android:text="Temp : "
-                        android:textSize="28px" />
-
-                    <TextView
-                        android:id="@+id/temp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:padding="10px"
-                        android:textSize="28px" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="10px"
-                        android:text="Precip : "
-                        android:textColor="@color/black"
-                        android:textSize="28px" />
-
-                    <TextView
-                        android:id="@+id/precip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:padding="10px"
-                        android:textSize="28px" />
-
-                    <TextView
-                        android:id="@+id/textView5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="150px"
-                        android:textColor="@color/black"
-                        android:padding="10px"
-                        android:text="Humidity : "
-                        android:textSize="28px" />
-
-                    <TextView
-                        android:id="@+id/humidity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:padding="10px"
-                        android:textSize="28px" />
-                </LinearLayout>
+                android:orientation="vertical"
+                android:visibility="visible" >
 
                 <RelativeLayout
-                        android:id="@+id/RelativeLayout1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
-
-                        <TextView
-                            android:id="@+id/body"
-                            android:layout_width="520px"
-                            android:layout_height="wrap_content"
-                            android:layout_alignBaseline="@+id/imgview"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentTop="true"
-                            android:padding="10px"
-                            android:singleLine="false"
-                            
-                            android:text="Light Rain until evening."
-                            android:textColor="@color/black"
-                            android:textSize="28px" />
-
-                        <ImageView
-                            android:id="@+id/imgview"
-                            android:layout_width="100px"
-                            android:layout_height="100px"
-                            android:layout_alignParentTop="true"
-                            android:layout_marginBottom="20px"
-                            android:padding="20px"
-                            android:layout_toRightOf="@+id/body" />
-                    </RelativeLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView8"
-                android:layout_centerHorizontal="true"
-                android:background="#fff"
-                android:gravity="center"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:id="@+id/textView8"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#242424"
-                    android:gravity="center"
-                    android:text="Personnel on site"
-                    android:textColor="#fff"
-                    android:textSize="36px" />
-
-                <Button
-                    android:id="@+id/button3"
-                    android:layout_width="600px"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20px"
-                    android:text="Tap to add personnel"
-                    android:textSize="36px"
-                    android:background="@drawable/black_background"
-                    android:textColor="#fff" />
-
-                <Button
-                    android:id="@+id/button4"
-                    android:layout_width="600px"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20px"
-                    android:layout_marginTop="20px"
-                    android:text="Prefill from last report"
-                    android:textSize="36px"
-                    android:background="@drawable/black_border"
-                    android:textColor="#000" />
-
-                <LinearLayout
-                    android:id="@+id/personnelLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" >
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="100px" >
-
-                        <TextView
-                            android:id="@+id/TextView03"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentTop="true"
-                            android:textColor="@color/black"
-                            android:gravity="center"
-                            android:padding="10px"
-                            android:text="Personnel"
-                            android:textSize="36px" />
-
-                        <TextView
-                            android:id="@+id/TextView02"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/black"
-                            android:layout_alignParentTop="true"
-                            android:layout_centerHorizontal="true"
-                            android:gravity="center"
-                            android:text="# Hours"
-                            android:textSize="36px" />
-
-                        <TextView
-                            android:id="@+id/TextView05"
-                            android:layout_width="wrap_content"
-                            android:layout_height="80px"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentTop="true"
-                            android:gravity="center"
-                            android:textSize="36px" />
-                    </RelativeLayout>
-
-                    <ListView
-                        android:id="@+id/personellist"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
-                    </ListView>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/onsite"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone" >
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="100px" >
-
-                        <TextView
-                            android:id="@+id/TextView08"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentTop="true"
-                            android:gravity="center"
-                            android:padding="20px"
-                            android:text="Personnel"
-                            android:textColor="@color/black"
-                            android:textSize="36px" />
-
-                        <TextView
-                            android:id="@+id/TextView06"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_centerHorizontal="true"
-                            android:gravity="center"
-                            android:padding="20px"
-                            android:text="# Counts"
-                            android:textColor="@color/black"
-                            android:textSize="36px" />
-
-                        <TextView
-                            android:id="@+id/TextView07"
-                            android:layout_width="wrap_content"
-                            android:layout_height="80px"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentTop="true"
-                            android:gravity="center"
-                            android:textSize="36px" />
-                    </RelativeLayout>
-
-                    <ListView
-                        android:id="@+id/companieslist"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
-                    </ListView>
-                </LinearLayout>
-
-            </LinearLayout>
-            
-            
-            <LinearLayout
-                    android:id="@+id/safetyTopicslayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/textView09"
-                    android:layout_centerHorizontal="true"
-                    android:background="@color/white"
-                    android:gravity="center"
-                    android:orientation="vertical" >
+                    android:layout_height="100px" >
 
                     <TextView
-                        android:id="@+id/textView09"
-                        android:layout_width="match_parent"
+                        android:id="@+id/TextView08"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/light_black"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
                         android:gravity="center"
-                        android:text="Safety Topics Covered"
-                        android:textColor="@color/white"
+                        android:padding="20px"
+                        android:text="COMPANIES"
+                        android:textColor="@color/black"
                         android:textSize="36px" />
-                    
-                    <Button
-                        android:id="@+id/addtopics"
-                        android:layout_width="600px"
+
+                    <TextView
+                        android:id="@+id/TextView06"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20px"
-                        android:layout_marginBottom="20px"
-                        android:background="@drawable/black_background"
-                        android:text="Tap to add Topics"
-                        android:textColor="@color/white"
+                        android:layout_marginRight="20px"
+                        android:layout_toLeftOf="@+id/TextView07"
+                        android:gravity="center"
+                        android:padding="20px"
+                        android:text="# ON SITE"
+                        android:textColor="@color/black"
                         android:textSize="36px" />
-                    
-                    <ListView
-                        android:id="@+id/safetylist"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" >
-                    </ListView>
-                    
-                    
-                    
-               </LinearLayout>
-            
 
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/linearLayout2"
-                android:layout_centerHorizontal="true"
-                android:background="#242424"
-                android:gravity="center"
-                android:text="Photos"
-                android:textColor="#fff"
-                android:textSize="36px" />
+                    <TextView
+                        android:id="@+id/TextView07"
+                        android:layout_width="88px"
+                        android:layout_height="88px"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center"
+                        android:textSize="36px" />
+                </RelativeLayout>
 
-            <HorizontalScrollView
-                android:id="@+id/horizontalScrollView1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/textView9"
-                android:background="#fff"
-                android:layout_centerHorizontal="true" >
-
-                <LinearLayout
-                    android:id="@+id/scrolllayout2"
+                <ListView
+                    android:id="@+id/companieslist"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#0000"
-                    android:orientation="horizontal" >
+                    android:layout_height="wrap_content" >
+                </ListView>
+            </LinearLayout>
+        </LinearLayout>
 
-                    <ImageView
-                        android:id="@+id/photogallery"
-                        android:layout_width="102px"
-                        android:layout_height="102px"
-                        android:layout_margin="15px"
-                        android:src="@drawable/library_btn" />
-
-                    <ImageView
-                        android:id="@+id/camera"
-                        android:layout_width="102px"
-                        android:layout_height="102px"
-                        android:layout_margin="15px"
-                        android:src="@drawable/camera_btn" />
-                </LinearLayout>
-            </HorizontalScrollView>
+        <LinearLayout
+            android:id="@+id/linearlayoutSafetytopic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView09"
+            android:layout_centerHorizontal="true"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/textView09"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/textView9"
-                android:layout_below="@+id/horizontalScrollView1"
-                android:background="#242424"
+                android:background="@color/light_black"
                 android:gravity="center"
-                android:text="Notes"
-                android:textColor="#fff"
+                android:text="Safety Topics Covered"
+                android:textColor="@color/white"
                 android:textSize="36px" />
 
-            <EditText
-                android:id="@+id/notes"
+            <Button
+                android:id="@+id/buttonSafetytopic"
+                android:layout_width="600px"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20px"
+                android:layout_marginTop="20px"
+                android:background="@drawable/black_background"
+                android:text="Tap to add Topics"
+                android:textColor="@color/white"
+                android:textSize="36px" />
+
+            <ListView
+                android:id="@+id/safetylist"
                 android:layout_width="match_parent"
-                android:layout_height="400px"
-                android:layout_alignParentBottom="true"
-                android:layout_below="@+id/textView10"
-                android:background="#fff"
-                android:textColor="@color/black"
-                android:singleLine="false"
-                android:padding="20px"
-                android:minLines="3"
-                android:hint="Notes"
-                android:gravity="top|left"
-                android:layout_centerHorizontal="true"
-                android:textSize="30px" />
+                android:layout_height="wrap_content" >
+            </ListView>
         </LinearLayout>
-    </ScrollView>
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linearLayout2"
+            android:layout_centerHorizontal="true"
+            android:background="#242424"
+            android:gravity="center"
+            android:text="Photos"
+            android:textColor="#fff"
+            android:textSize="36px" />
+
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView9"
+            android:layout_centerHorizontal="true"
+            android:background="#fff" >
+
+            <LinearLayout
+                android:id="@+id/linearlayoutLin2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#0000"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:id="@+id/photogallery"
+                    android:layout_width="102px"
+                    android:layout_height="102px"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="15px"
+                    android:src="@drawable/library_btn" />
+
+                <ImageView
+                    android:id="@+id/camera"
+                    android:layout_width="102px"
+                    android:layout_height="102px"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="15px"
+                    android:src="@drawable/camera_btn" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView9"
+            android:layout_below="@+id/horizontalScrollView1"
+            android:background="#242424"
+            android:gravity="center"
+            android:text="Notes"
+            android:textColor="#fff"
+            android:textSize="36px" />
+
+        <EditText
+            android:id="@+id/edittextNotes"
+            android:layout_width="match_parent"
+            android:layout_height="400px"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/textView10"
+            android:layout_centerHorizontal="true"
+            android:background="#fff"
+            android:gravity="top|left"
+            android:hint="Notes"
+            android:minLines="3"
+            android:padding="20px"
+            android:singleLine="false"
+            android:textColor="@color/black"
+            android:textSize="30px" />
+    </LinearLayout>
+
+</ScrollView>

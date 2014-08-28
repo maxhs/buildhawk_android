@@ -1,5 +1,9 @@
 package com.buildhawk;
 
+/*
+ *  This file shows the gallery  and sorting of all photos.
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -35,95 +39,95 @@ public class ImageActivity extends Activity {
 
 	public static ArrayList<ProjectPhotos> arraylist = new ArrayList<ProjectPhotos>();
 
-	ArrayList<String> workuser, checkuser, reportuser, docuser, allusers,
-			docdate, workdate, checkdate, reportdate, alldates, docphase,
-			checklistphase, worklistphase, reportphase, allphase;
+	ArrayList<String> workuserArrayList, checkuserArrayList, reportuserArrayList, docuserArrayList, allusersArrayList,
+			docdateArrayList, workdateArrayList, checkdateArrayList, reportdateArrayList, alldatesArrayList, docphaseArrayList,
+			checklistphaseArrayList, worklistphaseArrayList, reportphaseArrayList, allphaseArrayList;
 
-	ArrayList<String> users = new ArrayList<String>();
-	ArrayList<String> tempusers = new ArrayList<String>();
-	ArrayList<String> tempdates = new ArrayList<String>();
-	ArrayList<String> dates = new ArrayList<String>();
+	ArrayList<String> usersArrayList = new ArrayList<String>();
+	ArrayList<String> tempusersArrayList = new ArrayList<String>();
+	ArrayList<String> tempdatesArrayList = new ArrayList<String>();
+	ArrayList<String> datesArrayList = new ArrayList<String>();
 
-	ArrayList<String> tempphase = new ArrayList<String>();
-	ArrayList<String> phase = new ArrayList<String>();
-	ArrayList<String> arr = new ArrayList<String>();
-	ArrayList<String> ids = new ArrayList<String>();
-	ArrayList<String> desc = new ArrayList<String>();
+	ArrayList<String> tempphaseArrayList = new ArrayList<String>();
+	ArrayList<String> phaseArrayList = new ArrayList<String>();
+	ArrayList<String> arrArrayList = new ArrayList<String>();
+	ArrayList<String> idsArrayList = new ArrayList<String>();
+	ArrayList<String> descArrayList = new ArrayList<String>();
 	Dialog dialog;
 	int flag = 0;
-	LinearLayout lay;
-	LinearLayout mainLayout;
-	ImageView imgView;
-	TextView txtView, tv_sort, tv_projecttext;
+	LinearLayout linearlayout;
+	LinearLayout linearlayoutMain;
+	ImageView imageview;
+	TextView textview, textviewSort, textviewProject;
 	int count = 0;
-	RelativeLayout relLay;
-	RelativeLayout back;
-	TextView tv_Key;
+	RelativeLayout relativelayoutRyt;
+	RelativeLayout relativelayoutBack;
+	TextView textviewKey;
 	ConnectionDetector connDect;
-	Boolean isInternetPresent = false;
-	String key;
+	Boolean isInternetPresentBoolean = false;
+	String keyString;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_image);
 
-		relLay = (RelativeLayout) findViewById(R.id.rellay);
-		new ASSL(this, relLay, 1134, 720, false);
+		relativelayoutRyt = (RelativeLayout) findViewById(R.id.relativelayoutRyt);
+		new ASSL(this, relativelayoutRyt, 1134, 720, false);
 		connDect = new ConnectionDetector(getApplicationContext());
-		isInternetPresent = connDect.isConnectingToInternet();
+		isInternetPresentBoolean = connDect.isConnectingToInternet();
 		// Bundle bundle=new Bundle();
 		// bundle.getString("key",)
-		tv_sort = (TextView) findViewById(R.id.sort);
-		tv_sort.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		textviewSort = (TextView) findViewById(R.id.textviewSort);
+		textviewSort.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 		// projecttext=(TextView)findViewById(R.id.project_txt);
-		back = (RelativeLayout) findViewById(R.id.back);
+		relativelayoutBack = (RelativeLayout) findViewById(R.id.relativelayoutBack);
 
 		// projecttext.setText(Prefrences.selectedProName);
 		Bundle bundle = getIntent().getExtras();
-		key = bundle.getString("key");
-		workuser = new ArrayList<String>();
-		checkuser = new ArrayList<String>();
-		reportuser = new ArrayList<String>();
-		docuser = new ArrayList<String>();
-		allusers = new ArrayList<String>();
-		docdate = new ArrayList<String>();
-		checkdate = new ArrayList<String>();
-		workdate = new ArrayList<String>();
-		reportdate = new ArrayList<String>();
-		alldates = new ArrayList<String>();
-		docphase = new ArrayList<String>();
-		checklistphase = new ArrayList<String>();
-		worklistphase = new ArrayList<String>();
-		reportphase = new ArrayList<String>();
-		allphase = new ArrayList<String>();
+		keyString = bundle.getString("key");
+		workuserArrayList = new ArrayList<String>();
+		checkuserArrayList = new ArrayList<String>();
+		reportuserArrayList = new ArrayList<String>();
+		docuserArrayList = new ArrayList<String>();
+		allusersArrayList = new ArrayList<String>();
+		docdateArrayList = new ArrayList<String>();
+		checkdateArrayList = new ArrayList<String>();
+		workdateArrayList = new ArrayList<String>();
+		reportdateArrayList = new ArrayList<String>();
+		alldatesArrayList = new ArrayList<String>();
+		docphaseArrayList = new ArrayList<String>();
+		checklistphaseArrayList = new ArrayList<String>();
+		worklistphaseArrayList = new ArrayList<String>();
+		reportphaseArrayList = new ArrayList<String>();
+		allphaseArrayList = new ArrayList<String>();
 
-		workuser = bundle.getStringArrayList("work");
-		checkuser = bundle.getStringArrayList("check");
-		reportuser = bundle.getStringArrayList("report");
-		docuser = bundle.getStringArrayList("doc");
-		allusers = bundle.getStringArrayList("allusers");
+		workuserArrayList = bundle.getStringArrayList("work");
+		checkuserArrayList = bundle.getStringArrayList("check");
+		reportuserArrayList = bundle.getStringArrayList("report");
+		docuserArrayList = bundle.getStringArrayList("doc");
+		allusersArrayList = bundle.getStringArrayList("allusers");
 
-		docdate = bundle.getStringArrayList("doc_date");
-		checkdate = bundle.getStringArrayList("check_date");
-		workdate = bundle.getStringArrayList("work_date");
-		reportdate = bundle.getStringArrayList("report_date");
-		alldates = bundle.getStringArrayList("all_date");
+		docdateArrayList = bundle.getStringArrayList("doc_date");
+		checkdateArrayList = bundle.getStringArrayList("check_date");
+		workdateArrayList = bundle.getStringArrayList("work_date");
+		reportdateArrayList = bundle.getStringArrayList("report_date");
+		alldatesArrayList = bundle.getStringArrayList("all_date");
 
-		docphase = bundle.getStringArrayList("doc_phase");
-		checklistphase = bundle.getStringArrayList("checklist_phase");
-		worklistphase = bundle.getStringArrayList("worklist_phase");
-		reportphase = bundle.getStringArrayList("report_phase");
-		allphase = bundle.getStringArrayList("all_phase");
+		docphaseArrayList = bundle.getStringArrayList("doc_phase");
+		checklistphaseArrayList = bundle.getStringArrayList("checklist_phase");
+		worklistphaseArrayList = bundle.getStringArrayList("worklist_phase");
+		reportphaseArrayList = bundle.getStringArrayList("report_phase");
+		allphaseArrayList = bundle.getStringArrayList("all_phase");
 
 		arraylist.clear();
 
-		mainLayout = (LinearLayout) findViewById(R.id.view);
-		new ASSL(this, mainLayout, 1134, 720, false);
+		linearlayoutMain = (LinearLayout) findViewById(R.id.linearlayoutMain);
+		new ASSL(this, linearlayoutMain, 1134, 720, false);
 
 		Prefrences.well = 1;
 
-		back.setOnClickListener(new OnClickListener() {
+		relativelayoutBack.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -135,22 +139,22 @@ public class ImageActivity extends Activity {
 				// doc_phase,
 				// checklist_phase, worklist_phase, report_phase, all_phase;
 
-				users.clear();
-				tempusers.clear();
+				usersArrayList.clear();
+				tempusersArrayList.clear();
 
-				tempdates.clear();
-				dates.clear();
-				allusers.clear();
-				workuser.clear();
-				checkuser.clear();
-				reportuser.clear();
+				tempdatesArrayList.clear();
+				datesArrayList.clear();
+				allusersArrayList.clear();
+				workuserArrayList.clear();
+				checkuserArrayList.clear();
+				reportuserArrayList.clear();
 
-				docuser.clear();
-				tempphase.clear();
-				phase.clear();
-				arr.clear();
-				ids.clear();
-				desc.clear();
+				docuserArrayList.clear();
+				tempphaseArrayList.clear();
+				phaseArrayList.clear();
+				arrArrayList.clear();
+				idsArrayList.clear();
+				descArrayList.clear();
 
 				finish();
 				overridePendingTransition(R.anim.slide_in_left,
@@ -158,7 +162,7 @@ public class ImageActivity extends Activity {
 			}
 		});
 
-		tv_sort.setOnClickListener(new OnClickListener() {
+		textviewSort.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -179,102 +183,102 @@ public class ImageActivity extends Activity {
 				// window.setAttributes(wlp);
 
 				// dialog.setTitle("Sort");
-				Button btnsort = (Button) dialog.findViewById(R.id.btn_sort);
-				Button btnusers = (Button) dialog.findViewById(R.id.btn_user);
-				RelativeLayout listoutside = (RelativeLayout) dialog
-						.findViewById(R.id.list_outside);
-				TextView who = (TextView) dialog.findViewById(R.id.txt_who);
-				Button btnsub = (Button) dialog.findViewById(R.id.btn_sub);
-				Button btncancel = (Button) dialog.findViewById(R.id.cancel);
+				Button buttonSort = (Button) dialog.findViewById(R.id.buttonSort);
+				Button buttonUsers = (Button) dialog.findViewById(R.id.buttonUsers);
+				RelativeLayout relativelayoutListoutside = (RelativeLayout) dialog
+						.findViewById(R.id.relativelayoutListoutside);
+				TextView textviewWho = (TextView) dialog.findViewById(R.id.textviewWho);
+				Button buttonSub = (Button) dialog.findViewById(R.id.buttonSub);
+				Button buttonCancel = (Button) dialog.findViewById(R.id.buttonCancel);
 
-				btncancel.setTypeface(Prefrences
+				buttonCancel.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				btnsort.setTypeface(Prefrences
+				buttonSort.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				btnsub.setTypeface(Prefrences
+				buttonSub.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				btnusers.setTypeface(Prefrences
+				buttonUsers.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
-				who.setTypeface(Prefrences
+				textviewWho.setTypeface(Prefrences
 						.helveticaNeuelt(getApplicationContext()));
 
-				who.setGravity(Gravity.CENTER);
-				who.setText("Sort");
-				if (key.equals("All")) {
-					btnsort.setVisibility(View.VISIBLE);
-					btnsort.setText("By Taken/Uploaded");
-					btnusers.setText("By Date");
-					btnsub.setText("By Default");
-				} else if (key.equals("Checklist")) {
-					btnsort.setVisibility(View.VISIBLE);
-					btnsort.setText("By Taken/Uploaded");
-					btnusers.setText("By Date");
-					btnsub.setText("By Default");
-				} else if (key.equals("Worklist")) {
-					btnsort.setVisibility(View.VISIBLE);
-					btnsort.setText("By Taken/Uploaded");
-					btnusers.setText("By Date");
-					btnsub.setText("By Default");
+				textviewWho.setGravity(Gravity.CENTER);
+				textviewWho.setText("Sort");
+				if (keyString.equals("All")) {
+					buttonSort.setVisibility(View.VISIBLE);
+					buttonSort.setText("By Taken/Uploaded");
+					buttonUsers.setText("By Date");
+					buttonSub.setText("By Default");
+				} else if (keyString.equals("Checklist")) {
+					buttonSort.setVisibility(View.VISIBLE);
+					buttonSort.setText("By Taken/Uploaded");
+					buttonUsers.setText("By Date");
+					buttonSub.setText("By Default");
+				} else if (keyString.equals("Worklist")) {
+					buttonSort.setVisibility(View.VISIBLE);
+					buttonSort.setText("By Taken/Uploaded");
+					buttonUsers.setText("By Date");
+					buttonSub.setText("By Default");
 
-				} else if (key.equals("Report")) {
-					btnsort.setVisibility(View.GONE);
+				} else if (keyString.equals("Report")) {
+					buttonSort.setVisibility(View.GONE);
 					// btn_sort.setText("By Taken/Uploaded");
-					btnusers.setText("By Taken/Uploaded");
-					btnsub.setText("By Default");
-				} else if (key.equals("Project Docs")) {
-					btnsort.setVisibility(View.GONE);
+					buttonUsers.setText("By Taken/Uploaded");
+					buttonSub.setText("By Default");
+				} else if (keyString.equals("Project Docs")) {
+					buttonSort.setVisibility(View.GONE);
 					// btn_sort.setText("By Taken/Uploaded");
-					btnusers.setText("By Taken/Uploaded");
-					btnsub.setText("By Default");
+					buttonUsers.setText("By Taken/Uploaded");
+					buttonSub.setText("By Default");
 				}
-				btnsort.setOnClickListener(new OnClickListener() {
+				buttonSort.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 
-						byName(key);
+						byName(keyString);
 						dialog.dismiss();
 					}
 				});
 
-				btnusers.setOnClickListener(new OnClickListener() {
+				buttonUsers.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						if (key.equals("Report")) {
-							byName(key);
-						} else if (key.equals("Project Docs")) {
-							byName(key);
+						if (keyString.equals("Report")) {
+							byName(keyString);
+						} else if (keyString.equals("Project Docs")) {
+							byName(keyString);
 						} else {
-							byDate(key);
+							byDate(keyString);
 						}
 						dialog.dismiss();
 					}
 				});
 
-				btnsub.setOnClickListener(new OnClickListener() {
+				buttonSub.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						if (key.equals("Checklist")) {
-							byPhase(key);
-						} else if (key.equals("All")) {
-							byAll(key);
-						} else if (key.equals("Report")) {
-							byDate(key);
-						} else if (key.equals("Worklist")) {
-							byAll(key);
-						} else if (key.equals("Project Docs")) {
-							byAll(key);
+						if (keyString.equals("Checklist")) {
+							byPhase(keyString);
+						} else if (keyString.equals("All")) {
+							byAll(keyString);
+						} else if (keyString.equals("Report")) {
+							byDate(keyString);
+						} else if (keyString.equals("Worklist")) {
+							byAll(keyString);
+						} else if (keyString.equals("Project Docs")) {
+							byAll(keyString);
 						}
 						dialog.dismiss();
 					}
 				});
 
-				btncancel.setOnClickListener(new OnClickListener() {
+				buttonCancel.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
@@ -283,7 +287,7 @@ public class ImageActivity extends Activity {
 					}
 				});
 
-				listoutside.setOnClickListener(new OnClickListener() {
+				relativelayoutListoutside.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
@@ -296,16 +300,16 @@ public class ImageActivity extends Activity {
 			}
 		});
 
-		if (key.equals("Checklist")) {
-			byPhase(key);
-		} else if (key.equals("All")) {
-			byAll(key);
-		} else if (key.equals("Report")) {
-			byDate(key);
-		} else if (key.equals("Worklist")) {
-			byAll(key);
-		} else if (key.equals("Project Docs")) {
-			byAll(key);
+		if (keyString.equals("Checklist")) {
+			byPhase(keyString);
+		} else if (keyString.equals("All")) {
+			byAll(keyString);
+		} else if (keyString.equals("Report")) {
+			byDate(keyString);
+		} else if (keyString.equals("Worklist")) {
+			byAll(keyString);
+		} else if (keyString.equals("Project Docs")) {
+			byAll(keyString);
 		}
 
 	}
@@ -321,16 +325,16 @@ public class ImageActivity extends Activity {
 		// doc_date, work_date, check_date, report_date, all_dates, doc_phase,
 		// checklist_phase, worklist_phase, report_phase, all_phase;
 
-		users.clear();
-		tempusers.clear();
+		usersArrayList.clear();
+		tempusersArrayList.clear();
 
-		tempdates.clear();
-		dates.clear();
+		tempdatesArrayList.clear();
+		datesArrayList.clear();
 
-		tempphase.clear();
-		phase.clear();
-		arr.clear();
-		ids.clear();
+		tempphaseArrayList.clear();
+		phaseArrayList.clear();
+		arrArrayList.clear();
+		idsArrayList.clear();
 		finish();
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
@@ -348,21 +352,21 @@ public class ImageActivity extends Activity {
 	}
 
 	void byAll(String str) {
-		mainLayout.removeAllViews();
-		arr.clear();
-		ids.clear();
-		desc.clear();
+		linearlayoutMain.removeAllViews();
+		arrArrayList.clear();
+		idsArrayList.clear();
+		descArrayList.clear();
 		arraylist.clear();
 		if (str.equals("All")) {
-			arraylist.addAll(DocumentFragment.photosList);
+			arraylist.addAll(DocumentFragment.photosListArrayList);
 		} else if (str.equals("Report")) {
-			arraylist.addAll(DocumentFragment.photosList5);
+			arraylist.addAll(DocumentFragment.photosList5ArrayList);
 		} else if (str.equals("Worklist")) {
-			arraylist.addAll(DocumentFragment.photosList4);
+			arraylist.addAll(DocumentFragment.photosList4ArrayList);
 		} else if (str.equals("Project Docs")) {
-			arraylist.addAll(DocumentFragment.photosList2);
+			arraylist.addAll(DocumentFragment.photosList2ArrayList);
 		} else if (str.equals("Checklist")) {
-			arraylist.addAll(DocumentFragment.photosList3);
+			arraylist.addAll(DocumentFragment.photosList3ArrayList);
 		}
 
 		if (arraylist.isEmpty()) {
@@ -371,14 +375,14 @@ public class ImageActivity extends Activity {
 		} else {
 			int pos = 0;
 			int rowValue = 0;
-			lay = new LinearLayout(this);
-			lay.setOrientation(LinearLayout.HORIZONTAL);
-			mainLayout.addView(lay);
+			linearlayout = new LinearLayout(this);
+			linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+			linearlayoutMain.addView(linearlayout);
 			do {
-				arr.add(arraylist.get(pos).urlLarge);
-				ids.add(arraylist.get(pos).id);
-				desc.add(arraylist.get(pos).description);
-				imgView = new ImageView(this);
+				arrArrayList.add(arraylist.get(pos).urlLarge);
+				idsArrayList.add(arraylist.get(pos).id);
+				descArrayList.add(arraylist.get(pos).description);
+				imageview = new ImageView(this);
 				if (rowValue < 3) {
 					rowValue++;
 					// LayoutParams parms =
@@ -387,42 +391,42 @@ public class ImageActivity extends Activity {
 							(int) (220 * ASSL.Xscale()),
 							(int) (220 * ASSL.Yscale()));
 					lp.setMargins(15, 10, 0, 10);
-					imgView.setTag(pos);
-					imgView.setLayoutParams(lp);
+					imageview.setTag(pos);
+					imageview.setLayoutParams(lp);
 					// Bitmap bitmap = BitmapFactory.decodeFile(Receiver1.list
 					// .getAbsolutePath());
 
 					Picasso.with(this)
 							.load(arraylist.get(pos).url200.toString())
 							.placeholder(R.drawable.default_200)
-							.into(imgView);
-					lay.addView(imgView);
+							.into(imageview);
+					linearlayout.addView(imageview);
 				} else {
 					rowValue = 0;
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
 					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 							(int) (220 * ASSL.Xscale()),
 							(int) (220 * ASSL.Yscale()));
 					lp.setMargins(15, 10, 0, 10);
-					imgView.setTag(pos);
-					imgView.setLayoutParams(lp);
+					imageview.setTag(pos);
+					imageview.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(pos).url200.toString())
 							.placeholder(R.drawable.default_200)
-							.into(imgView);
-					lay.addView(imgView);
+							.into(imageview);
+					linearlayout.addView(imageview);
 
 					rowValue++;
 				}
-				imgView.setOnClickListener(new OnClickListener() {
+				imageview.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						
-					if (isInternetPresent) {
+					if (isInternetPresentBoolean) {
 								
 							
 							Log.i("Tag Value", "" + Prefrences.selectedPic);
@@ -431,27 +435,27 @@ public class ImageActivity extends Activity {
 	
 							Intent intent = new Intent(ImageActivity.this,
 									SelectedImageView.class);
-							intent.putExtra("array", arr);
-							intent.putExtra("ids", ids);
-							intent.putExtra("desc", desc);
-							intent.putExtra("key", key);
-							Log.d("", "----0000000----" + key);
+							intent.putExtra("array", arrArrayList);
+							intent.putExtra("ids", idsArrayList);
+							intent.putExtra("desc", descArrayList);
+							intent.putExtra("key", keyString);
+							Log.d("", "----0000000----" + keyString);
 							intent.putExtra("id",arraylist.get(Prefrences.selectedPic).id);
-							intent.putStringArrayListExtra("doc", docuser);
-							intent.putStringArrayListExtra("work", workuser);
-							intent.putStringArrayListExtra("check", checkuser);
-							intent.putStringArrayListExtra("report", reportuser);
-							intent.putStringArrayListExtra("allusers", allusers);
-							intent.putStringArrayListExtra("doc_date", docdate);
-							intent.putStringArrayListExtra("work_date", workdate);
-							intent.putStringArrayListExtra("check_date", checkdate);
-							intent.putStringArrayListExtra("report_date",reportdate);
-							intent.putStringArrayListExtra("all_date", alldates);
-							intent.putStringArrayListExtra("doc_phase", docphase);
-							intent.putStringArrayListExtra("worklist_phase",worklistphase);
-							intent.putStringArrayListExtra("checklist_phase",checklistphase);
-							intent.putStringArrayListExtra("report_phase",reportphase);
-							intent.putStringArrayListExtra("all_phase", allphase);
+							intent.putStringArrayListExtra("doc", docuserArrayList);
+							intent.putStringArrayListExtra("work", workuserArrayList);
+							intent.putStringArrayListExtra("check", checkuserArrayList);
+							intent.putStringArrayListExtra("report", reportuserArrayList);
+							intent.putStringArrayListExtra("allusers", allusersArrayList);
+							intent.putStringArrayListExtra("doc_date", docdateArrayList);
+							intent.putStringArrayListExtra("work_date", workdateArrayList);
+							intent.putStringArrayListExtra("check_date", checkdateArrayList);
+							intent.putStringArrayListExtra("report_date",reportdateArrayList);
+							intent.putStringArrayListExtra("all_date", alldatesArrayList);
+							intent.putStringArrayListExtra("doc_phase", docphaseArrayList);
+							intent.putStringArrayListExtra("worklist_phase",worklistphaseArrayList);
+							intent.putStringArrayListExtra("checklist_phase",checklistphaseArrayList);
+							intent.putStringArrayListExtra("report_phase",reportphaseArrayList);
+							intent.putStringArrayListExtra("all_phase", allphaseArrayList);
 							startActivity(intent);
 							finish();
 							overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
@@ -468,14 +472,14 @@ public class ImageActivity extends Activity {
 	}
 
 	void byName(String s) {
-		mainLayout.removeAllViews();
+		linearlayoutMain.removeAllViews();
 		arraylist.clear();
-		users.clear();
-		tempusers.clear();
-		arr.clear();
-		ids.clear();
-		desc.clear();
-		key = s;
+		usersArrayList.clear();
+		tempusersArrayList.clear();
+		arrArrayList.clear();
+		idsArrayList.clear();
+		descArrayList.clear();
+		keyString = s;
 		// Log.d("work size", "" + work_user.size());
 		// Log.d("check size", "" + check_user.size());
 		// Log.d("report size", "" + report_user.size());
@@ -483,32 +487,32 @@ public class ImageActivity extends Activity {
 		// Log.d("all users size", "" + all_users.size());
 
 		if (s.equals("All")) {
-			arraylist.addAll(DocumentFragment.photosList);
-			users.addAll(allusers);
-			tempusers.addAll(allusers);
+			arraylist.addAll(DocumentFragment.photosListArrayList);
+			usersArrayList.addAll(allusersArrayList);
+			tempusersArrayList.addAll(allusersArrayList);
 		}
 		if (s.equals("Project Docs")) {
-			arraylist.addAll(DocumentFragment.photosList2);
-			users.addAll(docuser);
-			tempusers.addAll(docuser);
+			arraylist.addAll(DocumentFragment.photosList2ArrayList);
+			usersArrayList.addAll(docuserArrayList);
+			tempusersArrayList.addAll(docuserArrayList);
 		} else if (s.equals("Checklist")) {
-			arraylist.addAll(DocumentFragment.photosList3);
+			arraylist.addAll(DocumentFragment.photosList3ArrayList);
 
-			users.addAll(checkuser);
-			tempusers.addAll(checkuser);
+			usersArrayList.addAll(checkuserArrayList);
+			tempusersArrayList.addAll(checkuserArrayList);
 		} else if (s.equals("Worklist")) {
-			arraylist.addAll(DocumentFragment.photosList4);
-			users.addAll(workuser);
-			tempusers.addAll(workuser);
+			arraylist.addAll(DocumentFragment.photosList4ArrayList);
+			usersArrayList.addAll(workuserArrayList);
+			tempusersArrayList.addAll(workuserArrayList);
 		} else if (s.equals("Report")) {
-			arraylist.addAll(DocumentFragment.photosList5);
-			users.addAll(reportuser);
-			tempusers.addAll(reportuser);
+			arraylist.addAll(DocumentFragment.photosList5ArrayList);
+			usersArrayList.addAll(reportuserArrayList);
+			tempusersArrayList.addAll(reportuserArrayList);
 
 		}
 
-		Collections.sort(users);
-		for (int i = 0; i < users.size(); i++) {
+		Collections.sort(usersArrayList);
+		for (int i = 0; i < usersArrayList.size(); i++) {
 			// Log.d("users", users.get(i));
 		}
 		if (arraylist.isEmpty()) {
@@ -521,35 +525,35 @@ public class ImageActivity extends Activity {
 			do {
 				flag = 0;
 				if (pos == 0) {
-					txtView = new TextView(this);
-					txtView.setTypeface(Prefrences
+					textview = new TextView(this);
+					textview.setTypeface(Prefrences
 							.helveticaNeuelt(getApplicationContext()));
-					txtView.setText("" + users.get(pos));
-					txtView.setTextSize(30);
-					txtView.setTextColor(Color.WHITE);
-					txtView.setPadding(10, 0, 0, 0);
-					mainLayout.addView(txtView);
+					textview.setText("" + usersArrayList.get(pos));
+					textview.setTextSize(30);
+					textview.setTextColor(Color.WHITE);
+					textview.setPadding(10, 0, 0, 0);
+					linearlayoutMain.addView(textview);
 
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
 					flag = 1;
 					rowValue = 0;
 				} else if (pos != 0
-						&& !users.get(pos).equals(users.get(pos - 1))) {
+						&& !usersArrayList.get(pos).equals(usersArrayList.get(pos - 1))) {
 
-					txtView = new TextView(this);
-					txtView.setTypeface(Prefrences
+					textview = new TextView(this);
+					textview.setTypeface(Prefrences
 							.helveticaNeuelt(getApplicationContext()));
-					txtView.setText("" + users.get(pos));
-					txtView.setTextSize(30);
-					txtView.setTextColor(Color.WHITE);
-					txtView.setPadding(10, 0, 0, 0);
-					mainLayout.addView(txtView);
+					textview.setText("" + usersArrayList.get(pos));
+					textview.setTextSize(30);
+					textview.setTextColor(Color.WHITE);
+					textview.setPadding(10, 0, 0, 0);
+					linearlayoutMain.addView(textview);
 
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
 					flag = 1;
 					rowValue = 0;
 				}
@@ -563,12 +567,12 @@ public class ImageActivity extends Activity {
 					count++;
 				}
 				Log.d("count", "" + count);
-				imgView = new ImageView(this);
+				imageview = new ImageView(this);
 				int indexplus = 0;
-				for (int j = 0; j < tempusers.size(); j++) {
+				for (int j = 0; j < tempusersArrayList.size(); j++) {
 					// Log.d("tempusers.get("+j+"):",tempusers.get(j));
 					// Log.d("users.get("+i+"):",users.get(i));
-					if (tempusers.get(j).equals(users.get(pos))) {
+					if (tempusersArrayList.get(j).equals(usersArrayList.get(pos))) {
 						indexplus++;
 						if (count == indexplus) {
 							index = j;
@@ -580,47 +584,47 @@ public class ImageActivity extends Activity {
 				// Log.d("", "------1---"+users);
 				// Log.d("", "------2----"+tempusers);
 				// Log.d("", "------3------"+index);
-				arr.add(arraylist.get(index).urlLarge);
-				ids.add(arraylist.get(index).id);
-				desc.add(arraylist.get(index).description);
+				arrArrayList.add(arraylist.get(index).urlLarge);
+				idsArrayList.add(arraylist.get(index).id);
+				descArrayList.add(arraylist.get(index).description);
 				if (rowValue < 3) {
 					rowValue++;
-					imgView.setTag(pos);
+					imageview.setTag(pos);
 					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 							(int) (220 * ASSL.Xscale()),
 							(int) (220 * ASSL.Yscale()));
 					lp.setMargins(15, 10, 0, 10);
 
-					imgView.setLayoutParams(lp);
+					imageview.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
-							.into(imgView);
-					lay.addView(imgView);
+							.into(imageview);
+					linearlayout.addView(imageview);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
 				} else {
 					rowValue = 0;
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
-					imgView.setTag(pos);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
+					imageview.setTag(pos);
 					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 							(int) (220 * ASSL.Xscale()),
 							(int) (220 * ASSL.Yscale()));
 					lp.setMargins(15, 10, 0, 10);
 
-					imgView.setLayoutParams(lp);
+					imageview.setLayoutParams(lp);
 
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
-							.into(imgView);
-					lay.addView(imgView);
+							.into(imageview);
+					linearlayout.addView(imageview);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
 					rowValue++;
 				}
 
-				imgView.setOnClickListener(new OnClickListener() {
+				imageview.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
@@ -632,35 +636,35 @@ public class ImageActivity extends Activity {
 
 						Intent intent = new Intent(ImageActivity.this,
 								SelectedImageView.class);
-						intent.putExtra("array", arr);
-						intent.putExtra("ids", ids);
-						intent.putExtra("desc", desc);
-						intent.putExtra("key", key);
-						Log.d("", "----0000000----" + key);
+						intent.putExtra("array", arrArrayList);
+						intent.putExtra("ids", idsArrayList);
+						intent.putExtra("desc", descArrayList);
+						intent.putExtra("key", keyString);
+						Log.d("", "----0000000----" + keyString);
 						intent.putExtra("id",
 								arraylist.get(Prefrences.selectedPic).id);
 
-						intent.putStringArrayListExtra("doc", docuser);
-						intent.putStringArrayListExtra("work", workuser);
-						intent.putStringArrayListExtra("check", checkuser);
-						intent.putStringArrayListExtra("report", reportuser);
-						intent.putStringArrayListExtra("allusers", allusers);
+						intent.putStringArrayListExtra("doc", docuserArrayList);
+						intent.putStringArrayListExtra("work", workuserArrayList);
+						intent.putStringArrayListExtra("check", checkuserArrayList);
+						intent.putStringArrayListExtra("report", reportuserArrayList);
+						intent.putStringArrayListExtra("allusers", allusersArrayList);
 
-						intent.putStringArrayListExtra("doc_date", docdate);
-						intent.putStringArrayListExtra("work_date", workdate);
-						intent.putStringArrayListExtra("check_date", checkdate);
+						intent.putStringArrayListExtra("doc_date", docdateArrayList);
+						intent.putStringArrayListExtra("work_date", workdateArrayList);
+						intent.putStringArrayListExtra("check_date", checkdateArrayList);
 						intent.putStringArrayListExtra("report_date",
-								reportdate);
-						intent.putStringArrayListExtra("all_date", alldates);
+								reportdateArrayList);
+						intent.putStringArrayListExtra("all_date", alldatesArrayList);
 
-						intent.putStringArrayListExtra("doc_phase", docphase);
+						intent.putStringArrayListExtra("doc_phase", docphaseArrayList);
 						intent.putStringArrayListExtra("worklist_phase",
-								worklistphase);
+								worklistphaseArrayList);
 						intent.putStringArrayListExtra("checklist_phase",
-								checklistphase);
+								checklistphaseArrayList);
 						intent.putStringArrayListExtra("report_phase",
-								reportphase);
-						intent.putStringArrayListExtra("all_phase", allphase);
+								reportphaseArrayList);
+						intent.putStringArrayListExtra("all_phase", allphaseArrayList);
 						startActivity(intent);
 						finish();
 						overridePendingTransition(R.anim.slide_in_right,
@@ -668,54 +672,54 @@ public class ImageActivity extends Activity {
 					}
 				});
 				pos++;
-			} while (pos < users.size());
+			} while (pos < usersArrayList.size());
 		}
 	}
 
 	void byDate(String str) {
-		mainLayout.removeAllViews();
+		linearlayoutMain.removeAllViews();
 		arraylist.clear();
-		dates.clear();
-		tempdates.clear();
-		arr.clear();
-		ids.clear();
-		desc.clear();
+		datesArrayList.clear();
+		tempdatesArrayList.clear();
+		arrArrayList.clear();
+		idsArrayList.clear();
+		descArrayList.clear();
 		// Log.d("work date size", "" + work_date.size());
 		// Log.d("check date size", "" + check_date.size());
 		// Log.d("report date size", "" + report_date.size());
 		// Log.d("doc date size", "" + doc_date.size());
-		Log.d("all users date size", "" + alldates.size());
+		Log.d("all users date size", "" + alldatesArrayList.size());
 		if (str.equals("All")) {
-			arraylist.addAll(DocumentFragment.photosList);
-			dates.addAll(alldates);
-			tempdates.addAll(alldates);
+			arraylist.addAll(DocumentFragment.photosListArrayList);
+			datesArrayList.addAll(alldatesArrayList);
+			tempdatesArrayList.addAll(alldatesArrayList);
 		}
 		if (str.equals("Project Docs")) {
-			arraylist.addAll(DocumentFragment.photosList2);
-			dates.addAll(docdate);
-			tempdates.addAll(docdate);
+			arraylist.addAll(DocumentFragment.photosList2ArrayList);
+			datesArrayList.addAll(docdateArrayList);
+			tempdatesArrayList.addAll(docdateArrayList);
 		} else if (str.equals("Checklist")) {
-			arraylist.addAll(DocumentFragment.photosList3);
-			dates.addAll(checkdate);
-			tempdates.addAll(checkdate);
+			arraylist.addAll(DocumentFragment.photosList3ArrayList);
+			datesArrayList.addAll(checkdateArrayList);
+			tempdatesArrayList.addAll(checkdateArrayList);
 		} else if (str.equals("Worklist")) {
-			arraylist.addAll(DocumentFragment.photosList4);
-			dates.addAll(workdate);
-			tempdates.addAll(workdate);
+			arraylist.addAll(DocumentFragment.photosList4ArrayList);
+			datesArrayList.addAll(workdateArrayList);
+			tempdatesArrayList.addAll(workdateArrayList);
 		} else if (str.equals("Report")) {
-			arraylist.addAll(DocumentFragment.photosList5);
-			dates.addAll(reportdate);
-			tempdates.addAll(reportdate);
+			arraylist.addAll(DocumentFragment.photosList5ArrayList);
+			datesArrayList.addAll(reportdateArrayList);
+			tempdatesArrayList.addAll(reportdateArrayList);
 
 		}
 
-		for (int i = 0; i < tempdates.size(); i++) {
+		for (int i = 0; i < tempdatesArrayList.size(); i++) {
 			// Log.d("tempdates", tempdates.get(i));
 			// Log.d("temp uri", arraylist.get(i).urlLarge);
 		}
 
-		Collections.sort(dates, Collections.reverseOrder());
-		for (int i = 0; i < dates.size(); i++) {
+		Collections.sort(datesArrayList, Collections.reverseOrder());
+		for (int i = 0; i < datesArrayList.size(); i++) {
 			// Log.d("dates", dates.get(i));
 		}
 		if (arraylist.isEmpty()) {
@@ -728,35 +732,35 @@ public class ImageActivity extends Activity {
 			do {
 				flag = 0;
 				if (pos == 0) {
-					txtView = new TextView(this);
-					txtView.setTypeface(Prefrences
+					textview = new TextView(this);
+					textview.setTypeface(Prefrences
 							.helveticaNeuelt(getApplicationContext()));
-					txtView.setText("" + dates.get(pos));
-					txtView.setTextSize(30);
-					txtView.setTextColor(Color.WHITE);
-					txtView.setPadding(10, 0, 0, 0);
-					mainLayout.addView(txtView);
+					textview.setText("" + datesArrayList.get(pos));
+					textview.setTextSize(30);
+					textview.setTextColor(Color.WHITE);
+					textview.setPadding(10, 0, 0, 0);
+					linearlayoutMain.addView(textview);
 
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
 					flag = 1;
 					rowValue = 0;
 				} else if (pos != 0
-						&& !dates.get(pos).equals(dates.get(pos - 1))) {
+						&& !datesArrayList.get(pos).equals(datesArrayList.get(pos - 1))) {
 
-					txtView = new TextView(this);
-					txtView.setTypeface(Prefrences
+					textview = new TextView(this);
+					textview.setTypeface(Prefrences
 							.helveticaNeuelt(getApplicationContext()));
-					txtView.setText("" + dates.get(pos));
-					txtView.setTextSize(30);
-					txtView.setTextColor(Color.WHITE);
-					txtView.setPadding(10, 0, 0, 0);
-					mainLayout.addView(txtView);
+					textview.setText("" + datesArrayList.get(pos));
+					textview.setTextSize(30);
+					textview.setTextColor(Color.WHITE);
+					textview.setPadding(10, 0, 0, 0);
+					linearlayoutMain.addView(textview);
 
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
 					flag = 1;
 					rowValue = 0;
 				}
@@ -770,12 +774,12 @@ public class ImageActivity extends Activity {
 					count++;
 				}
 				Log.d("count", "" + count);
-				imgView = new ImageView(this);
+				imageview = new ImageView(this);
 				int indexplus = 0;
-				for (int j = 0; j < tempdates.size(); j++) {
+				for (int j = 0; j < tempdatesArrayList.size(); j++) {
 					// Log.d("tempdates.get("+j+"):",tempdates.get(j));
 					// Log.d("dates.get("+i+"):",dates.get(i));
-					if (tempdates.get(j).equals(dates.get(pos))) {
+					if (tempdatesArrayList.get(j).equals(datesArrayList.get(pos))) {
 						indexplus++;
 						if (count == indexplus) {
 							index = j;
@@ -785,48 +789,48 @@ public class ImageActivity extends Activity {
 					}
 				}
 				Log.d("", "-----1----" + index);
-				Log.d("", "-----2----" + dates.size());
-				Log.d("", "-----3----" + tempdates.size());
-				arr.add(arraylist.get(index).urlLarge);
-				ids.add(arraylist.get(index).id);
-				desc.add(arraylist.get(index).description);
+				Log.d("", "-----2----" + datesArrayList.size());
+				Log.d("", "-----3----" + tempdatesArrayList.size());
+				arrArrayList.add(arraylist.get(index).urlLarge);
+				idsArrayList.add(arraylist.get(index).id);
+				descArrayList.add(arraylist.get(index).description);
 
 				if (rowValue < 3) {
 					rowValue++;
-					imgView.setTag(pos);
+					imageview.setTag(pos);
 					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 							(int) (220 * ASSL.Xscale()),
 							(int) (220 * ASSL.Yscale()));
 					lp.setMargins(15, 10, 0, 10);
 
-					imgView.setLayoutParams(lp);
+					imageview.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
-							.into(imgView);
-					lay.addView(imgView);
+							.into(imageview);
+					linearlayout.addView(imageview);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
 				} else {
 					rowValue = 0;
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
-					imgView.setTag(pos);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
+					imageview.setTag(pos);
 					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 							(int) (220 * ASSL.Xscale()),
 							(int) (220 * ASSL.Yscale()));
 					lp.setMargins(15, 10, 0, 10);
 
-					imgView.setLayoutParams(lp);
+					imageview.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
-							.into(imgView);
-					lay.addView(imgView);
+							.into(imageview);
+					linearlayout.addView(imageview);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
 					rowValue++;
 				}
-				imgView.setOnClickListener(new OnClickListener() {
+				imageview.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
@@ -838,35 +842,35 @@ public class ImageActivity extends Activity {
 
 						Intent intent = new Intent(ImageActivity.this,
 								SelectedImageView.class);
-						intent.putExtra("array", arr);
-						intent.putExtra("ids", ids);
-						intent.putExtra("desc", desc);
-						intent.putExtra("key", key);
-						Log.d("", "----0000000----" + key);
+						intent.putExtra("array", arrArrayList);
+						intent.putExtra("ids", idsArrayList);
+						intent.putExtra("desc", descArrayList);
+						intent.putExtra("key", keyString);
+						Log.d("", "----0000000----" + keyString);
 						intent.putExtra("id",
 								arraylist.get(Prefrences.selectedPic).id);
 
-						intent.putStringArrayListExtra("doc", docuser);
-						intent.putStringArrayListExtra("work", workuser);
-						intent.putStringArrayListExtra("check", checkuser);
-						intent.putStringArrayListExtra("report", reportuser);
-						intent.putStringArrayListExtra("allusers", allusers);
+						intent.putStringArrayListExtra("doc", docuserArrayList);
+						intent.putStringArrayListExtra("work", workuserArrayList);
+						intent.putStringArrayListExtra("check", checkuserArrayList);
+						intent.putStringArrayListExtra("report", reportuserArrayList);
+						intent.putStringArrayListExtra("allusers", allusersArrayList);
 
-						intent.putStringArrayListExtra("doc_date", docdate);
-						intent.putStringArrayListExtra("work_date", workdate);
-						intent.putStringArrayListExtra("check_date", checkdate);
+						intent.putStringArrayListExtra("doc_date", docdateArrayList);
+						intent.putStringArrayListExtra("work_date", workdateArrayList);
+						intent.putStringArrayListExtra("check_date", checkdateArrayList);
 						intent.putStringArrayListExtra("report_date",
-								reportdate);
-						intent.putStringArrayListExtra("all_date", alldates);
+								reportdateArrayList);
+						intent.putStringArrayListExtra("all_date", alldatesArrayList);
 
-						intent.putStringArrayListExtra("doc_phase", docphase);
+						intent.putStringArrayListExtra("doc_phase", docphaseArrayList);
 						intent.putStringArrayListExtra("worklist_phase",
-								worklistphase);
+								worklistphaseArrayList);
 						intent.putStringArrayListExtra("checklist_phase",
-								checklistphase);
+								checklistphaseArrayList);
 						intent.putStringArrayListExtra("report_phase",
-								reportphase);
-						intent.putStringArrayListExtra("all_phase", allphase);
+								reportphaseArrayList);
+						intent.putStringArrayListExtra("all_phase", allphaseArrayList);
 						startActivity(intent);
 						finish();
 						overridePendingTransition(R.anim.slide_in_right,
@@ -874,55 +878,55 @@ public class ImageActivity extends Activity {
 					}
 				});
 				pos++;
-			} while (pos < dates.size());
+			} while (pos < datesArrayList.size());
 		}
 	}
 
 	void byPhase(String str) {
-		mainLayout.removeAllViews();
+		linearlayoutMain.removeAllViews();
 		arraylist.clear();
-		phase.clear();
-		tempphase.clear();
-		arr.clear();
-		ids.clear();
-		desc.clear();
-		Log.d("work phase size", "" + worklistphase.size());
-		Log.d("check phase size", "" + checklistphase.size());
-		Log.d("report phase size", "" + reportphase.size());
-		Log.d("doc phase size", "" + docphase.size());
-		Log.d("all users phase size", "" + allphase.size());
+		phaseArrayList.clear();
+		tempphaseArrayList.clear();
+		arrArrayList.clear();
+		idsArrayList.clear();
+		descArrayList.clear();
+		Log.d("work phase size", "" + worklistphaseArrayList.size());
+		Log.d("check phase size", "" + checklistphaseArrayList.size());
+		Log.d("report phase size", "" + reportphaseArrayList.size());
+		Log.d("doc phase size", "" + docphaseArrayList.size());
+		Log.d("all users phase size", "" + allphaseArrayList.size());
 		if (str.equals("All")) {
-			arraylist.addAll(DocumentFragment.photosList);
-			phase.addAll(allphase);
-			tempphase.addAll(allphase);
+			arraylist.addAll(DocumentFragment.photosListArrayList);
+			phaseArrayList.addAll(allphaseArrayList);
+			tempphaseArrayList.addAll(allphaseArrayList);
 		}
 		if (str.equals("Project Docs")) {
-			arraylist.addAll(DocumentFragment.photosList2);
-			phase.addAll(docphase);
-			tempphase.addAll(docphase);
+			arraylist.addAll(DocumentFragment.photosList2ArrayList);
+			phaseArrayList.addAll(docphaseArrayList);
+			tempphaseArrayList.addAll(docphaseArrayList);
 		} else if (str.equals("Checklist")) {
-			arraylist.addAll(DocumentFragment.photosList3);
-			phase.addAll(checklistphase);
-			tempphase.addAll(checklistphase);
+			arraylist.addAll(DocumentFragment.photosList3ArrayList);
+			phaseArrayList.addAll(checklistphaseArrayList);
+			tempphaseArrayList.addAll(checklistphaseArrayList);
 		} else if (str.equals("Worklist")) {
-			arraylist.addAll(DocumentFragment.photosList4);
-			phase.addAll(worklistphase);
-			tempphase.addAll(worklistphase);
+			arraylist.addAll(DocumentFragment.photosList4ArrayList);
+			phaseArrayList.addAll(worklistphaseArrayList);
+			tempphaseArrayList.addAll(worklistphaseArrayList);
 		} else if (str.equals("Report")) {
-			arraylist.addAll(DocumentFragment.photosList5);
-			phase.addAll(reportphase);
-			tempphase.addAll(reportphase);
+			arraylist.addAll(DocumentFragment.photosList5ArrayList);
+			phaseArrayList.addAll(reportphaseArrayList);
+			tempphaseArrayList.addAll(reportphaseArrayList);
 
 		}
 
-		for (int i = 0; i < tempphase.size(); i++) {
+		for (int i = 0; i < tempphaseArrayList.size(); i++) {
 			// Log.d("tempphase", tempphase.get(i));
 			// Log.d("temp uri", arraylist.get(i).urlLarge);
 		}
 
-		Collections.sort(phase);
-		for (int i = 0; i < phase.size(); i++) {
-			Log.d("phase", phase.get(i));
+		Collections.sort(phaseArrayList);
+		for (int i = 0; i < phaseArrayList.size(); i++) {
+			Log.d("phase", phaseArrayList.get(i));
 		}
 		if (arraylist.isEmpty()) {
 			Toast.makeText(getApplicationContext(), "null", Toast.LENGTH_LONG)
@@ -934,35 +938,35 @@ public class ImageActivity extends Activity {
 			do {
 				flag = 0;
 				if (pos == 0) {
-					txtView = new TextView(this);
-					txtView.setTypeface(Prefrences
+					textview = new TextView(this);
+					textview.setTypeface(Prefrences
 							.helveticaNeuelt(getApplicationContext()));
-					txtView.setText("" + phase.get(pos));
-					txtView.setTextSize(30);
-					txtView.setPadding(10, 0, 0, 0);
-					txtView.setTextColor(Color.WHITE);
-					mainLayout.addView(txtView);
+					textview.setText("" + phaseArrayList.get(pos));
+					textview.setTextSize(30);
+					textview.setPadding(10, 0, 0, 0);
+					textview.setTextColor(Color.WHITE);
+					linearlayoutMain.addView(textview);
 
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
 					flag = 1;
 					rowValue = 0;
 				} else if (pos != 0
-						&& !phase.get(pos).equals(phase.get(pos - 1))) {
+						&& !phaseArrayList.get(pos).equals(phaseArrayList.get(pos - 1))) {
 
-					txtView = new TextView(this);
-					txtView.setTypeface(Prefrences
+					textview = new TextView(this);
+					textview.setTypeface(Prefrences
 							.helveticaNeuelt(getApplicationContext()));
-					txtView.setText("" + phase.get(pos));
-					txtView.setTextSize(30);
-					txtView.setPadding(10, 0, 0, 0);
-					txtView.setTextColor(Color.WHITE);
-					mainLayout.addView(txtView);
+					textview.setText("" + phaseArrayList.get(pos));
+					textview.setTextSize(30);
+					textview.setPadding(10, 0, 0, 0);
+					textview.setTextColor(Color.WHITE);
+					linearlayoutMain.addView(textview);
 
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
 					flag = 1;
 					rowValue = 0;
 				}
@@ -976,12 +980,12 @@ public class ImageActivity extends Activity {
 					count++;
 				}
 				Log.d("count", "" + count);
-				imgView = new ImageView(this);
+				imageview = new ImageView(this);
 				int indexplus = 0;
-				for (int j = 0; j < tempphase.size(); j++) {
-					Log.d("tempphase.get(" + j + "):", tempphase.get(j));
-					Log.d("phase.get(" + pos + "):", phase.get(pos));
-					if (tempphase.get(j).equals(phase.get(pos))) {
+				for (int j = 0; j < tempphaseArrayList.size(); j++) {
+					Log.d("tempphase.get(" + j + "):", tempphaseArrayList.get(j));
+					Log.d("phase.get(" + pos + "):", phaseArrayList.get(pos));
+					if (tempphaseArrayList.get(j).equals(phaseArrayList.get(pos))) {
 						indexplus++;
 						if (count == indexplus) {
 							index = j;
@@ -991,52 +995,52 @@ public class ImageActivity extends Activity {
 					}
 				}
 				Log.d("", "-----1----" + index);
-				Log.d("", "-----2----" + phase.size());
-				Log.d("", "-----3----" + tempphase.size());
-				arr.add(arraylist.get(index).urlLarge);
-				ids.add(arraylist.get(index).id);
-				desc.add(arraylist.get(index).description);
+				Log.d("", "-----2----" + phaseArrayList.size());
+				Log.d("", "-----3----" + tempphaseArrayList.size());
+				arrArrayList.add(arraylist.get(index).urlLarge);
+				idsArrayList.add(arraylist.get(index).id);
+				descArrayList.add(arraylist.get(index).description);
 				if (rowValue < 3) {
 					rowValue++;
-					imgView.setTag(pos);
+					imageview.setTag(pos);
 					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 							(int) (220 * ASSL.Xscale()),
 							(int) (220 * ASSL.Yscale()));
 					lp.setMargins(15, 10, 0, 0);
 
-					imgView.setLayoutParams(lp);
+					imageview.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
-							.into(imgView);
-					lay.addView(imgView);
+							.into(imageview);
+					linearlayout.addView(imageview);
 					Log.d("actual uri", arraylist.get(index).urlLarge);
 				} else {
 					rowValue = 0;
-					lay = new LinearLayout(this);
-					lay.setOrientation(LinearLayout.HORIZONTAL);
-					mainLayout.addView(lay);
-					imgView.setTag(pos);
+					linearlayout = new LinearLayout(this);
+					linearlayout.setOrientation(LinearLayout.HORIZONTAL);
+					linearlayoutMain.addView(linearlayout);
+					imageview.setTag(pos);
 					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 							(int) (220 * ASSL.Xscale()),
 							(int) (220 * ASSL.Yscale()));
 					lp.setMargins(15, 10, 0, 0);
 
-					imgView.setLayoutParams(lp);
+					imageview.setLayoutParams(lp);
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
-							.into(imgView);
-					lay.addView(imgView);
+							.into(imageview);
+					linearlayout.addView(imageview);
 					Log.d("actual uri", arraylist.get(index).urlLarge);
 					rowValue++;
 				}
-				imgView.setOnClickListener(new OnClickListener() {
+				imageview.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						if (isInternetPresent) {
+						if (isInternetPresentBoolean) {
 							
 						
 						Log.i("Tag Value", "" + Prefrences.selectedPic);
@@ -1045,35 +1049,35 @@ public class ImageActivity extends Activity {
 
 						Intent intent = new Intent(ImageActivity.this,
 								SelectedImageView.class);
-						intent.putExtra("array", arr);
-						intent.putExtra("ids", ids);
-						intent.putExtra("desc", desc);
-						intent.putExtra("key", key);
-						Log.d("", "----0000000----" + key);
+						intent.putExtra("array", arrArrayList);
+						intent.putExtra("ids", idsArrayList);
+						intent.putExtra("desc", descArrayList);
+						intent.putExtra("key", keyString);
+						Log.d("", "----0000000----" + keyString);
 						intent.putExtra("id",
 								arraylist.get(Prefrences.selectedPic).id);
 
-						intent.putStringArrayListExtra("doc", docuser);
-						intent.putStringArrayListExtra("work", workuser);
-						intent.putStringArrayListExtra("check", checkuser);
-						intent.putStringArrayListExtra("report", reportuser);
-						intent.putStringArrayListExtra("allusers", allusers);
+						intent.putStringArrayListExtra("doc", docuserArrayList);
+						intent.putStringArrayListExtra("work", workuserArrayList);
+						intent.putStringArrayListExtra("check", checkuserArrayList);
+						intent.putStringArrayListExtra("report", reportuserArrayList);
+						intent.putStringArrayListExtra("allusers", allusersArrayList);
 
-						intent.putStringArrayListExtra("doc_date", docdate);
-						intent.putStringArrayListExtra("work_date", workdate);
-						intent.putStringArrayListExtra("check_date", checkdate);
+						intent.putStringArrayListExtra("doc_date", docdateArrayList);
+						intent.putStringArrayListExtra("work_date", workdateArrayList);
+						intent.putStringArrayListExtra("check_date", checkdateArrayList);
 						intent.putStringArrayListExtra("report_date",
-								reportdate);
-						intent.putStringArrayListExtra("all_date", alldates);
+								reportdateArrayList);
+						intent.putStringArrayListExtra("all_date", alldatesArrayList);
 
-						intent.putStringArrayListExtra("doc_phase", docphase);
+						intent.putStringArrayListExtra("doc_phase", docphaseArrayList);
 						intent.putStringArrayListExtra("worklist_phase",
-								worklistphase);
+								worklistphaseArrayList);
 						intent.putStringArrayListExtra("checklist_phase",
-								checklistphase);
+								checklistphaseArrayList);
 						intent.putStringArrayListExtra("report_phase",
-								reportphase);
-						intent.putStringArrayListExtra("all_phase", allphase);
+								reportphaseArrayList);
+						intent.putStringArrayListExtra("all_phase", allphaseArrayList);
 						startActivity(intent);
 						finish();
 						overridePendingTransition(R.anim.slide_in_right,
@@ -1084,7 +1088,7 @@ public class ImageActivity extends Activity {
 					}
 				});
 				pos++;
-			} while (pos < phase.size());
+			} while (pos < phaseArrayList.size());
 		}
 	}
 

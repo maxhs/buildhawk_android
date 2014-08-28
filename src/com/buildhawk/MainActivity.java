@@ -1,5 +1,9 @@
 package com.buildhawk;
 
+/*
+ *  This file is used to get the user id and password and device token to login.
+ */
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,20 +15,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
@@ -33,14 +34,14 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class MainActivity extends Activity {
-	Button btn_login;
-	private String regId;
+	Button buttonLogin;
+	private String regIdString;
 	SharedPreferences pref;
-	EditText txt_email, txt_pass;
+	EditText edittextEmail, edittextPass;
 	ConnectionDetector connDect;
-	Boolean isInternetPresent = false;
-	RelativeLayout relLay;
-	ScrollView scroll;
+	Boolean isInternetPresentBoolean = false;
+	RelativeLayout relativelayoutRoot;
+//	ScrollView scrollview;
 	ImageView imageview;
 	SharedPreferences sharedpref;
 
@@ -48,21 +49,21 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		relLay = (RelativeLayout) findViewById(R.id.rellay);
-		new ASSL(this, relLay, 1134, 720, false);
+		relativelayoutRoot = (RelativeLayout) findViewById(R.id.relativeLayoutRoot);
+		new ASSL(this, relativelayoutRoot, 1134, 720, false);
 
-		txt_email = (EditText) findViewById(R.id.email);
-		txt_pass = (EditText) findViewById(R.id.password);
+		edittextEmail = (EditText) findViewById(R.id.edittextEmail);
+		edittextPass = (EditText) findViewById(R.id.edittextPass);
 
-		btn_login = (Button) findViewById(R.id.login);
-		scroll = (ScrollView) findViewById(R.id.scrollView1);
+		buttonLogin = (Button) findViewById(R.id.buttonLogin);
+//		scrollview = (ScrollView) findViewById(R.id.scrollView1);
 		imageview = (ImageView) findViewById(R.id.imageView1);
 
-		txt_email.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		txt_pass.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		edittextEmail.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		edittextPass.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
 
 		connDect = new ConnectionDetector(getApplicationContext());
-		isInternetPresent = connDect.isConnectingToInternet();
+		isInternetPresentBoolean = ConnectionDetector.isConnectingToInternet();
 		sharedpref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
 		
 
@@ -72,31 +73,31 @@ public class MainActivity extends Activity {
 			Log.e("error", "" + e.toString());
 		}
 
-		txt_pass.setOnTouchListener(new OnTouchListener() {
+		edittextPass.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
 				// img.setVisibility(View.INVISIBLE);
-				scroll.fullScroll(ScrollView.FOCUS_DOWN);
+//				scrollview.fullScroll(ScrollView.FOCUS_DOWN);
 
 				return false;
 			}
 		});
 
-		txt_email.setOnTouchListener(new OnTouchListener() {
+		edittextEmail.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
 				// img.setVisibility(View.INVISIBLE);
-				scroll.fullScroll(ScrollView.FOCUS_DOWN);
+//				scrollview.fullScroll(ScrollView.FOCUS_DOWN);
 
 				return false;
 			}
 		});
 
-		btn_login.setOnClickListener(new OnClickListener() {
+		buttonLogin.setOnClickListener(new OnClickListener() {
 			@SuppressLint("ShowToast")
 			@Override
 			public void onClick(View v) {
@@ -113,7 +114,7 @@ public class MainActivity extends Activity {
 					exception.printStackTrace();
 
 				}
-				if (isInternetPresent) {
+				if (isInternetPresentBoolean) {
 					sessionData();
 
 				} else {
@@ -129,14 +130,14 @@ public class MainActivity extends Activity {
 	private void registerWithGCM() {
 		GCMRegistrar.checkDevice(this);
 		GCMRegistrar.checkManifest(this);
-		regId = GCMRegistrar.getRegistrationId(this);
-		if (regId.equals("")) {
-			GCMRegistrar.register(this, "454876423564"); // Note: get the sender
-			Log.v("reg id ", "" + regId); // id from
+		regIdString = GCMRegistrar.getRegistrationId(this);
+		if (regIdString.equals("")) {
+			GCMRegistrar.register(this, "149110570482"); // Note: get the sender 149110570482
+			Log.v("reg id new ", "" + regIdString); // id from
 			// configuration.
 		} else {
 			// Data.device_tok = regId;
-			Log.v("Registration", "Already registered, regId: " + regId);
+			Log.v("Registration", "Already registered, regId: " + regIdString);
 		}
 	}
 
@@ -145,12 +146,14 @@ public class MainActivity extends Activity {
 	public void sessionData() {
 
 		Prefrences.showLoadingDialog(MainActivity.this, "Loading...");
-
+		Log.v("Send...", "" + edittextEmail.getText().toString() + ", " + edittextPass.getText().toString() + ", "+ regIdString);
 		RequestParams params = new RequestParams();
 
-		params.put("email", txt_email.getText().toString());
-		params.put("password", txt_pass.getText().toString());
-		params.put("device_token", regId);
+		params.put("email", edittextEmail.getText().toString());
+		params.put("password", edittextPass.getText().toString());
+		params.put("device_token", regIdString);
+		Log.d("reg id HITTED ", "" + regIdString);
+		params.put("device_type", "3");
 
 		AsyncHttpClient client = new AsyncHttpClient();
 
@@ -231,8 +234,8 @@ public class MainActivity extends Activity {
 						}
 						Prefrences.dismissLoadingDialog();
 						Prefrences.saveAccessToken(Prefrences.userId,
-								txt_email.getText().toString(), txt_pass.getText().toString(),
-								getApplicationContext());
+								edittextEmail.getText().toString(), edittextPass.getText().toString(),
+								regIdString,getApplicationContext());
 
 						startActivity(new Intent(MainActivity.this,
 								Homepage.class));

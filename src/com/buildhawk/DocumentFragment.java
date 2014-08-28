@@ -1,6 +1,7 @@
 package com.buildhawk;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,7 +28,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.buildhawk.utils.Company;
 import com.buildhawk.utils.ProjectPhotos;
+import com.buildhawk.utils.Users;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -35,42 +38,48 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
-
+/*
+ *  It filters the photos in the project and show them in a list.
+ * 
+ */
 public class DocumentFragment extends Fragment {
 
-	PullToRefreshListView docListView;
+	PullToRefreshListView pullToRefreshListView;
 	ConnectionDetector connDect;
-	Boolean isInternetPresent = false;
-	Boolean pull = false;
-	public static ArrayList<ProjectPhotos> photosList = new ArrayList<ProjectPhotos>();
-	public static ArrayList<ProjectPhotos> photosList2 = new ArrayList<ProjectPhotos>();
-	public static ArrayList<ProjectPhotos> photosList3 = new ArrayList<ProjectPhotos>();
-	public static ArrayList<ProjectPhotos> photosList4 = new ArrayList<ProjectPhotos>();
-	public static ArrayList<ProjectPhotos> photosList5 = new ArrayList<ProjectPhotos>();
-	public static ArrayList<String> proDocImg = new ArrayList<String>();
-	public static ArrayList<String> checklistImg = new ArrayList<String>();
-	public static ArrayList<String> worklistImg = new ArrayList<String>();
-	public static ArrayList<String> reportsImg = new ArrayList<String>();
+	Boolean isInternetPresentBoolean = false;
+	Boolean pullBoolean = false;
+	public static ArrayList<ProjectPhotos> photosListArrayList = new ArrayList<ProjectPhotos>();
+	public static ArrayList<ProjectPhotos> photosList2ArrayList = new ArrayList<ProjectPhotos>();
+	public static ArrayList<ProjectPhotos> photosList3ArrayList = new ArrayList<ProjectPhotos>();
+	public static ArrayList<ProjectPhotos> photosList4ArrayList = new ArrayList<ProjectPhotos>();
+	public static ArrayList<ProjectPhotos> photosList5ArrayList = new ArrayList<ProjectPhotos>();
+	public static ArrayList<String> proDocImgArrayList = new ArrayList<String>();
+	public static ArrayList<String> checklistImgArrayList = new ArrayList<String>();
+	public static ArrayList<String> worklistImgArrayList = new ArrayList<String>();
+	public static ArrayList<String> reportsImgArrayList = new ArrayList<String>();
 
-	public ArrayList<String> allUsers;// = new ArrayList<String>();
-	public ArrayList<String> docUsername;
-	public ArrayList<String> reportUsername;// = new ArrayList<String>();
-	public ArrayList<String> worklistUsername;
-	public ArrayList<String> checklistUsername;
+	public ArrayList<String> allUsersArrayList;// = new ArrayList<String>();
+	public ArrayList<String> docUsernameArrayList;
+	public ArrayList<String> reportUsernameArrayList;// = new ArrayList<String>();
+	public ArrayList<String> worklistUsernameArrayList;
+	public ArrayList<String> checklistUsernameArrayList;
 
-	public ArrayList<String> allDates;// = new ArrayList<String>();
-	public ArrayList<String> docDates;// = new ArrayList<String>();
-	public ArrayList<String> reportDates;// = new ArrayList<String>();
-	public ArrayList<String> worklistDates;// = new ArrayList<String>();
-	public ArrayList<String> checklistDates;// = new ArrayList<String>();
+	public ArrayList<String> allDatesArrayList;// = new ArrayList<String>();
+	public ArrayList<String> docDatesArrayList;// = new ArrayList<String>();
+	public ArrayList<String> reportDatesArrayList;// = new ArrayList<String>();
+	public ArrayList<String> worklistDatesArrayList;// = new ArrayList<String>();
+	public ArrayList<String> checklistDatesArrayList;// = new ArrayList<String>();
 
-	public ArrayList<String> allPhase;// = new ArrayList<String>();
-	public ArrayList<String> docPhase;// = new ArrayList<String>();
-	public ArrayList<String> reportPhase;// = new ArrayList<String>();
-	public ArrayList<String> worklistPhase;// = new ArrayList<String>();
-	public ArrayList<String> checklistPhase;// = new ArrayList<String>();
-	String totalCount;
-	RelativeLayout relLay;
+	public ArrayList<String> allPhaseArrayList;// = new ArrayList<String>();
+	public ArrayList<String> docPhaseArrayList;// = new ArrayList<String>();
+	public ArrayList<String> reportPhaseArrayList;// = new ArrayList<String>();
+	public ArrayList<String> worklistPhaseArrayList;// = new ArrayList<String>();
+	public ArrayList<String> checklistPhaseArrayList;// = new ArrayList<String>();
+	
+	public static ArrayList<String> ProDocFold;
+	public static ArrayList<String> ProDocFolders;
+	String totalCountString;
+	RelativeLayout relativelayoutRoot;
 	Activity activity;
 	SharedPreferences sharedpref;
 
@@ -80,31 +89,48 @@ public class DocumentFragment extends Fragment {
 
 		View root = inflater.inflate(R.layout.documents, container, false);
 
-		relLay = (RelativeLayout) root.findViewById(R.id.rellay);
-		new ASSL(getActivity(), relLay, 1134, 720, false);
-		docListView = (PullToRefreshListView) root.findViewById(R.id.docList);
+		relativelayoutRoot = (RelativeLayout) root.findViewById(R.id.relativelayoutRoot);
+		new ASSL(getActivity(), relativelayoutRoot, 1134, 720, false);
+		pullToRefreshListView = (PullToRefreshListView) root.findViewById(R.id.pullToRefreshListView);
 		// act=ProjectDetail.this;
-		sharedpref = getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
-		
-		if(Prefrences.document_s.equalsIgnoreCase("")){
-			Prefrences.document_bool=false;
+		sharedpref = getActivity().getSharedPreferences("MyPref", 0); // 0 - for
+																		// private
+																		// mode
+		if(Prefrences.selectedProId.equalsIgnoreCase(Prefrences.LastSelectedProId))
+		{
+			if(!Prefrences.LastDocument_s.equalsIgnoreCase(""))
+//				Prefrences.document_bool = true;
+//			else
+			{
+				Prefrences.document_s=Prefrences.LastDocument_s;			
+				Prefrences.document_bool = true;
+			}
 		}
-		
-		docListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+		else
+		{
+			if (Prefrences.document_s.equalsIgnoreCase("")) {
+				Prefrences.document_bool = false;
+			}
+		}
+		pullToRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
 
 			@Override
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 				// TODO Auto-generated method stub
 
-				if (isInternetPresent) {
-					pull = true;
+				if (isInternetPresentBoolean) {
+					pullBoolean = true;
+//					pullToRefreshListView.onRefreshComplete();
 					projectPhotos();
 				} else {
-				String response;
+					String response,projectId;
 					response = sharedpref.getString("documentlistfragment", "");
-					if(response.equalsIgnoreCase("")){
-						Toast.makeText(getActivity(), "No internet connection.",Toast.LENGTH_SHORT).show();
-					}else{
+//					projectId = sharedpref.getString("projectId", "");
+					if (response.equalsIgnoreCase("") ) {//&& projectId.equalsIgnoreCase("")) {
+						Toast.makeText(getActivity(),
+								"No internet connection.", Toast.LENGTH_SHORT)
+								.show();
+					} else {
 						fillServerData(response);
 					}
 				}
@@ -119,235 +145,424 @@ public class DocumentFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onResume();
 		connDect = new ConnectionDetector(getActivity());
-		isInternetPresent = connDect.isConnectingToInternet();
+		isInternetPresentBoolean = connDect.isConnectingToInternet();
 		if (Prefrences.stopingHit == 1) {
 			Prefrences.stopingHit = 0;
-			
-			if(Prefrences.document_bool==false){
-			if (isInternetPresent) {
-				projectPhotos();
-			} else {
-				String response = sharedpref.getString("documentlistfragment", "");
-				if(response.equalsIgnoreCase("")){
-					Toast.makeText(getActivity(),"No internet connection.", Toast.LENGTH_SHORT).show();
-				}else{
-					fillServerData(response);
-				}
-			}
-			}else{
+
+			if (Prefrences.document_bool == false ) {
 				
+				if (isInternetPresentBoolean) {
+
+					projectPhotos();
+				} else {
+					String response,projectId;
+					response = sharedpref.getString("documentlistfragment", "");
+//					projectId = sharedpref.getString("projectId", "");
+					if (response.equalsIgnoreCase("") ) {//&& projectId.equalsIgnoreCase("")) {
+						Toast.makeText(getActivity(),
+								"No internet connection.", Toast.LENGTH_SHORT)
+								.show();
+					}
+					else {
+						fillServerData(response);
+					}
+				}
+
+			} else {
+
 				JSONObject res = null;
 				try {
-					
-					
+
 					res = new JSONObject(Prefrences.document_s);
-					
-					photosList.clear();
-					photosList2.clear();
-					photosList3.clear();
-					photosList4.clear();
-					photosList5.clear();
-					proDocImg.clear();
-					checklistImg.clear();
-					worklistImg.clear();
-					reportsImg.clear();
-					allUsers = new ArrayList<String>();
-					reportUsername = new ArrayList<String>();
-					worklistUsername = new ArrayList<String>();
-					checklistUsername = new ArrayList<String>();
-					docUsername = new ArrayList<String>();
-					allDates = new ArrayList<String>();
-					docDates = new ArrayList<String>();
-					reportDates = new ArrayList<String>();
-					worklistDates = new ArrayList<String>();
-					checklistDates = new ArrayList<String>();
-					allPhase = new ArrayList<String>();
-					docPhase = new ArrayList<String>();
-					reportPhase = new ArrayList<String>();
-					worklistPhase = new ArrayList<String>();
-					checklistPhase = new ArrayList<String>();
+
+					photosListArrayList.clear();
+					photosList2ArrayList.clear();
+					photosList3ArrayList.clear();
+					photosList4ArrayList.clear();
+					photosList5ArrayList.clear();
+					proDocImgArrayList.clear();
+					checklistImgArrayList.clear();
+					worklistImgArrayList.clear();
+					reportsImgArrayList.clear();
+					allUsersArrayList = new ArrayList<String>();
+					reportUsernameArrayList = new ArrayList<String>();
+					worklistUsernameArrayList = new ArrayList<String>();
+					checklistUsernameArrayList = new ArrayList<String>();
+					docUsernameArrayList = new ArrayList<String>();
+					allDatesArrayList = new ArrayList<String>();
+					docDatesArrayList = new ArrayList<String>();
+					reportDatesArrayList = new ArrayList<String>();
+					worklistDatesArrayList = new ArrayList<String>();
+					checklistDatesArrayList = new ArrayList<String>();
+					allPhaseArrayList = new ArrayList<String>();
+					docPhaseArrayList = new ArrayList<String>();
+					reportPhaseArrayList = new ArrayList<String>();
+					worklistPhaseArrayList = new ArrayList<String>();
+					checklistPhaseArrayList = new ArrayList<String>();
 
 					Log.v("response ", "" + res.toString(2));
 					JSONArray photos = res.getJSONArray("photos");
 
 					for (int i = 0; i < photos.length(); i++) {
 						JSONObject count = photos.getJSONObject(i);
+						if(count.has("folder"))
+						{
 
-						photosList.add(new ProjectPhotos(count
-								.getString("id"), count
-								.getString("url_large"), count
-								.getString("original"), count
-								.getString("url_small"), count
-								.getString("url_thumb"), count
-								.getString("image_file_size"), count
-								.getString("image_content_type"), count
-								.getString("source"), count
-								.getString("phase"), count
-								.getString("created_at"), count
-								.getString("user_name"), count
-								.getString("name"), count
-								.getString("description"), count
-								.getString("date_string")));
+							JSONObject uCompany = count
+									.getJSONObject("folder");
+							
+//							userArrayList.add(new Users(
+//									uCount.getString("id"),
+//									uCount.getString("first_name"),
+//									uCount.getString("last_name"),
+//									uCount.getString("full_name"),
+//									uCount.getString("email"),
+//									uCount.getString("formatted_phone"),
+////									uCount.getString("authentication_token"),
+//									uCount.getString("url_thumb"),
+//									uCount.getString("url_small"),
+//									new Company(uCompany
+//											.getString("id"), uCompany
+//											.getString("name"))));
 
-						Log.d("----description----",
-								"----description----"
-										+ count.getString("description")
-										+ " name"
-										+ count.getString("name"));
-						if (count.getString("user_name").equals("null")) {
-							allUsers.add("kanika(null)");
-						} else {
-							allUsers.add(count.getString("user_name"));
-						}
-
-						if (count.getString("phase").equals("null")) {
-							allPhase.add("kanika_phase(null)");
-						} else {
-							allPhase.add(count.getString("phase"));
-						}
-
-						allDates.add(count.getString("date_string"));
-
-						if (photosList.get(i).source
-								.equalsIgnoreCase("Documents")) {
-							proDocImg.add(count.getString("source"));
-							photosList2.add(new ProjectPhotos(
-									count.getString("id"),
-									count.getString("url_large"),
-									count.getString("original"),
-									count.getString("url_small"),
-									count.getString("url_thumb"),
-									count.getString("image_file_size"),
-									count.getString("image_content_type"),
-									count.getString("source"), count
-											.getString("phase"), count
-											.getString("created_at"),
-									count.getString("user_name"), count
+							photosListArrayList.add(new ProjectPhotos(count.getString("id"), count
+									.getString("url_large"), count.getString("original"),
+									count.getString("url_small"), count
+											.getString("url_thumb"), count
+											.getString("image_file_size"), count
+											.getString("image_content_type"), count
+											.getString("source"), count.getString("phase"),
+									count.getString("created_at"), count
+											.getString("user_name"), count
 											.getString("name"), count
-											.getString("description"),
-									count.getString("date_string")));
-							if (count.getString("user_name").equals(
-									"null")) {
-								docUsername.add("kanika(null)");
-							} else {
-								docUsername.add(count
-										.getString("user_name"));
-							}
-							if (count.getString("phase").equals("null")) {
-								docPhase.add("kanika_phase(null)");
-							} else {
-								docPhase.add(count.getString("phase"));
-							}
+											.getString("description"), count
+											.getString("date_string"),new Company(uCompany
+													.getString("id"), uCompany
+													.getString("name"))));
 
-							docDates.add(count
-									.getString("date_string"));
-						} else if (photosList.get(i).source
-								.equalsIgnoreCase("Checklist")) {
-
-							checklistImg.add(count.getString("source"));
-							photosList3.add(new ProjectPhotos(
-									count.getString("id"),
-									count.getString("url_large"),
-									count.getString("original"),
-									count.getString("url_small"),
-									count.getString("url_thumb"),
-									count.getString("image_file_size"),
-									count.getString("image_content_type"),
-									count.getString("source"), count
-											.getString("phase"), count
-											.getString("created_at"),
-									count.getString("user_name"), count
-											.getString("name"), count
-											.getString("description"),
-									count.getString("date_string")));
-							if (count.getString("user_name").equals(
-									"null")) {
-								checklistUsername.add("kanika(null)");
+							Log.d("----description----",
+									"----description----" + count.getString("description")
+											+ " name" + count.getString("name"));
+							if (count.getString("user_name").equals("null")) {
+								allUsersArrayList.add("others(null)");
 							} else {
-								checklistUsername.add(count
-										.getString("user_name"));
+								allUsersArrayList.add(count.getString("user_name"));
 							}
 
 							if (count.getString("phase").equals("null")) {
-								checklistPhase
-										.add("kanika_phase(null)");
+								allPhaseArrayList.add("others_phase(null)");
 							} else {
-								checklistPhase.add(count
-										.getString("phase"));
+								allPhaseArrayList.add(count.getString("phase"));
 							}
 
-							checklistDates.add(count
-									.getString("date_string"));
-						} else if (photosList.get(i).source
-								.equalsIgnoreCase("Worklist")) {
-							worklistImg.add(count.getString("source"));
-							photosList4.add(new ProjectPhotos(
-									count.getString("id"),
-									count.getString("url_large"),
-									count.getString("original"),
-									count.getString("url_small"),
-									count.getString("url_thumb"),
-									count.getString("image_file_size"),
-									count.getString("image_content_type"),
-									count.getString("source"), count
-											.getString("phase"), count
-											.getString("created_at"),
-									count.getString("user_name"), count
+							allDatesArrayList.add(count.getString("date_string"));
+							
+
+							if (photosListArrayList.get(i).source.equalsIgnoreCase("Documents")) {
+								proDocImgArrayList.add(count.getString("source"));
+								photosList2ArrayList.add(new ProjectPhotos(count.getString("id"),
+										count.getString("url_large"), count
+												.getString("original"), count
+												.getString("url_small"), count
+												.getString("url_thumb"), count
+												.getString("image_file_size"), count
+												.getString("image_content_type"), count
+												.getString("source"), count
+												.getString("phase"), count
+												.getString("created_at"), count
+												.getString("user_name"), count
+												.getString("name"), count
+												.getString("description"), count
+												.getString("date_string"),new Company(uCompany
+														.getString("id"), uCompany
+														.getString("name"))
+												));
+								if (count.getString("user_name").equals("null")) {
+									docUsernameArrayList.add("others(null)");
+								} else {
+									docUsernameArrayList.add(count.getString("user_name"));
+								}
+								if (count.getString("phase").equals("null")) {
+									docPhaseArrayList.add("others_phase(null)");
+								} else {
+									docPhaseArrayList.add(count.getString("phase"));
+								}
+
+								docDatesArrayList.add(count.getString("date_string"));
+								
+								ProDocFold.add(photosListArrayList.get(i).folder.coName.toString());
+//								loc.addAll(WorklistFragment.locs);
+								
+								
+//							
+								
+								
+							} else if (photosListArrayList.get(i).source
+									.equalsIgnoreCase("Checklist")) {
+
+								checklistImgArrayList.add(count.getString("source"));
+								photosList3ArrayList.add(new ProjectPhotos(count.getString("id"),
+										count.getString("url_large"), count
+												.getString("original"), count
+												.getString("url_small"), count
+												.getString("url_thumb"), count
+												.getString("image_file_size"), count
+												.getString("image_content_type"), count
+												.getString("source"), count
+												.getString("phase"), count
+												.getString("created_at"), count
+												.getString("user_name"), count
+												.getString("name"), count
+												.getString("description"), count
+												.getString("date_string"),new Company(uCompany
+														.getString("id"), uCompany
+														.getString("name"))));
+								if (count.getString("user_name").equals("null")) {
+									checklistUsernameArrayList.add("others(null)");
+								} else {
+									checklistUsernameArrayList.add(count.getString("user_name"));
+								}
+
+								if (count.getString("phase").equals("null")) {
+									checklistPhaseArrayList.add("others_phase(null)");
+								} else {
+									checklistPhaseArrayList.add(count.getString("phase"));
+								}
+
+								checklistDatesArrayList.add(count.getString("date_string"));
+							} else if (photosListArrayList.get(i).source
+									.equalsIgnoreCase("Worklist")) {
+								worklistImgArrayList.add(count.getString("source"));
+								photosList4ArrayList.add(new ProjectPhotos(count.getString("id"),
+										count.getString("url_large"), count
+												.getString("original"), count
+												.getString("url_small"), count
+												.getString("url_thumb"), count
+												.getString("image_file_size"), count
+												.getString("image_content_type"), count
+												.getString("source"), count
+												.getString("phase"), count
+												.getString("created_at"), count
+												.getString("user_name"), count
+												.getString("name"), count
+												.getString("description"), count
+												.getString("date_string"),new Company(uCompany
+														.getString("id"), uCompany
+														.getString("name"))));
+								if (count.getString("user_name").equals("null")) {
+									worklistUsernameArrayList.add("others(null)");
+								} else {
+									worklistUsernameArrayList.add(count.getString("user_name"));
+								}
+
+								if (count.getString("phase").equals("null")) {
+									worklistPhaseArrayList.add("others_phase(null)");
+								} else {
+									worklistPhaseArrayList.add(count.getString("phase"));
+								}
+
+								worklistDatesArrayList.add(count.getString("date_string"));
+							} else if (photosListArrayList.get(i).source.equalsIgnoreCase("Reports")) {
+								reportsImgArrayList.add(count.getString("source"));
+								photosList5ArrayList.add(new ProjectPhotos(count.getString("id"),
+										count.getString("url_large"), count
+												.getString("original"), count
+												.getString("url_small"), count
+												.getString("url_thumb"), count
+												.getString("image_file_size"), count
+												.getString("image_content_type"), count
+												.getString("source"), count
+												.getString("phase"), count
+												.getString("created_at"), count
+												.getString("user_name"), count
+												.getString("name"), count
+												.getString("description"), count
+												.getString("date_string"),new Company(uCompany
+														.getString("id"), uCompany
+														.getString("name"))));
+								if (count.getString("user_name").equals("null")) {
+									reportUsernameArrayList.add("others(null)");
+								} else {
+									reportUsernameArrayList.add(count.getString("user_name"));
+								}
+
+								if (count.getString("phase").equals("null")) {
+									reportPhaseArrayList.add("others_phase(null)");
+								} else {
+									reportPhaseArrayList.add(count.getString("phase"));
+								}
+
+								reportDatesArrayList.add(count.getString("date_string"));
+							}
+						
+							
+						}	
+						else
+						{
+							photosListArrayList.add(new ProjectPhotos(count.getString("id"), count
+									.getString("url_large"), count.getString("original"),
+									count.getString("url_small"), count
+											.getString("url_thumb"), count
+											.getString("image_file_size"), count
+											.getString("image_content_type"), count
+											.getString("source"), count.getString("phase"),
+									count.getString("created_at"), count
+											.getString("user_name"), count
 											.getString("name"), count
-											.getString("description"),
-									count.getString("date_string")));
-							if (count.getString("user_name").equals(
-									"null")) {
-								worklistUsername.add("kanika(null)");
+											.getString("description"), count
+											.getString("date_string"),new Company("","")));
+
+							Log.d("----description----",
+									"----description----" + count.getString("description")
+											+ " name" + count.getString("name"));
+							if (count.getString("user_name").equals("null")) {
+								allUsersArrayList.add("others(null)");
 							} else {
-								worklistUsername.add(count
-										.getString("user_name"));
+								allUsersArrayList.add(count.getString("user_name"));
 							}
 
 							if (count.getString("phase").equals("null")) {
-								worklistPhase.add("kanika_phase(null)");
+								allPhaseArrayList.add("others_phase(null)");
 							} else {
-								worklistPhase.add(count
-										.getString("phase"));
+								allPhaseArrayList.add(count.getString("phase"));
 							}
 
-							worklistDates.add(count
-									.getString("date_string"));
-						} else if (photosList.get(i).source
-								.equalsIgnoreCase("Reports")) {
-							reportsImg.add(count.getString("source"));
-							photosList5.add(new ProjectPhotos(
-									count.getString("id"),
-									count.getString("url_large"),
-									count.getString("original"),
-									count.getString("url_small"),
-									count.getString("url_thumb"),
-									count.getString("image_file_size"),
-									count.getString("image_content_type"),
-									count.getString("source"), count
-											.getString("phase"), count
-											.getString("created_at"),
-									count.getString("user_name"), count
-											.getString("name"), count
-											.getString("description"),
-									count.getString("date_string")));
-							if (count.getString("user_name").equals(
-									"null")) {
-								reportUsername.add("kanika(null)");
-							} else {
-								reportUsername.add(count
-										.getString("user_name"));
-							}
+							allDatesArrayList.add(count.getString("date_string"));
+							
 
-							if (count.getString("phase").equals("null")) {
-								reportPhase.add("kanika_phase(null)");
-							} else {
-								reportPhase.add(count
-										.getString("phase"));
-							}
+							if (photosListArrayList.get(i).source.equalsIgnoreCase("Documents")) {
+								proDocImgArrayList.add(count.getString("source"));
+								photosList2ArrayList.add(new ProjectPhotos(count.getString("id"),
+										count.getString("url_large"), count
+												.getString("original"), count
+												.getString("url_small"), count
+												.getString("url_thumb"), count
+												.getString("image_file_size"), count
+												.getString("image_content_type"), count
+												.getString("source"), count
+												.getString("phase"), count
+												.getString("created_at"), count
+												.getString("user_name"), count
+												.getString("name"), count
+												.getString("description"), count
+												.getString("date_string"),new Company("","")
+												));
+								if (count.getString("user_name").equals("null")) {
+									docUsernameArrayList.add("others(null)");
+								} else {
+									docUsernameArrayList.add(count.getString("user_name"));
+								}
+								if (count.getString("phase").equals("null")) {
+									docPhaseArrayList.add("others_phase(null)");
+								} else {
+									docPhaseArrayList.add(count.getString("phase"));
+								}
 
-							reportDates.add(count
-									.getString("date_string"));
+								docDatesArrayList.add(count.getString("date_string"));
+								
+//								ProDocFold.add("","");
+////								loc.addAll(WorklistFragment.locs);
+//								
+//								LinkedHashSet<String> listToSet = new LinkedHashSet<String>(
+//										ProDocFold);
+//								
+//								ProDocFolders = new ArrayList<String>(listToSet);
+								
+								
+								
+								
+								
+							} else if (photosListArrayList.get(i).source
+									.equalsIgnoreCase("Checklist")) {
+
+								checklistImgArrayList.add(count.getString("source"));
+								photosList3ArrayList.add(new ProjectPhotos(count.getString("id"),
+										count.getString("url_large"), count
+												.getString("original"), count
+												.getString("url_small"), count
+												.getString("url_thumb"), count
+												.getString("image_file_size"), count
+												.getString("image_content_type"), count
+												.getString("source"), count
+												.getString("phase"), count
+												.getString("created_at"), count
+												.getString("user_name"), count
+												.getString("name"), count
+												.getString("description"), count
+												.getString("date_string"),new Company("","")));
+								if (count.getString("user_name").equals("null")) {
+									checklistUsernameArrayList.add("others(null)");
+								} else {
+									checklistUsernameArrayList.add(count.getString("user_name"));
+								}
+
+								if (count.getString("phase").equals("null")) {
+									checklistPhaseArrayList.add("others_phase(null)");
+								} else {
+									checklistPhaseArrayList.add(count.getString("phase"));
+								}
+
+								checklistDatesArrayList.add(count.getString("date_string"));
+							} else if (photosListArrayList.get(i).source
+									.equalsIgnoreCase("Worklist")) {
+								worklistImgArrayList.add(count.getString("source"));
+								photosList4ArrayList.add(new ProjectPhotos(count.getString("id"),
+										count.getString("url_large"), count
+												.getString("original"), count
+												.getString("url_small"), count
+												.getString("url_thumb"), count
+												.getString("image_file_size"), count
+												.getString("image_content_type"), count
+												.getString("source"), count
+												.getString("phase"), count
+												.getString("created_at"), count
+												.getString("user_name"), count
+												.getString("name"), count
+												.getString("description"), count
+												.getString("date_string"),new Company("","")));
+								if (count.getString("user_name").equals("null")) {
+									worklistUsernameArrayList.add("others(null)");
+								} else {
+									worklistUsernameArrayList.add(count.getString("user_name"));
+								}
+
+								if (count.getString("phase").equals("null")) {
+									worklistPhaseArrayList.add("others_phase(null)");
+								} else {
+									worklistPhaseArrayList.add(count.getString("phase"));
+								}
+
+								worklistDatesArrayList.add(count.getString("date_string"));
+							} else if (photosListArrayList.get(i).source.equalsIgnoreCase("Reports")) {
+								reportsImgArrayList.add(count.getString("source"));
+								photosList5ArrayList.add(new ProjectPhotos(count.getString("id"),
+										count.getString("url_large"), count
+												.getString("original"), count
+												.getString("url_small"), count
+												.getString("url_thumb"), count
+												.getString("image_file_size"), count
+												.getString("image_content_type"), count
+												.getString("source"), count
+												.getString("phase"), count
+												.getString("created_at"), count
+												.getString("user_name"), count
+												.getString("name"), count
+												.getString("description"), count
+												.getString("date_string"),new Company("","")));
+								if (count.getString("user_name").equals("null")) {
+									reportUsernameArrayList.add("others(null)");
+								} else {
+									reportUsernameArrayList.add(count.getString("user_name"));
+								}
+
+								if (count.getString("phase").equals("null")) {
+									reportPhaseArrayList.add("others_phase(null)");
+								} else {
+									reportPhaseArrayList.add(count.getString("phase"));
+								}
+
+								reportDatesArrayList.add(count.getString("date_string"));
+							}
 						}
 					}
 					// for(int i=0;i<doc_username.size();i++)
@@ -362,9 +577,9 @@ public class DocumentFragment extends Fragment {
 					// for(int i=0;i<worklist_username.size();i++)
 					// {Log.i("worklist",""+worklist_username.get(i));}
 
-					totalCount = Integer.toString(photosList.size());
-					Log.i("value..", "" + photosList.size());
-					docListView.setAdapter(new LazyAdapter());
+					totalCountString = Integer.toString(photosListArrayList.size());
+					Log.i("value..", "" + photosListArrayList.size());
+					pullToRefreshListView.setAdapter(new LazyAdapter());
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -377,7 +592,7 @@ public class DocumentFragment extends Fragment {
 	// ************ API for Project Details. *************//
 
 	public void projectPhotos() {
-
+		if(pullBoolean!=true)
 		Prefrences.showLoadingDialog(getActivity(), "Loading...");
 
 		RequestParams params = new RequestParams();
@@ -397,8 +612,10 @@ public class DocumentFragment extends Fragment {
 
 						Editor editor = sharedpref.edit();
 						editor.putString("documentlistfragment", response);
+//						editor.putString("projectId", Prefrences.selectedProId);
 						editor.commit();
 						fillServerData(response);
+						if(pullBoolean!=true)
 						Prefrences.dismissLoadingDialog();
 					}
 
@@ -407,10 +624,11 @@ public class DocumentFragment extends Fragment {
 						Log.e("request fail", arg0.toString());
 						Toast.makeText(getActivity(), "Server Issue",
 								Toast.LENGTH_LONG).show();
+						if(pullBoolean!=true)
 						Prefrences.dismissLoadingDialog();
-						if (pull == true) {
-							pull = false;
-							docListView.onRefreshComplete();
+						if (pullBoolean == true) {
+							pullBoolean = false;
+							pullToRefreshListView.onRefreshComplete();
 						}
 					}
 				});
@@ -429,16 +647,22 @@ public class DocumentFragment extends Fragment {
 			inflater = (LayoutInflater) getActivity().getSystemService(
 					Context.LAYOUT_INFLATER_SERVICE);
 			Log.v("in adapter", "in adapter");
-			proDocSize.add(totalCount);
-			proDocSize.add(Integer.toString(proDocImg.size()));
-			proDocSize.add(Integer.toString(checklistImg.size()));
-			proDocSize.add(Integer.toString(worklistImg.size()));
-			proDocSize.add(Integer.toString(reportsImg.size()));
+			proDocSize.add(totalCountString);
+//			if (proDocImg.size() > 0)
+				proDocSize.add(Integer.toString(proDocImgArrayList.size()));
+//			if (checklistImg.size() > 0)
+				proDocSize.add(Integer.toString(checklistImgArrayList.size()));
+//			if (worklistImg.size() > 0)
+				proDocSize.add(Integer.toString(worklistImgArrayList.size()));
+//			if (reportsImg.size() > 0)
+				proDocSize.add(Integer.toString(reportsImgArrayList.size()));
 
 		}
 
 		public int getCount() {
-			return 5;
+			// Toast.makeText(activity, ""+proDocSize.size(),
+			// Toast.LENGTH_LONG).show();
+			return 5;//proDocSize.size();
 		}
 
 		public Object getItem(int position) {
@@ -446,7 +670,7 @@ public class DocumentFragment extends Fragment {
 		}
 
 		public long getItemId(int position) {
-			return 5;
+			return 5;//proDocSize.size();
 		}
 
 		public View getView(final int position, View convertView,
@@ -458,18 +682,18 @@ public class DocumentFragment extends Fragment {
 
 			vi = inflater.inflate(R.layout.documentlist_item, null);
 			vi.setTag(holder);
-			holder.name = (TextView) vi.findViewById(R.id.name);
-			holder.image = (ImageView) vi.findViewById(R.id.image);
-			holder.relLay = (LinearLayout) vi.findViewById(R.id.relLay);
-			holder.name.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
+			holder.textviewName = (TextView) vi.findViewById(R.id.name);
+			holder.imageview = (ImageView) vi.findViewById(R.id.image);
+			holder.linearlayout = (LinearLayout) vi.findViewById(R.id.relLay);
+			holder.textviewName.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
 
-			holder.relLay.setLayoutParams(new ListView.LayoutParams(720, 230));
+			holder.linearlayout.setLayoutParams(new ListView.LayoutParams(720, 230));
 
-			ASSL.DoMagic(holder.relLay);
+			ASSL.DoMagic(holder.linearlayout);
 			if (proDocSize.get(position).equals("0")) {
-				holder.name.setText(proDocImages[position] + " - No items");
+				holder.textviewName.setText(proDocImages[position] + " - No items");
 			} else {
-				holder.name.setText(proDocImages[position] + " - "
+				holder.textviewName.setText(proDocImages[position] + " - "
 						+ proDocSize.get(position) + " items");
 				// Log.d("",""+)
 			}
@@ -483,74 +707,159 @@ public class DocumentFragment extends Fragment {
 			// Picasso.with(activity).load(data.get(position).photos.get(0).urlThumb.toString()).into(holder.right_img);
 			// }
 
-			if (photosList.get(position).urlLarge.equals("null")) {
-				holder.image.setImageResource(R.drawable.default_200);
+			if(photosListArrayList.size()>0)
+			{
+				if(position>=photosListArrayList.size())
+				{
+					holder.imageview.setImageResource(R.drawable.default_200);
+				}
+				else
+				{
+			if (photosListArrayList.get(position).urlLarge.equals("null")) {
+				holder.imageview.setImageResource(R.drawable.default_200);
 			} else {
-				Picasso.with(ProjectDetail.activity)
-						.load(photosList.get(position).url200.toString())
-						.placeholder(R.drawable.default_200)
-						.into(holder.image);
+				
+				if (position == 0) {
+					if(photosListArrayList.size()>0)
+					Picasso.with(ProjectDetail.activity)
+							.load(photosListArrayList.get(0).url200.toString())
+							.placeholder(R.drawable.default_200)
+							.into(holder.imageview);
+					else
+						holder.imageview.setImageResource(R.drawable.default_200);
+						
+				} else if (position == 1) {
+//					Log.v("error", photosList2ArrayList + "hellooo");
+					if (photosList2ArrayList.size() != 0)
+						Picasso.with(ProjectDetail.activity)
+								.load(photosList2ArrayList.get(0).url200.toString())
+								.placeholder(R.drawable.default_200)
+								.into(holder.imageview);
+					else
+						holder.imageview.setImageResource(R.drawable.default_200);
+				} else if (position == 2) {
+					if (photosList3ArrayList.size() > 0)
+						Picasso.with(ProjectDetail.activity)
+								.load(photosList3ArrayList.get(0).url200.toString())
+								.placeholder(R.drawable.default_200)
+								.into(holder.imageview);
+					else
+						holder.imageview.setImageResource(R.drawable.default_200);
+				} else if (position == 3) {
+					if (photosList4ArrayList.size() > 0)
+						Picasso.with(ProjectDetail.activity)
+								.load(photosList4ArrayList.get(0).url200
+										.toString())
+								.placeholder(R.drawable.default_200)
+								.into(holder.imageview);
+					else
+						holder.imageview.setImageResource(R.drawable.default_200);
+				} else if (position == 4) {
+					if (photosList5ArrayList.size() > 0)
+						Picasso.with(ProjectDetail.activity)
+								.load(photosList5ArrayList.get(0).url200
+										.toString())
+								.placeholder(R.drawable.default_200)
+								.into(holder.imageview);
+					else
+						holder.imageview.setImageResource(R.drawable.default_200);
+				}
+				}
 			}
+			}
+			else
+			{
+				holder.imageview.setImageResource(R.drawable.default_200);
+			}
+//			if(photosList.get(position).urlLarge.equals("null"))
+//			{
+//				holder.image.setImageResource(R.drawable.default_200);
+//			}
+//			else
+//			{
+//				Picasso.with(ProjectDetail.activity).load(photosList.get(position).url200.toString()).into(holder.image);
+//			}
 
-			holder.relLay.setOnClickListener(new OnClickListener() {
+			
+			
+			holder.linearlayout.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if (proDocSize.get(position).length() > 0) {
-						int count_checker=0;
+						int count_checker = 0;
 						if (proDocImages[position].equals("All")) {
-							count_checker = photosList.size();
+							count_checker = photosListArrayList.size();
 						}
 						if (proDocImages[position].equals("Project Docs")) {
-							count_checker = photosList2.size();
-							
+							count_checker = photosList2ArrayList.size();
+
 						} else if (proDocImages[position].equals("Checklist")) {
-							count_checker = photosList3.size();
-							
+							count_checker = photosList3ArrayList.size();
+
 						} else if (proDocImages[position].equals("Worklist")) {
-							count_checker = photosList4.size();
+							count_checker = photosList4ArrayList.size();
 
 						} else if (proDocImages[position].equals("Report")) {
-							count_checker = photosList5.size();
+							count_checker = photosList5ArrayList.size();
 
 						}
-						
-						
-						if(count_checker>0){
-						
-								Intent intent = new Intent(getActivity(),
-										ImageActivity.class);
-								intent.putExtra("key", proDocImages[position]);
-								intent.putStringArrayListExtra("doc", docUsername);
-								intent.putStringArrayListExtra("work", worklistUsername);
-								intent.putStringArrayListExtra("check",
-										checklistUsername);
-								intent.putStringArrayListExtra("report", reportUsername);
-								intent.putStringArrayListExtra("allusers", allUsers);
-		
-								intent.putStringArrayListExtra("doc_date", docDates);
-								intent.putStringArrayListExtra("work_date",
-										worklistDates);
-								intent.putStringArrayListExtra("check_date",
-										checklistDates);
-								intent.putStringArrayListExtra("report_date",
-										reportDates);
-								intent.putStringArrayListExtra("all_date", allDates);
-		
-								intent.putStringArrayListExtra("doc_phase", docPhase);
-								intent.putStringArrayListExtra("worklist_phase",
-										worklistPhase);
-								intent.putStringArrayListExtra("checklist_phase",
-										checklistPhase);
-								intent.putStringArrayListExtra("report_phase",
-										reportPhase);
-								intent.putStringArrayListExtra("all_phase", allPhase);
-		
-								startActivity(intent);
-								getActivity().overridePendingTransition(
-										R.anim.slide_in_right, R.anim.slide_out_left);
-						}else{
-							Toast.makeText(getActivity(),"No internet connection.", Toast.LENGTH_SHORT).show();
+
+						if (proDocImages[position].equals("Project Docs")) {
+							Intent intent = new Intent(getActivity(),SelectedFolder.class);
+							startActivity(intent);
+							getActivity().overridePendingTransition(R.anim.slide_in_right,
+									R.anim.slide_out_left);
 						}
+						else {
+							
+						
+						if (count_checker > 0) {
+
+							Intent intent = new Intent(getActivity(),
+									ImageActivity.class);
+							intent.putExtra("key", proDocImages[position]);
+							intent.putStringArrayListExtra("doc", docUsernameArrayList);
+							intent.putStringArrayListExtra("work",
+									worklistUsernameArrayList);
+							intent.putStringArrayListExtra("check",
+									checklistUsernameArrayList);
+							intent.putStringArrayListExtra("report",
+									reportUsernameArrayList);
+							intent.putStringArrayListExtra("allusers", allUsersArrayList);
+
+							intent.putStringArrayListExtra("doc_date", docDatesArrayList);
+							intent.putStringArrayListExtra("work_date",
+									worklistDatesArrayList);
+							intent.putStringArrayListExtra("check_date",
+									checklistDatesArrayList);
+							intent.putStringArrayListExtra("report_date",
+									reportDatesArrayList);
+							intent.putStringArrayListExtra("all_date", allDatesArrayList);
+
+							intent.putStringArrayListExtra("doc_phase",
+									docPhaseArrayList);
+							intent.putStringArrayListExtra("worklist_phase",
+									worklistPhaseArrayList);
+							intent.putStringArrayListExtra("checklist_phase",
+									checklistPhaseArrayList);
+							intent.putStringArrayListExtra("report_phase",
+									reportPhaseArrayList);
+							intent.putStringArrayListExtra("all_phase",
+									allPhaseArrayList);
+
+							startActivity(intent);
+							getActivity().overridePendingTransition(
+									R.anim.slide_in_right,
+									R.anim.slide_out_left);
+						} else {
+							Toast.makeText(getActivity(),
+									"No Data",
+									Toast.LENGTH_SHORT).show();
+						}
+						}
+						
+						
+						
 						// openImgAct();
 					}
 				}
@@ -568,230 +877,420 @@ public class DocumentFragment extends Fragment {
 
 		class ViewHolder {
 
-			private TextView name;
-			private ImageView image;
-			LinearLayout relLay;
+			private TextView textviewName;
+			private ImageView imageview;
+			LinearLayout linearlayout;
 
 		}
 	}
-	
-	
-	public void fillServerData(String response){
+
+	public void fillServerData(String response) {
 		JSONObject res = null;
 		try {
-			
-			Prefrences.document_bool=true;
+
+			Prefrences.document_bool = true;
 			Prefrences.document_s = response;
 			res = new JSONObject(response);
-			
-			photosList.clear();
-			photosList2.clear();
-			photosList3.clear();
-			photosList4.clear();
-			photosList5.clear();
-			proDocImg.clear();
-			checklistImg.clear();
-			worklistImg.clear();
-			reportsImg.clear();
-			allUsers = new ArrayList<String>();
-			reportUsername = new ArrayList<String>();
-			worklistUsername = new ArrayList<String>();
-			checklistUsername = new ArrayList<String>();
-			docUsername = new ArrayList<String>();
-			allDates = new ArrayList<String>();
-			docDates = new ArrayList<String>();
-			reportDates = new ArrayList<String>();
-			worklistDates = new ArrayList<String>();
-			checklistDates = new ArrayList<String>();
-			allPhase = new ArrayList<String>();
-			docPhase = new ArrayList<String>();
-			reportPhase = new ArrayList<String>();
-			worklistPhase = new ArrayList<String>();
-			checklistPhase = new ArrayList<String>();
+
+			photosListArrayList.clear();
+			photosList2ArrayList.clear();
+			photosList3ArrayList.clear();
+			photosList4ArrayList.clear();
+			photosList5ArrayList.clear();
+			proDocImgArrayList.clear();
+			checklistImgArrayList.clear();
+			worklistImgArrayList.clear();
+			reportsImgArrayList.clear();
+			allUsersArrayList = new ArrayList<String>();
+			reportUsernameArrayList = new ArrayList<String>();
+			worklistUsernameArrayList = new ArrayList<String>();
+			checklistUsernameArrayList = new ArrayList<String>();
+			docUsernameArrayList = new ArrayList<String>();
+			allDatesArrayList = new ArrayList<String>();
+			docDatesArrayList = new ArrayList<String>();
+			reportDatesArrayList = new ArrayList<String>();
+			worklistDatesArrayList = new ArrayList<String>();
+			checklistDatesArrayList = new ArrayList<String>();
+			allPhaseArrayList = new ArrayList<String>();
+			docPhaseArrayList = new ArrayList<String>();
+			reportPhaseArrayList = new ArrayList<String>();
+			worklistPhaseArrayList = new ArrayList<String>();
+			checklistPhaseArrayList = new ArrayList<String>();
+			ProDocFold = new ArrayList<String>();
+			ProDocFolders = new ArrayList<String>();
 
 			Log.v("response ", "" + res.toString(2));
 			JSONArray photos = res.getJSONArray("photos");
 
 			for (int i = 0; i < photos.length(); i++) {
 				JSONObject count = photos.getJSONObject(i);
+				if(count.has("folder"))
+				{
 
-				photosList.add(new ProjectPhotos(count
-						.getString("id"), count
-						.getString("url_large"), count
-						.getString("original"), count
-						.getString("url_small"), count
-						.getString("url_thumb"), count
-						.getString("image_file_size"), count
-						.getString("image_content_type"), count
-						.getString("source"), count
-						.getString("phase"), count
-						.getString("created_at"), count
-						.getString("user_name"), count
-						.getString("name"), count
-						.getString("description"), count
-						.getString("date_string")));
+					JSONObject uCompany = count
+							.getJSONObject("folder");
+					
+//					userArrayList.add(new Users(
+//							uCount.getString("id"),
+//							uCount.getString("first_name"),
+//							uCount.getString("last_name"),
+//							uCount.getString("full_name"),
+//							uCount.getString("email"),
+//							uCount.getString("formatted_phone"),
+////							uCount.getString("authentication_token"),
+//							uCount.getString("url_thumb"),
+//							uCount.getString("url_small"),
+//							new Company(uCompany
+//									.getString("id"), uCompany
+//									.getString("name"))));
 
-				Log.d("----description----",
-						"----description----"
-								+ count.getString("description")
-								+ " name"
-								+ count.getString("name"));
-				if (count.getString("user_name").equals("null")) {
-					allUsers.add("kanika(null)");
-				} else {
-					allUsers.add(count.getString("user_name"));
-				}
-
-				if (count.getString("phase").equals("null")) {
-					allPhase.add("kanika_phase(null)");
-				} else {
-					allPhase.add(count.getString("phase"));
-				}
-
-				allDates.add(count.getString("date_string"));
-
-				if (photosList.get(i).source
-						.equalsIgnoreCase("Documents")) {
-					proDocImg.add(count.getString("source"));
-					photosList2.add(new ProjectPhotos(
-							count.getString("id"),
-							count.getString("url_large"),
-							count.getString("original"),
-							count.getString("url_small"),
-							count.getString("url_thumb"),
-							count.getString("image_file_size"),
-							count.getString("image_content_type"),
-							count.getString("source"), count
-									.getString("phase"), count
-									.getString("created_at"),
-							count.getString("user_name"), count
+					photosListArrayList.add(new ProjectPhotos(count.getString("id"), count
+							.getString("url_large"), count.getString("original"),
+							count.getString("url_small"), count
+									.getString("url_thumb"), count
+									.getString("image_file_size"), count
+									.getString("image_content_type"), count
+									.getString("source"), count.getString("phase"),
+							count.getString("created_at"), count
+									.getString("user_name"), count
 									.getString("name"), count
-									.getString("description"),
-							count.getString("date_string")));
-					if (count.getString("user_name").equals(
-							"null")) {
-						docUsername.add("kanika(null)");
-					} else {
-						docUsername.add(count
-								.getString("user_name"));
-					}
-					if (count.getString("phase").equals("null")) {
-						docPhase.add("kanika_phase(null)");
-					} else {
-						docPhase.add(count.getString("phase"));
-					}
+									.getString("description"), count
+									.getString("date_string"),new Company(uCompany
+											.getString("id"), uCompany
+											.getString("name"))));
 
-					docDates.add(count
-							.getString("date_string"));
-				} else if (photosList.get(i).source
-						.equalsIgnoreCase("Checklist")) {
-
-					checklistImg.add(count.getString("source"));
-					photosList3.add(new ProjectPhotos(
-							count.getString("id"),
-							count.getString("url_large"),
-							count.getString("original"),
-							count.getString("url_small"),
-							count.getString("url_thumb"),
-							count.getString("image_file_size"),
-							count.getString("image_content_type"),
-							count.getString("source"), count
-									.getString("phase"), count
-									.getString("created_at"),
-							count.getString("user_name"), count
-									.getString("name"), count
-									.getString("description"),
-							count.getString("date_string")));
-					if (count.getString("user_name").equals(
-							"null")) {
-						checklistUsername.add("kanika(null)");
+					Log.d("----description----",
+							"----description----" + count.getString("description")
+									+ " name" + count.getString("name"));
+					if (count.getString("user_name").equals("null")) {
+						allUsersArrayList.add("others(null)");
 					} else {
-						checklistUsername.add(count
-								.getString("user_name"));
+						allUsersArrayList.add(count.getString("user_name"));
 					}
 
 					if (count.getString("phase").equals("null")) {
-						checklistPhase
-								.add("kanika_phase(null)");
+						allPhaseArrayList.add("others_phase(null)");
 					} else {
-						checklistPhase.add(count
-								.getString("phase"));
+						allPhaseArrayList.add(count.getString("phase"));
 					}
 
-					checklistDates.add(count
-							.getString("date_string"));
-				} else if (photosList.get(i).source
-						.equalsIgnoreCase("Worklist")) {
-					worklistImg.add(count.getString("source"));
-					photosList4.add(new ProjectPhotos(
-							count.getString("id"),
-							count.getString("url_large"),
-							count.getString("original"),
-							count.getString("url_small"),
-							count.getString("url_thumb"),
-							count.getString("image_file_size"),
-							count.getString("image_content_type"),
-							count.getString("source"), count
-									.getString("phase"), count
-									.getString("created_at"),
-							count.getString("user_name"), count
+					allDatesArrayList.add(count.getString("date_string"));
+					
+
+					if (photosListArrayList.get(i).source.equalsIgnoreCase("Documents")) {
+						proDocImgArrayList.add(count.getString("source"));
+						photosList2ArrayList.add(new ProjectPhotos(count.getString("id"),
+								count.getString("url_large"), count
+										.getString("original"), count
+										.getString("url_small"), count
+										.getString("url_thumb"), count
+										.getString("image_file_size"), count
+										.getString("image_content_type"), count
+										.getString("source"), count
+										.getString("phase"), count
+										.getString("created_at"), count
+										.getString("user_name"), count
+										.getString("name"), count
+										.getString("description"), count
+										.getString("date_string"),new Company(uCompany
+												.getString("id"), uCompany
+												.getString("name"))
+										));
+						if (count.getString("user_name").equals("null")) {
+							docUsernameArrayList.add("others(null)");
+						} else {
+							docUsernameArrayList.add(count.getString("user_name"));
+						}
+						if (count.getString("phase").equals("null")) {
+							docPhaseArrayList.add("others_phase(null)");
+						} else {
+							docPhaseArrayList.add(count.getString("phase"));
+						}
+
+						docDatesArrayList.add(count.getString("date_string"));
+						
+						ProDocFold.add(photosListArrayList.get(i).folder.coName.toString());
+//						loc.addAll(WorklistFragment.locs);
+						
+						
+//					
+						
+						
+					} else if (photosListArrayList.get(i).source
+							.equalsIgnoreCase("Checklist")) {
+
+						checklistImgArrayList.add(count.getString("source"));
+						photosList3ArrayList.add(new ProjectPhotos(count.getString("id"),
+								count.getString("url_large"), count
+										.getString("original"), count
+										.getString("url_small"), count
+										.getString("url_thumb"), count
+										.getString("image_file_size"), count
+										.getString("image_content_type"), count
+										.getString("source"), count
+										.getString("phase"), count
+										.getString("created_at"), count
+										.getString("user_name"), count
+										.getString("name"), count
+										.getString("description"), count
+										.getString("date_string"),new Company(uCompany
+												.getString("id"), uCompany
+												.getString("name"))));
+						if (count.getString("user_name").equals("null")) {
+							checklistUsernameArrayList.add("others(null)");
+						} else {
+							checklistUsernameArrayList.add(count.getString("user_name"));
+						}
+
+						if (count.getString("phase").equals("null")) {
+							checklistPhaseArrayList.add("others_phase(null)");
+						} else {
+							checklistPhaseArrayList.add(count.getString("phase"));
+						}
+
+						checklistDatesArrayList.add(count.getString("date_string"));
+					} else if (photosListArrayList.get(i).source
+							.equalsIgnoreCase("Worklist")) {
+						worklistImgArrayList.add(count.getString("source"));
+						photosList4ArrayList.add(new ProjectPhotos(count.getString("id"),
+								count.getString("url_large"), count
+										.getString("original"), count
+										.getString("url_small"), count
+										.getString("url_thumb"), count
+										.getString("image_file_size"), count
+										.getString("image_content_type"), count
+										.getString("source"), count
+										.getString("phase"), count
+										.getString("created_at"), count
+										.getString("user_name"), count
+										.getString("name"), count
+										.getString("description"), count
+										.getString("date_string"),new Company(uCompany
+												.getString("id"), uCompany
+												.getString("name"))));
+						if (count.getString("user_name").equals("null")) {
+							worklistUsernameArrayList.add("others(null)");
+						} else {
+							worklistUsernameArrayList.add(count.getString("user_name"));
+						}
+
+						if (count.getString("phase").equals("null")) {
+							worklistPhaseArrayList.add("others_phase(null)");
+						} else {
+							worklistPhaseArrayList.add(count.getString("phase"));
+						}
+
+						worklistDatesArrayList.add(count.getString("date_string"));
+					} else if (photosListArrayList.get(i).source.equalsIgnoreCase("Reports")) {
+						reportsImgArrayList.add(count.getString("source"));
+						photosList5ArrayList.add(new ProjectPhotos(count.getString("id"),
+								count.getString("url_large"), count
+										.getString("original"), count
+										.getString("url_small"), count
+										.getString("url_thumb"), count
+										.getString("image_file_size"), count
+										.getString("image_content_type"), count
+										.getString("source"), count
+										.getString("phase"), count
+										.getString("created_at"), count
+										.getString("user_name"), count
+										.getString("name"), count
+										.getString("description"), count
+										.getString("date_string"),new Company(uCompany
+												.getString("id"), uCompany
+												.getString("name"))));
+						if (count.getString("user_name").equals("null")) {
+							reportUsernameArrayList.add("others(null)");
+						} else {
+							reportUsernameArrayList.add(count.getString("user_name"));
+						}
+
+						if (count.getString("phase").equals("null")) {
+							reportPhaseArrayList.add("others_phase(null)");
+						} else {
+							reportPhaseArrayList.add(count.getString("phase"));
+						}
+
+						reportDatesArrayList.add(count.getString("date_string"));
+					}
+				
+					
+				}	
+				else
+				{
+					photosListArrayList.add(new ProjectPhotos(count.getString("id"), count
+							.getString("url_large"), count.getString("original"),
+							count.getString("url_small"), count
+									.getString("url_thumb"), count
+									.getString("image_file_size"), count
+									.getString("image_content_type"), count
+									.getString("source"), count.getString("phase"),
+							count.getString("created_at"), count
+									.getString("user_name"), count
 									.getString("name"), count
-									.getString("description"),
-							count.getString("date_string")));
-					if (count.getString("user_name").equals(
-							"null")) {
-						worklistUsername.add("kanika(null)");
+									.getString("description"), count
+									.getString("date_string"),new Company("","")));
+
+					Log.d("----description----",
+							"----description----" + count.getString("description")
+									+ " name" + count.getString("name"));
+					if (count.getString("user_name").equals("null")) {
+						allUsersArrayList.add("others(null)");
 					} else {
-						worklistUsername.add(count
-								.getString("user_name"));
+						allUsersArrayList.add(count.getString("user_name"));
 					}
 
 					if (count.getString("phase").equals("null")) {
-						worklistPhase.add("kanika_phase(null)");
+						allPhaseArrayList.add("others_phase(null)");
 					} else {
-						worklistPhase.add(count
-								.getString("phase"));
+						allPhaseArrayList.add(count.getString("phase"));
 					}
 
-					worklistDates.add(count
-							.getString("date_string"));
-				} else if (photosList.get(i).source
-						.equalsIgnoreCase("Reports")) {
-					reportsImg.add(count.getString("source"));
-					photosList5.add(new ProjectPhotos(
-							count.getString("id"),
-							count.getString("url_large"),
-							count.getString("original"),
-							count.getString("url_small"),
-							count.getString("url_thumb"),
-							count.getString("image_file_size"),
-							count.getString("image_content_type"),
-							count.getString("source"), count
-									.getString("phase"), count
-									.getString("created_at"),
-							count.getString("user_name"), count
-									.getString("name"), count
-									.getString("description"),
-							count.getString("date_string")));
-					if (count.getString("user_name").equals(
-							"null")) {
-						reportUsername.add("kanika(null)");
-					} else {
-						reportUsername.add(count
-								.getString("user_name"));
-					}
+					allDatesArrayList.add(count.getString("date_string"));
+					
 
-					if (count.getString("phase").equals("null")) {
-						reportPhase.add("kanika_phase(null)");
-					} else {
-						reportPhase.add(count
-								.getString("phase"));
-					}
+					if (photosListArrayList.get(i).source.equalsIgnoreCase("Documents")) {
+						proDocImgArrayList.add(count.getString("source"));
+						photosList2ArrayList.add(new ProjectPhotos(count.getString("id"),
+								count.getString("url_large"), count
+										.getString("original"), count
+										.getString("url_small"), count
+										.getString("url_thumb"), count
+										.getString("image_file_size"), count
+										.getString("image_content_type"), count
+										.getString("source"), count
+										.getString("phase"), count
+										.getString("created_at"), count
+										.getString("user_name"), count
+										.getString("name"), count
+										.getString("description"), count
+										.getString("date_string"),new Company("","")
+										));
+						if (count.getString("user_name").equals("null")) {
+							docUsernameArrayList.add("others(null)");
+						} else {
+							docUsernameArrayList.add(count.getString("user_name"));
+						}
+						if (count.getString("phase").equals("null")) {
+							docPhaseArrayList.add("others_phase(null)");
+						} else {
+							docPhaseArrayList.add(count.getString("phase"));
+						}
 
-					reportDates.add(count
-							.getString("date_string"));
+						docDatesArrayList.add(count.getString("date_string"));
+						
+//						ProDocFold.add("","");
+////						loc.addAll(WorklistFragment.locs);
+//						
+//						LinkedHashSet<String> listToSet = new LinkedHashSet<String>(
+//								ProDocFold);
+//						
+//						ProDocFolders = new ArrayList<String>(listToSet);
+						
+						
+						
+						
+						
+					} else if (photosListArrayList.get(i).source
+							.equalsIgnoreCase("Checklist")) {
+
+						checklistImgArrayList.add(count.getString("source"));
+						photosList3ArrayList.add(new ProjectPhotos(count.getString("id"),
+								count.getString("url_large"), count
+										.getString("original"), count
+										.getString("url_small"), count
+										.getString("url_thumb"), count
+										.getString("image_file_size"), count
+										.getString("image_content_type"), count
+										.getString("source"), count
+										.getString("phase"), count
+										.getString("created_at"), count
+										.getString("user_name"), count
+										.getString("name"), count
+										.getString("description"), count
+										.getString("date_string"),new Company("","")));
+						if (count.getString("user_name").equals("null")) {
+							checklistUsernameArrayList.add("others(null)");
+						} else {
+							checklistUsernameArrayList.add(count.getString("user_name"));
+						}
+
+						if (count.getString("phase").equals("null")) {
+							checklistPhaseArrayList.add("others_phase(null)");
+						} else {
+							checklistPhaseArrayList.add(count.getString("phase"));
+						}
+
+						checklistDatesArrayList.add(count.getString("date_string"));
+					} else if (photosListArrayList.get(i).source
+							.equalsIgnoreCase("Worklist")) {
+						worklistImgArrayList.add(count.getString("source"));
+						photosList4ArrayList.add(new ProjectPhotos(count.getString("id"),
+								count.getString("url_large"), count
+										.getString("original"), count
+										.getString("url_small"), count
+										.getString("url_thumb"), count
+										.getString("image_file_size"), count
+										.getString("image_content_type"), count
+										.getString("source"), count
+										.getString("phase"), count
+										.getString("created_at"), count
+										.getString("user_name"), count
+										.getString("name"), count
+										.getString("description"), count
+										.getString("date_string"),new Company("","")));
+						if (count.getString("user_name").equals("null")) {
+							worklistUsernameArrayList.add("others(null)");
+						} else {
+							worklistUsernameArrayList.add(count.getString("user_name"));
+						}
+
+						if (count.getString("phase").equals("null")) {
+							worklistPhaseArrayList.add("others_phase(null)");
+						} else {
+							worklistPhaseArrayList.add(count.getString("phase"));
+						}
+
+						worklistDatesArrayList.add(count.getString("date_string"));
+					} else if (photosListArrayList.get(i).source.equalsIgnoreCase("Reports")) {
+						reportsImgArrayList.add(count.getString("source"));
+						photosList5ArrayList.add(new ProjectPhotos(count.getString("id"),
+								count.getString("url_large"), count
+										.getString("original"), count
+										.getString("url_small"), count
+										.getString("url_thumb"), count
+										.getString("image_file_size"), count
+										.getString("image_content_type"), count
+										.getString("source"), count
+										.getString("phase"), count
+										.getString("created_at"), count
+										.getString("user_name"), count
+										.getString("name"), count
+										.getString("description"), count
+										.getString("date_string"),new Company("","")));
+						if (count.getString("user_name").equals("null")) {
+							reportUsernameArrayList.add("others(null)");
+						} else {
+							reportUsernameArrayList.add(count.getString("user_name"));
+						}
+
+						if (count.getString("phase").equals("null")) {
+							reportPhaseArrayList.add("others_phase(null)");
+						} else {
+							reportPhaseArrayList.add(count.getString("phase"));
+						}
+
+						reportDatesArrayList.add(count.getString("date_string"));
+					}
 				}
 			}
+			LinkedHashSet<String> listToSet = new LinkedHashSet<String>(
+					ProDocFold);
+			
+			ProDocFolders = new ArrayList<String>(listToSet);
+			
+			Log.d("ProDocFolders", "----ProDocFolders-----"+ProDocFolders.size());
+			
 			// for(int i=0;i<doc_username.size();i++)
 			// {Log.i("doc",""+doc_username.get(i));}
 			//
@@ -804,13 +1303,13 @@ public class DocumentFragment extends Fragment {
 			// for(int i=0;i<worklist_username.size();i++)
 			// {Log.i("worklist",""+worklist_username.get(i));}
 
-			totalCount = Integer.toString(photosList.size());
-			Log.i("value..", "" + photosList.size());
-			docListView.setAdapter(new LazyAdapter());
+			totalCountString = Integer.toString(photosListArrayList.size());
+			Log.i("value..", "" + photosListArrayList.size());
+			pullToRefreshListView.setAdapter(new LazyAdapter());
 
-			if (pull == true) {
-				pull = false;
-				docListView.onRefreshComplete();
+			if (pullBoolean == true) {
+				pullBoolean = false;
+				pullToRefreshListView.onRefreshComplete();
 			}
 
 		} catch (Exception e) {

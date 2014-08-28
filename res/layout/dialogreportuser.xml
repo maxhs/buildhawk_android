@@ -16,7 +16,7 @@
         android:orientation="vertical" >
 
         <EditText
-            android:id="@+id/hours"
+            android:id="@+id/edittextHours"
             android:layout_width="500px"
             android:layout_height="80px"
             android:layout_marginBottom="2px"
@@ -35,7 +35,7 @@
         </EditText>
         
         <EditText
-            android:id="@+id/location"
+            android:id="@+id/edittextLocation"
             android:layout_width="500px"
             android:layout_height="80px"
             android:layout_marginBottom="2px"
@@ -71,7 +71,7 @@
                 android:textSize="36px" />
 
             <Button
-                android:id="@+id/submit"
+                android:id="@+id/buttonSubmit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2px"

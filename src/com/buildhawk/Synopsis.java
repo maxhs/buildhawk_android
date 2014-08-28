@@ -1,5 +1,9 @@
 package com.buildhawk;
 
+/*
+ *  This file is used to show the synopsis of the selected project. Brief info of selected project.
+ */
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -53,17 +57,17 @@ import com.squareup.picasso.Picasso;
 
 public class Synopsis extends Activity {
 
-	ListView syncatlist, synupitemlist, syncomplist;
+	ListView listviewSyncat, listviewSynupItem, listviewSynComp;
 	Context con;
-	TextView tv_addres;
-	LinearLayout lin;
+	TextView textviewAddres;
+	LinearLayout linearlayoutHorizontal;
 	ConnectionDetector connDect;
-	Boolean isInternetPresent = false;
-	ArrayList<SynopsisProject> SynProject = new ArrayList<SynopsisProject>();
-	ArrayList<SynopsisCategories> SynCateg = new ArrayList<SynopsisCategories>();
-	ArrayList<SynopsisUpcomingItems> SynItems = new ArrayList<SynopsisUpcomingItems>();
-	ArrayList<SynopsisRecentDocuments> SynDoc = new ArrayList<SynopsisRecentDocuments>();
-	ArrayList<SynopsisRecentlyCompleted> Syncomp = new ArrayList<SynopsisRecentlyCompleted>();
+	Boolean isInternetPresentBoolean = false;
+	ArrayList<SynopsisProject> synProjectArrayList = new ArrayList<SynopsisProject>();
+	ArrayList<SynopsisCategories> synCategArrayList = new ArrayList<SynopsisCategories>();
+	ArrayList<SynopsisUpcomingItems> synItemsArrayList = new ArrayList<SynopsisUpcomingItems>();
+	ArrayList<SynopsisRecentDocuments> synDocArrayList = new ArrayList<SynopsisRecentDocuments>();
+	ArrayList<SynopsisRecentlyCompleted> syncompArrayList = new ArrayList<SynopsisRecentlyCompleted>();
 
 	ArrayList<String> arr = new ArrayList<String>();
 	ArrayList<String> ids = new ArrayList<String>();
@@ -81,17 +85,17 @@ public class Synopsis extends Activity {
 	static final int DRAG = 1;
 	static final int ZOOM = 2;
 
-	TextView tv_proName;
+	TextView textViewProName;
 	int mode = NONE;
-	Activity act;
+//	Activity act;
 	HorizontalScrollView hScrollView;
-	RelativeLayout back;
-	LinearLayout relLay;
-	PullToRefreshScrollView scrollView;
-	Button btn_Goto;
-	TextView tv_headerProjSynopsis, tv_headerprogress, tv_headerRecentDocs,
-			tv_headerUpcomingItems, tv_headerRecentItems;
-	ImageView img_ladder_page2;
+	RelativeLayout relativelayoutBack;
+	LinearLayout linearlayoutRoot;
+	PullToRefreshScrollView pullToRefreshScrollView;
+	Button buttonGotoProject;
+	TextView textviewHeaderProjSynopsis, textviewHeaderprogress, textviewHeaderRecentDocs,
+			textviewHeaderUpcomingItems, textviewHeaderRecentItems;
+	ImageView imageviewLadderPage2;
 	 SharedPreferences sharedpref;
 
 	@Override
@@ -99,50 +103,50 @@ public class Synopsis extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_synopsis);
 		// Prefrences.dismissLoadingDialog();
-		relLay = (LinearLayout) findViewById(R.id.LinearLayoutSynopsis);
-		new ASSL(this, relLay, 1134, 720, false);
+		linearlayoutRoot = (LinearLayout) findViewById(R.id.LinearLayoutSynopsis);
+		new ASSL(this, linearlayoutRoot, 1134, 720, false);
 		sharedpref = Synopsis.this.getSharedPreferences("MyPref", 0); // 0 - for private mode
 		
 		
-		act = this;
-		back = (RelativeLayout) findViewById(R.id.back);
+//		act = this;
+		relativelayoutBack = (RelativeLayout) findViewById(R.id.relativeLayoutBack);
 		con = Synopsis.this;
 		hScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView1);
-		syncatlist = (ListView) findViewById(R.id.syncatlist);
-		synupitemlist = (ListView) findViewById(R.id.synupitems);
-		syncomplist = (ListView) findViewById(R.id.syncomplist);
+		listviewSyncat = (ListView) findViewById(R.id.listviewSyncat);
+		listviewSynupItem = (ListView) findViewById(R.id.listviewSynupItem);
+		listviewSynComp = (ListView) findViewById(R.id.listviewSynComp);
 		// synopcat = ProjectsAdapter.SynCateg;
 		// synoupitem = ProjectsAdapter.SynItems;
 		// synopdoc=ProjectsAdapter.SynDoc;
 		// syncomp = ProjectsAdapter.Syncomp;
-		tv_addres = (TextView) findViewById(R.id.addres);
-		tv_proName = (TextView) findViewById(R.id.proName);
-		tv_proName.setText(Prefrences.selectedProName);
-		btn_Goto = (Button) findViewById(R.id.GotoProject);
+		textviewAddres = (TextView) findViewById(R.id.textviewAddres);
+		textViewProName = (TextView) findViewById(R.id.textViewProName);
+		
+		buttonGotoProject = (Button) findViewById(R.id.buttonGotoProject);
 
-		tv_headerProjSynopsis = (TextView) findViewById(R.id.textView1);
-		tv_headerprogress = (TextView) findViewById(R.id.textView2);
-		tv_headerRecentDocs = (TextView) findViewById(R.id.textView3);
-		tv_headerUpcomingItems = (TextView) findViewById(R.id.textView4);
-		tv_headerRecentItems = (TextView) findViewById(R.id.textView5);
-		tv_headerProjSynopsis.setTypeface(Prefrences
+		textviewHeaderProjSynopsis = (TextView) findViewById(R.id.textviewHeaderProjSynopsis);
+		textviewHeaderprogress = (TextView) findViewById(R.id.textviewHeaderprogress);
+		textviewHeaderRecentDocs = (TextView) findViewById(R.id.textviewHeaderRecentDocs);
+		textviewHeaderUpcomingItems = (TextView) findViewById(R.id.textviewHeaderUpcomingItems);
+		textviewHeaderRecentItems = (TextView) findViewById(R.id.textviewHeaderRecentItems);
+		textviewHeaderProjSynopsis.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		tv_headerprogress.setTypeface(Prefrences
+		textviewHeaderprogress.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		tv_headerRecentDocs.setTypeface(Prefrences
+		textviewHeaderRecentDocs.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		tv_headerUpcomingItems.setTypeface(Prefrences
+		textviewHeaderUpcomingItems.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		tv_headerRecentItems.setTypeface(Prefrences
+		textviewHeaderRecentItems.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
 
-		tv_addres.setText(Homepage.projectsList.get(0).address.formattedAddress); // get(position)
+		
 
-		tv_addres.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		tv_proName.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
-		btn_Goto.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		textviewAddres.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		textViewProName.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		buttonGotoProject.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
 
-		scrollView = (PullToRefreshScrollView) findViewById(R.id.scrollView1);
+		pullToRefreshScrollView = (PullToRefreshScrollView) findViewById(R.id.pullToRefreshScrollView);
 
 		// scrollView.post(new Runnable() {
 		// public void run() {
@@ -150,13 +154,17 @@ public class Synopsis extends Activity {
 		// }
 		// });
 
-		scrollView.scrollTo(0, 0);
-		scrollView.scrollBy(0, 0);
+		
 
-		lin = (LinearLayout) findViewById(R.id.scrolllayout);
-		img_ladder_page2 = new ImageView(Synopsis.this);
+		linearlayoutHorizontal = (LinearLayout) findViewById(R.id.linearlayoutHorizontal);
+		imageviewLadderPage2 = new ImageView(Synopsis.this);
 
-		scrollView.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
+		textViewProName.setText(Prefrences.selectedProName);
+		textviewAddres.setText(Prefrences.selectedProAddress); // get(position)
+		
+		
+		
+		pullToRefreshScrollView.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
 
 			@Override
 			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
@@ -185,7 +193,7 @@ public class Synopsis extends Activity {
 		//
 		// });
 
-		btn_Goto.setOnClickListener(new OnClickListener() {
+		buttonGotoProject.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -194,15 +202,15 @@ public class Synopsis extends Activity {
 				startActivity(new Intent(con, ProjectDetail.class));
 				overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);
-				
-				// ProjectsAdapter.projectDetail(act);
+
 			}
 		});
 
-		back.setOnClickListener(new OnClickListener() {
+		relativelayoutBack.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 
+				Prefrences.LastSelectedProId=Prefrences.selectedProId;
 				finish();
 				overridePendingTransition(R.anim.slide_in_left,
 						R.anim.slide_out_right);
@@ -221,20 +229,31 @@ public class Synopsis extends Activity {
 		super.onResume();
 		Prefrences.pageFlag = 0;
 		connDect = new ConnectionDetector(Synopsis.this);
-		isInternetPresent = connDect.isConnectingToInternet();
+		isInternetPresentBoolean = connDect.isConnectingToInternet();
+
 		if (Prefrences.stopingHit == 1) {
 			Prefrences.stopingHit = 0;
-			if (isInternetPresent) {
-				synopsisHit();
-			}else{
-				String response;
-				response = sharedpref.getString("projectSynopsis", "");
-				if(response.equalsIgnoreCase("")){
-					Toast.makeText(Synopsis.this,"No internet connection.", Toast.LENGTH_SHORT).show();
-				}else{
-					fillServerData(response);
+			if (!Prefrences.LastSelectedProId
+					.equalsIgnoreCase(Prefrences.selectedProId)) {
+				if (isInternetPresentBoolean) {
+					synopsisHit();
 				}
+			} else {
+//				if (isInternetPresent) {
+//					synopsisHit();
+//				} else {
+					String response;
+					response = sharedpref.getString("projectSynopsis", "");
+					if (response.equalsIgnoreCase("")) {
+						Toast.makeText(Synopsis.this,
+								"No internet connection.", Toast.LENGTH_SHORT)
+								.show();
+					} else {
+						fillServerData(response);
+					}
+//				}
 			}
+
 		}
 	}
 
@@ -242,6 +261,8 @@ public class Synopsis extends Activity {
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
+		
+		Prefrences.LastSelectedProId=Prefrences.selectedProId;
 		finish();
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
@@ -357,15 +378,15 @@ public class Synopsis extends Activity {
 			}
 			holder.prog_bar = (ProgressBar) convertView
 					.findViewById(R.id.progressBar1);
-			holder.tv1 = (TextView) convertView.findViewById(R.id.syncategname);
-			holder.tv2 = (TextView) convertView.findViewById(R.id.percent);
-			holder.tv1.setTypeface(Prefrences
+			holder.syncategname = (TextView) convertView.findViewById(R.id.syncategname);
+			holder.percent = (TextView) convertView.findViewById(R.id.percent);
+			holder.syncategname.setTypeface(Prefrences
 					.helveticaNeuelt(getApplicationContext()));
-			holder.tv2.setTypeface(Prefrences
+			holder.percent.setTypeface(Prefrences
 					.helveticaNeuelt(getApplicationContext()));
 			holder.llayout = (LinearLayout) convertView
 					.findViewById(R.id.llayout);
-			holder.tv1.setText(sycat.name.toString());
+			holder.syncategname.setText(sycat.name.toString());
 			Float per = 0.00f, float1 = 0.00f, float2 = 0.00f;
 			float1 = Float.parseFloat(sycat.itemCount.toString());
 			float2 = Float.parseFloat(sycat.progressCount.toString());
@@ -375,7 +396,7 @@ public class Synopsis extends Activity {
 			for (int i = 0; i < percentage_val; i++) {
 				holder.prog_bar.setProgress(i);
 			}
-			holder.tv2.setText(str + "%");// sycat.progressCount.toString());
+			holder.percent.setText(str + "%");// sycat.progressCount.toString());
 			holder.llayout.setLayoutParams(new ListView.LayoutParams(720, 100));
 
 			ASSL.DoMagic(holder.llayout);
@@ -400,7 +421,7 @@ public class Synopsis extends Activity {
 	}
 
 	private static class viewholder {
-		TextView tv1, tv2;
+		TextView syncategname, percent;
 		ProgressBar prog_bar;
 		LinearLayout llayout;
 	}
@@ -453,14 +474,14 @@ public class Synopsis extends Activity {
 				holder = (viewholder2) convertView.getTag();
 			}
 
-			holder.tv1 = (TextView) convertView
+			holder.synupitemsbody = (TextView) convertView
 					.findViewById(R.id.synupitemsbody);
-			holder.tv1.setTypeface(Prefrences
+			holder.synupitemsbody.setTypeface(Prefrences
 					.helveticaNeuelt(getApplicationContext()));
 			// holder.tv2=(TextView)convertView.findViewById(R.id.percent);
 			holder.llayout = (LinearLayout) convertView
 					.findViewById(R.id.layoutt);
-			holder.tv1.setText(syitem.body.toString());
+			holder.synupitemsbody.setText(syitem.body.toString());
 
 			holder.img = (ImageView) convertView.findViewById(R.id.img);
 
@@ -482,10 +503,11 @@ public class Synopsis extends Activity {
 				@Override
 				public void onClick(View v) {
 //					Prefrences.selectedCheckitem = 0;
+					Prefrences.selectedCheckitemSynopsis = 1;
 					Intent intent = new Intent(con, CheckItemClick.class);
-					intent.putExtra("body", syitem.body.toString());
-					intent.putExtra("itemtype", syitem.itemType.toString());
-					intent.putExtra("status", syitem.status.toString());
+//					intent.putExtra("body", syitem.body.toString());
+//					intent.putExtra("itemtype", syitem.itemType.toString());
+//					intent.putExtra("status", syitem.status.toString());
 					intent.putExtra("id", syitem.id.toString());
 					startActivity(intent);
 					overridePendingTransition(R.anim.slide_in_right,
@@ -504,7 +526,7 @@ public class Synopsis extends Activity {
 	}
 
 	private static class viewholder2 {
-		TextView tv1;
+		TextView synupitemsbody;
 		ImageView img;
 		LinearLayout llayout;
 	}
@@ -558,13 +580,13 @@ public class Synopsis extends Activity {
 				holder = (viewholder2) convertView.getTag();
 			}
 
-			holder.tv1 = (TextView) convertView
+			holder.synupitemsbody = (TextView) convertView
 					.findViewById(R.id.synupitemsbody);
-			holder.tv1.setTypeface(Prefrences
+			holder.synupitemsbody.setTypeface(Prefrences
 					.helveticaNeuelt(getApplicationContext()));
 			holder.llayout = (LinearLayout) convertView
 					.findViewById(R.id.layoutt);
-			holder.tv1.setText(sycomp.body.toString());
+			holder.synupitemsbody.setText(sycomp.body.toString());
 
 			// Log.d("0-----","******* "+holder.tv1.getLineSpacingMultiplier());
 
@@ -586,11 +608,11 @@ public class Synopsis extends Activity {
 
 				@Override
 				public void onClick(View v) {
-//					Prefrences.selectedCheckitem = 1;
+					Prefrences.selectedCheckitemSynopsis = 1;
 					Intent intent = new Intent(con, CheckItemClick.class);
-					intent.putExtra("body", sycomp.body.toString());
-					intent.putExtra("itemtype", sycomp.itemType.toString());
-					intent.putExtra("status", sycomp.status.toString());
+//					intent.putExtra("body", sycomp.body.toString());
+//					intent.putExtra("itemtype", sycomp.itemType.toString());
+//					intent.putExtra("status", sycomp.status.toString());
 					intent.putExtra("id", sycomp.id.toString());
 					startActivity(intent);
 					overridePendingTransition(R.anim.slide_in_right,
@@ -604,6 +626,7 @@ public class Synopsis extends Activity {
 	}
 
 	public void synopsisHit() {
+		if(pull!=true)
 		Prefrences.showLoadingDialog(Synopsis.this, "Loading...");
 
 		RequestParams params = new RequestParams();
@@ -622,6 +645,7 @@ public class Synopsis extends Activity {
 						Log.i("request succesfull", "response = " + response);
 
 						fillServerData(response);
+						if(pull!=true)
 						Prefrences.dismissLoadingDialog();
 					}
 
@@ -630,11 +654,11 @@ public class Synopsis extends Activity {
 						Log.e("request fail", arg0.toString());
 						Toast.makeText(getApplicationContext(), "Server Issue",
 								Toast.LENGTH_LONG).show();
-
+						if(pull!=true)
 						Prefrences.dismissLoadingDialog();
 						if (pull == true) {
 							pull = false;
-							scrollView.onRefreshComplete();
+							pullToRefreshScrollView.onRefreshComplete();
 						}
 					}
 				});
@@ -646,12 +670,14 @@ public class Synopsis extends Activity {
 		editor.putString("projectSynopsis", response);
 		editor.commit();
 		try {
+			pullToRefreshScrollView.scrollTo(0, 0);
+			pullToRefreshScrollView.scrollBy(0, 0);
 			res = new JSONObject(response);
-			SynCateg.clear();
-			Syncomp.clear();
-			SynDoc.clear();
-			SynItems.clear();
-			SynProject.clear();
+			synCategArrayList.clear();
+			syncompArrayList.clear();
+			synDocArrayList.clear();
+			synItemsArrayList.clear();
+			synProjectArrayList.clear();
 			JSONObject project = res.getJSONObject("project");
 			Log.v("Synopsis value", project.toString());
 
@@ -668,7 +694,7 @@ public class Synopsis extends Activity {
 				JSONObject count = Syncategories
 						.getJSONObject(i);
 
-				SynCateg.add(new SynopsisCategories(count
+				synCategArrayList.add(new SynopsisCategories(count
 						.getString("name"), count
 						.getString("item_count"), count
 						.getString("completed_count"), count
@@ -678,7 +704,7 @@ public class Synopsis extends Activity {
 			}
 			for (int j = 0; j < Syncompl.length(); j++) {
 				JSONObject count2 = Syncompl.getJSONObject(j);
-				Syncomp.add(new SynopsisRecentlyCompleted(
+				syncompArrayList.add(new SynopsisRecentlyCompleted(
 						count2.getString("id"), count2
 								.getString("body"), count2
 								.getString("status"), count2
@@ -687,11 +713,11 @@ public class Synopsis extends Activity {
 						count2.getString("comments_count")));
 
 				Log.d("Syncomp", "Syncomp"
-						+ Syncomp.get(j).itemType);
+						+ syncompArrayList.get(j).itemType);
 			}
 			for (int k = 0; k < Syndocs.length(); k++) {
 				JSONObject count = Syndocs.getJSONObject(k);
-				SynDoc.add(new SynopsisRecentDocuments(count
+				synDocArrayList.add(new SynopsisRecentDocuments(count
 						.getString("id"), count
 						.getString("url_large"), count
 						.getString("original"), count
@@ -709,7 +735,7 @@ public class Synopsis extends Activity {
 			}
 			for (int l = 0; l < Synitems.length(); l++) {
 				JSONObject count = Synitems.getJSONObject(l);
-				SynItems.add(new SynopsisUpcomingItems(count
+				synItemsArrayList.add(new SynopsisUpcomingItems(count
 						.getString("id"), count
 						.getString("body"), count
 						.getString("critical_date"), count
@@ -720,71 +746,71 @@ public class Synopsis extends Activity {
 						.getString("comments_count")));
 
 				Log.d("SynItems", "SynItems"
-						+ SynItems.get(l).itemType);
+						+ synItemsArrayList.get(l).itemType);
 
 			}
 
-			SynProject.add(new SynopsisProject(project
-					.getString("progress"), SynItems, Syncomp,
-					SynDoc, SynCateg));
-			for (int j = 0; j < SynProject.size(); j++) {
+			synProjectArrayList.add(new SynopsisProject(project
+					.getString("progress"), synItemsArrayList, syncompArrayList,
+					synDocArrayList, synCategArrayList));
+			for (int j = 0; j < synProjectArrayList.size(); j++) {
 				Log.d("",
 						"cate"
-								+ SynProject.get(j).categories
+								+ synProjectArrayList.get(j).categories
 										.size());
 				Log.d("",
 						"comp"
-								+ SynProject.get(j).recentlyCompleted
+								+ synProjectArrayList.get(j).recentlyCompleted
 										.size());
 				Log.d("",
 						"items"
-								+ SynProject.get(j).upcomingItems
+								+ synProjectArrayList.get(j).upcomingItems
 										.size());
 				Log.d("",
 						"docs"
-								+ SynProject.get(j).recentDocuments
+								+ synProjectArrayList.get(j).recentDocuments
 										.size());
 			}
 
-			adapter adp = new adapter(con, SynCateg);
-			syncatlist.setAdapter(adp);
+			adapter adp = new adapter(con, synCategArrayList);
+			listviewSyncat.setAdapter(adp);
 
-			adapter2 adp2 = new adapter2(con, SynItems);
-			synupitemlist.setAdapter(adp2);
+			adapter2 adp2 = new adapter2(con, synItemsArrayList);
+			listviewSynupItem.setAdapter(adp2);
 
-			adapter3 adp3 = new adapter3(con, Syncomp);
-			syncomplist.setAdapter(adp3);
-			setlist(syncatlist, adp, 100);
-			setlist(synupitemlist, adp2, 100);
-			setlist(syncomplist, adp3, 100);
+			adapter3 adp3 = new adapter3(con, syncompArrayList);
+			listviewSynComp.setAdapter(adp3);
+			setlist(listviewSyncat, adp, 100);
+			setlist(listviewSynupItem, adp2, 100);
+			setlist(listviewSynComp, adp3, 100);
 
 			arr.clear();
 			ids.clear();
-			lin.removeAllViews();
-			lin = (LinearLayout) findViewById(R.id.scrolllayout);
-			for (int i = 0; i < SynDoc.size(); i++) {
+			linearlayoutHorizontal.removeAllViews();
+			linearlayoutHorizontal = (LinearLayout) findViewById(R.id.linearlayoutHorizontal);
+			for (int i = 0; i < synDocArrayList.size(); i++) {
 
-				arr.add(SynDoc.get(i).urlLarge);
-				ids.add(SynDoc.get(i).id);
-				img_ladder_page2 = new ImageView(Synopsis.this);
+				arr.add(synDocArrayList.get(i).urlLarge);
+				ids.add(synDocArrayList.get(i).id);
+				imageviewLadderPage2 = new ImageView(Synopsis.this);
 
 				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 						(int) (200), (int) (200));
 				lp.setMargins(10, 10, 10, 10);
 
-				img_ladder_page2.setTag(i);
-				img_ladder_page2.setLayoutParams(lp);
+				imageviewLadderPage2.setTag(i);
+				imageviewLadderPage2.setLayoutParams(lp);
 				// Picasso.with(con).load(arr.get(i).toString()).into(ladder_page2);
 
 				// File file = new File(SynDoc.get(i).urlSmall);
 				Picasso.with(con)
-						.load(SynDoc.get(i).urlSmall.toString())
+						.load(synDocArrayList.get(i).urlSmall.toString())
 						.resize((int) (200 * ASSL.Xscale()),
 								(int) (200 * ASSL.Yscale()))
-						.into(img_ladder_page2);
+						.into(imageviewLadderPage2);
 				// ladder_page2.setImageBitmap(myBitmap);
-				lin.addView(img_ladder_page2);
-				img_ladder_page2
+				linearlayoutHorizontal.addView(imageviewLadderPage2);
+				imageviewLadderPage2
 						.setOnClickListener(new OnClickListener() {
 
 							@Override
@@ -802,7 +828,7 @@ public class Synopsis extends Activity {
 								intent.putExtra("ids", ids);
 								intent.putExtra(
 										"id",
-										SynDoc.get(Prefrences.selectedPic).id);
+										synDocArrayList.get(Prefrences.selectedPic).id);
 								startActivity(intent);
 								overridePendingTransition(
 										R.anim.slide_in_right,
@@ -815,7 +841,7 @@ public class Synopsis extends Activity {
 
 			if (pull == true) {
 				pull = false;
-				scrollView.onRefreshComplete();
+				pullToRefreshScrollView.onRefreshComplete();
 			}
 
 		} catch (Exception e) {

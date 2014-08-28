@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rellay"
+    android:id="@+id/relativeLayoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CheckItemClick" >
@@ -17,7 +17,7 @@
             android:gravity="center" >
 
             <Button
-                android:id="@+id/back"
+                android:id="@+id/buttonBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -30,7 +30,7 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/save"
+                android:id="@+id/buttonSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -55,7 +55,7 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/txt_type"
+                    android:id="@+id/textviewType"
                     android:layout_width="match_parent"
                     android:layout_height="100px"
                     android:layout_gravity="bottom"
@@ -72,7 +72,7 @@
                     android:orientation="vertical" >
 
                     <TextView
-                        android:id="@+id/txt_body"
+                        android:id="@+id/textviewBody"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="15px"
@@ -88,7 +88,7 @@
                         android:weightSum="3" >
 
                         <ImageView
-                            android:id="@+id/email"
+                            android:id="@+id/imageviewEmail"
                             android:layout_width="217px"
                             android:layout_height="154px"
                             android:layout_alignParentLeft="true"
@@ -98,7 +98,7 @@
                             android:src="@drawable/email_btn" />
 
                         <ImageView
-                            android:id="@+id/call"
+                            android:id="@+id/imageviewCall"
                             android:layout_width="217px"
                             android:layout_height="154px"
                             android:layout_alignParentTop="true"
@@ -108,7 +108,7 @@
                             android:src="@drawable/call_btn" />
 
                         <ImageView
-                            android:id="@+id/message"
+                            android:id="@+id/imageviewMessage"
                             android:layout_width="217px"
                             android:layout_height="154px"
                             android:layout_alignBaseline="@+id/message"
@@ -121,7 +121,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/textviewHeaderRecentDocs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/transparent"
@@ -134,7 +134,7 @@
                     android:orientation="vertical" >
 
                     <Button
-                        android:id="@+id/complete_btn"
+                        android:id="@+id/buttonComplete"
                         android:layout_width="match_parent"
                         android:layout_height="130px"
                         android:src="@drawable/transparentclick"
@@ -150,7 +150,7 @@
                     </RelativeLayout>
 
                     <Button
-                        android:id="@+id/progress_btn"
+                        android:id="@+id/buttonProgress"
                         android:layout_width="match_parent"
                         android:layout_height="130px"
                         android:src="@drawable/transparentclick"
@@ -166,7 +166,7 @@
                     </RelativeLayout>
 
                     <Button
-                        android:id="@+id/notApplicable_btn"
+                        android:id="@+id/buttonNotapp"
                         android:layout_width="match_parent"
                         android:layout_height="130px"
                         android:src="@drawable/transparentclick"
@@ -176,7 +176,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/textviewHeaderUpcomingItems"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/shaded_gray"
@@ -194,30 +194,32 @@
                         android:layout_height="wrap_content" >
 
                         <LinearLayout
-                            android:id="@+id/scrolllayout2"
+                            android:id="@+id/linearlayoutLin2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal" >
 
                             <ImageView
-                                android:id="@+id/photogallery"
+                                android:id="@+id/imageviewGallery"
                                 android:layout_width="102px"
                                 android:layout_height="102px"
                                 android:layout_margin="15px"
+                                android:layout_gravity="center_vertical"
                                 android:src="@drawable/library_btn" />
 
                             <ImageView
-                                android:id="@+id/camera"
+                                android:id="@+id/imageviewCamera"
                                 android:layout_width="102px"
                                 android:layout_height="102px"
                                 android:layout_margin="15px"
+                                android:layout_gravity="center_vertical"
                                 android:src="@drawable/camera_btn" />
                         </LinearLayout>
                     </HorizontalScrollView>
                 </RelativeLayout>
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/textviewHeaderRecentItems"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/shaded_gray"
@@ -230,13 +232,14 @@
                     android:background="@drawable/background_draw" >
                     
                     <ImageView
-                                android:id="@+id/reminder"
+                                android:id="@+id/imageviewReminder"
                                 android:layout_width="155px"
                                 android:layout_height="155px"
                                 android:layout_margin="15px"
+                                android:layout_centerVertical="true"
                                 android:src="@drawable/clock" />
                     <TextView
-                    android:id="@+id/txtReminder"
+                    android:id="@+id/textviewReminder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="36px"
@@ -265,11 +268,11 @@
                     android:orientation="horizontal" >
 
                     <EditText
-                        android:id="@+id/commentBody"
+                        android:id="@+id/edittextCommentbody"
                         android:layout_width="520px"
                         android:layout_height="150px"
                         android:ems="10"
-                        android:hint="Add Comments..."
+                        android:hint="Add a comment..."
                         android:paddingLeft="15px"
                         android:paddingRight="15px"
                         android:singleLine="false"
@@ -278,7 +281,7 @@
                     </EditText>
 
                     <Button
-                        android:id="@+id/sendcomment"
+                        android:id="@+id/buttonSendcomment"
                         android:layout_width="200px"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -295,7 +298,7 @@
                     android:text="" />
 
                 <ListView
-                    android:id="@+id/commentslist"
+                    android:id="@+id/listviewComments"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clickable="true"

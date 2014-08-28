@@ -1,5 +1,9 @@
 package com.buildhawk;
 
+/*
+ *  This file is used to show the list of  all reports of a project.
+ */
+
 import java.util.ArrayList;
 
 import org.apache.http.entity.ByteArrayEntity;
@@ -48,38 +52,39 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class ReportFragment extends Fragment {
-	static ArrayList<Report> reportdata;
-	static ArrayList<Author> author;
+	static ArrayList<Report> reportdataArrayList;
+	static ArrayList<Author> authorArrayList;
 //	static ArrayList<String> possibleTypesArray;
-	static ArrayList<Report> reportdataDaily;
-	static ArrayList<Report> reportdataSafety;
-	static ArrayList<Report> reportdataWeekly;
+	static ArrayList<Report> reportdataDailyArrayList;
+	static ArrayList<Report> reportdataSafetyArrayList;
+	static ArrayList<Report> reportdataWeeklyArrayList;
 	public static boolean fromReportItem=false;
-	public ArrayList<Comments> commnt;
-	public ArrayList<CommentUser> cusr;
-	public  ArrayList<ProjectPhotos> photo;
-	public  ArrayList<ReportPersonnelUser> personnelUser;
-	public  ArrayList<subcontractors> psub;
-	public  ArrayList<ReportPersonnel> person;
+	public static boolean fromCreateItem=false;
+	public ArrayList<Comments> commntArrayList;
+	public ArrayList<CommentUser> cusrArrayList;
+	public  ArrayList<ProjectPhotos> photoArrayList;
+	public  ArrayList<ReportPersonnelUser> personnelUserArrayList;
+	public  ArrayList<subcontractors> psubArrayList;
+	public  ArrayList<ReportPersonnel> personArrayList;
 	
-	public  ArrayList<ReportCompanies>companies;
+	public  ArrayList<ReportCompanies>companiesArrayList;
 //	public static ArrayList<ReportCompany>Rcompany;
-	public  ArrayList<ReportCompanyUsers>coUsers;
-	public  ArrayList<ReportCompanyUsers>coSubUsers;
-	public  ArrayList<ReportCompanySubcontractors>coSubs;
-	public ArrayList<SafetyTopics>safe;
+	public  ArrayList<ReportCompanyUsers>coUsersArrayList;
+	public  ArrayList<ReportCompanyUsers>coSubUsersArrayList;
+	public  ArrayList<ReportCompanySubcontractors>coSubsArrayList;
+	public ArrayList<SafetyTopics>safeArrayList;
 	
-	public ArrayList<ReportTopics>ReportTopics;
+	public ArrayList<ReportTopics>reportTopicsArrayList;
 	ConnectionDetector connDect;
-	Boolean isInternetPresent = false;
-	String type;
+	Boolean isInternetPresentBoolean = false;
+	String typeString;
 	int j;
-	TextView tv_daily;
-	TextView tv_weekly;
-	TextView tv_safety;
-	PullToRefreshListView reportlist;
+	TextView textviewDaily;
+	TextView textviewWeekly;
+	TextView textviewSafety;
+	PullToRefreshListView pullToRefreshListView;
 	ReportListAdapter reportAdapter;
-	LinearLayout linlay;
+	LinearLayout linearlayoutRoot;
 	Boolean pull = false;
 	SharedPreferences sharedpref;
 
@@ -89,33 +94,51 @@ public class ReportFragment extends Fragment {
 			Bundle savedInstanceState) {
 
 		View root = inflater.inflate(R.layout.report, container, false);
-		linlay = (LinearLayout) root.findViewById(R.id.linearlay);
-		new ASSL(getActivity(), linlay, 1134, 720, false);
+		linearlayoutRoot = (LinearLayout) root.findViewById(R.id.linearlayoutReportRoot);
+		new ASSL(getActivity(), linearlayoutRoot, 1134, 720, false);
 		sharedpref = getActivity().getSharedPreferences("MyPref", 0); // 0 - for private mode
-		tv_daily = (TextView) root.findViewById(R.id.daily);
-		tv_safety = (TextView) root.findViewById(R.id.safety);
-		tv_weekly = (TextView) root.findViewById(R.id.weekly);
+		textviewDaily = (TextView) root.findViewById(R.id.textviewDaily);
+		textviewSafety = (TextView) root.findViewById(R.id.textviewSafety);
+		textviewWeekly = (TextView) root.findViewById(R.id.textviewWeekly);
 
-		tv_daily.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
-		tv_safety.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
-		tv_weekly.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
+		textviewDaily.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
+		textviewSafety.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
+		textviewWeekly.setTypeface(Prefrences.helveticaNeuelt(getActivity()));
 
-		reportlist = (PullToRefreshListView) root.findViewById(R.id.reportlist);
+		pullToRefreshListView = (PullToRefreshListView) root.findViewById(R.id.reportlist);
 		// registerForContextMenu(reportlist);
 		// get_project_reports(Prefrences.selectedProId);
 
-		if(Prefrences.report_s.equalsIgnoreCase("")){
-			Prefrences.report_bool=false;
-		}
 		
-		reportlist.setOnRefreshListener(new OnRefreshListener<ListView>() {
+		if(Prefrences.selectedProId.equalsIgnoreCase(Prefrences.LastSelectedProId))
+		{
+			if(!Prefrences.LastReport_s.equalsIgnoreCase(""))
+//				Prefrences.document_bool = true;
+//			else
+			{
+				Prefrences.report_s=Prefrences.LastReport_s;			
+				Prefrences.report_bool = true;
+			}
+		}
+		else
+		{
+			if (Prefrences.report_s.equalsIgnoreCase("")) {
+				Prefrences.report_bool = false;
+			}
+		}
+//		if(Prefrences.report_s.equalsIgnoreCase("")){
+//			Prefrences.report_bool=false;
+//		}
+		
+		pullToRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
 
 			@Override
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 				// TODO Auto-generated method stub
 				// if (isInternetPresent) {
 				pull = true;
-				registerForContextMenu(reportlist);
+//				reportlist.onRefreshComplete();
+				registerForContextMenu(pullToRefreshListView);
 				getProjectReports(Prefrences.selectedProId);
 				// } else {
 				// Toast.makeText(getActivity(),
@@ -124,7 +147,7 @@ public class ReportFragment extends Fragment {
 			}
 		});
 
-		tv_daily.setOnClickListener(new OnClickListener() {
+		textviewDaily.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -134,43 +157,43 @@ public class ReportFragment extends Fragment {
 						Prefrences.reportlisttypes=0;
 						reportAdapter =null;
 						reportAdapter = new ReportListAdapter(
-								getActivity(), reportdata);
-						reportlist.setAdapter(reportAdapter);
-						tv_daily.setBackgroundResource(R.drawable.all_white_background);
-						tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-						tv_safety.setBackgroundResource(R.color.white);
+								getActivity(), reportdataArrayList);
+						pullToRefreshListView.setAdapter(reportAdapter);
+						textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+						textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+						textviewSafety.setBackgroundResource(R.color.white);
 
-						tv_safety.setTextColor(Color.BLACK);
-						tv_weekly.setTextColor(Color.BLACK);
-						tv_daily.setTextColor(Color.BLACK);
+						textviewSafety.setTextColor(Color.BLACK);
+						textviewWeekly.setTextColor(Color.BLACK);
+						textviewDaily.setTextColor(Color.BLACK);
 						
 					}else
 				{
 				Prefrences.reportlisttypes=1;
-				tv_daily.setBackgroundResource(R.drawable.all_black_background);
-				tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-				tv_safety.setBackgroundResource(R.color.white);
+				textviewDaily.setBackgroundResource(R.drawable.all_black_background);
+				textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+				textviewSafety.setBackgroundResource(R.color.white);
 
-				tv_safety.setTextColor(Color.BLACK);
-				tv_weekly.setTextColor(Color.BLACK);
-				tv_daily.setTextColor(Color.WHITE);
+				textviewSafety.setTextColor(Color.BLACK);
+				textviewWeekly.setTextColor(Color.BLACK);
+				textviewDaily.setTextColor(Color.WHITE);
 
-				if (reportdataDaily.size() == 0) {
+				if (reportdataDailyArrayList.size() == 0) {
 					Toast.makeText(getActivity(), "No data", 5000).show();
-					reportlist.setVisibility(View.INVISIBLE);
+					pullToRefreshListView.setVisibility(View.INVISIBLE);
 				} else {
 					Prefrences.reportType = 1;
 					reportAdapter =null;
 					reportAdapter = new ReportListAdapter(getActivity(),
-							reportdataDaily);
-					reportlist.setVisibility(View.VISIBLE);
-					reportlist.setAdapter(reportAdapter);
+							reportdataDailyArrayList);
+					pullToRefreshListView.setVisibility(View.VISIBLE);
+					pullToRefreshListView.setAdapter(reportAdapter);
 					// reportAdapter.notify();
 				}
 			}
 		}
 	});
-		tv_weekly.setOnClickListener(new OnClickListener() {
+		textviewWeekly.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -179,42 +202,42 @@ public class ReportFragment extends Fragment {
 					Prefrences.reportlisttypes=0;
 					reportAdapter =null;
 					reportAdapter = new ReportListAdapter(
-							getActivity(), reportdata);
-					reportlist.setAdapter(reportAdapter);
-					tv_daily.setBackgroundResource(R.drawable.all_white_background);
-					tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-					tv_safety.setBackgroundResource(R.color.white);
+							getActivity(), reportdataArrayList);
+					pullToRefreshListView.setAdapter(reportAdapter);
+					textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+					textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+					textviewSafety.setBackgroundResource(R.color.white);
 
-					tv_safety.setTextColor(Color.BLACK);
-					tv_weekly.setTextColor(Color.BLACK);
-					tv_daily.setTextColor(Color.BLACK);
+					textviewSafety.setTextColor(Color.BLACK);
+					textviewWeekly.setTextColor(Color.BLACK);
+					textviewDaily.setTextColor(Color.BLACK);
 					
 				}else{
 				Prefrences.reportlisttypes=3;
-				tv_daily.setBackgroundResource(R.drawable.all_white_background);
-				tv_weekly.setBackgroundResource(R.drawable.complete_black_background);
-				tv_safety.setBackgroundResource(R.color.white);
+				textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+				textviewWeekly.setBackgroundResource(R.drawable.complete_black_background);
+				textviewSafety.setBackgroundResource(R.color.white);
 
-				tv_safety.setTextColor(Color.BLACK);
-				tv_weekly.setTextColor(Color.WHITE);
-				tv_daily.setTextColor(Color.BLACK);
+				textviewSafety.setTextColor(Color.BLACK);
+				textviewWeekly.setTextColor(Color.WHITE);
+				textviewDaily.setTextColor(Color.BLACK);
 
-				if (reportdataWeekly.isEmpty()) {
+				if (reportdataWeeklyArrayList.isEmpty()) {
 					Toast.makeText(getActivity(), "No data", 5000).show();
-					reportlist.setVisibility(View.INVISIBLE);
+					pullToRefreshListView.setVisibility(View.INVISIBLE);
 				} else {
 					Prefrences.reportType = 3;
 					reportAdapter =null;
 					reportAdapter = new ReportListAdapter(getActivity(),
-							reportdataWeekly);
-					reportlist.setVisibility(View.VISIBLE);
-					reportlist.setAdapter(reportAdapter);
+							reportdataWeeklyArrayList);
+					pullToRefreshListView.setVisibility(View.VISIBLE);
+					pullToRefreshListView.setAdapter(reportAdapter);
 					// reportAdapter.notify();
 				}
 				}
 			}
 		});
-		tv_safety.setOnClickListener(new OnClickListener() {
+		textviewSafety.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -223,38 +246,38 @@ public class ReportFragment extends Fragment {
 					Prefrences.reportlisttypes=0;
 					reportAdapter =null;
 					reportAdapter = new ReportListAdapter(
-							getActivity(), reportdata);
-					reportlist.setAdapter(reportAdapter);
-					tv_daily.setBackgroundResource(R.drawable.all_white_background);
-					tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-					tv_safety.setBackgroundResource(R.color.white);
+							getActivity(), reportdataArrayList);
+					pullToRefreshListView.setAdapter(reportAdapter);
+					textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+					textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+					textviewSafety.setBackgroundResource(R.color.white);
 
-					tv_safety.setTextColor(Color.BLACK);
-					tv_weekly.setTextColor(Color.BLACK);
-					tv_daily.setTextColor(Color.BLACK);
+					textviewSafety.setTextColor(Color.BLACK);
+					textviewWeekly.setTextColor(Color.BLACK);
+					textviewDaily.setTextColor(Color.BLACK);
 					
 				}else{
 				Prefrences.reportlisttypes=2;
 				
-				tv_daily.setBackgroundResource(R.drawable.all_white_background);
-				tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-				tv_safety.setBackgroundResource(R.color.black);
+				textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+				textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+				textviewSafety.setBackgroundResource(R.color.black);
 
-				tv_safety.setTextColor(Color.WHITE);
-				tv_weekly.setTextColor(Color.BLACK);
-				tv_daily.setTextColor(Color.BLACK);
+				textviewSafety.setTextColor(Color.WHITE);
+				textviewWeekly.setTextColor(Color.BLACK);
+				textviewDaily.setTextColor(Color.BLACK);
 
-				if (reportdataSafety.size() == 0) {
+				if (reportdataSafetyArrayList.size() == 0) {
 					Toast.makeText(getActivity(), "No data", 5000).show();
-					reportlist.setVisibility(View.INVISIBLE);
+					pullToRefreshListView.setVisibility(View.INVISIBLE);
 
 				} else {
 					Prefrences.reportType = 2;
 					reportAdapter =null;
 					reportAdapter = new ReportListAdapter(getActivity(),
-							reportdataSafety);
-					reportlist.setVisibility(View.VISIBLE);
-					reportlist.setAdapter(reportAdapter);
+							reportdataSafetyArrayList);
+					pullToRefreshListView.setVisibility(View.VISIBLE);
+					pullToRefreshListView.setAdapter(reportAdapter);
 					// reportAdapter.notify();
 				}
 				}
@@ -269,374 +292,421 @@ public class ReportFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onResume();
 		connDect = new ConnectionDetector(getActivity());
-		isInternetPresent = connDect.isConnectingToInternet();
+		isInternetPresentBoolean = connDect.isConnectingToInternet();
 		
 		if(fromReportItem==true){
 			fromReportItem=false;
-			if(Prefrences.reportlisttypes==0)
+			if(Prefrences.reportlisttypes==0 )
 			{
 			reportAdapter = new ReportListAdapter(
-					getActivity(), reportdata);
-			reportlist.setAdapter(reportAdapter);
-			tv_daily.setBackgroundResource(R.drawable.all_white_background);
-			tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-			tv_safety.setBackgroundResource(R.color.white);
+					getActivity(), reportdataArrayList);
+			pullToRefreshListView.setAdapter(reportAdapter);
+			textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+			textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+			textviewSafety.setBackgroundResource(R.color.white);
 
-			tv_safety.setTextColor(Color.BLACK);
-			tv_weekly.setTextColor(Color.BLACK);
-			tv_daily.setTextColor(Color.BLACK);
+			textviewSafety.setTextColor(Color.BLACK);
+			textviewWeekly.setTextColor(Color.BLACK);
+			textviewDaily.setTextColor(Color.BLACK);
 			}
 			else if(Prefrences.reportlisttypes==1)
 			{
 			reportAdapter = new ReportListAdapter(
-					getActivity(), reportdataDaily);
-			reportlist.setAdapter(reportAdapter);
-			tv_daily.setBackgroundResource(R.drawable.all_black_background);
-			tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-			tv_safety.setBackgroundResource(R.color.white);
+					getActivity(), reportdataDailyArrayList);
+			pullToRefreshListView.setAdapter(reportAdapter);
+			textviewDaily.setBackgroundResource(R.drawable.all_black_background);
+			textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+			textviewSafety.setBackgroundResource(R.color.white);
 
-			tv_safety.setTextColor(Color.BLACK);
-			tv_weekly.setTextColor(Color.BLACK);
-			tv_daily.setTextColor(Color.WHITE);
+			textviewSafety.setTextColor(Color.BLACK);
+			textviewWeekly.setTextColor(Color.BLACK);
+			textviewDaily.setTextColor(Color.WHITE);
 			}
 			else if(Prefrences.reportlisttypes==2)
 			{
 			reportAdapter = new ReportListAdapter(
-					getActivity(), reportdataSafety);
-			reportlist.setAdapter(reportAdapter);
-			tv_daily.setBackgroundResource(R.drawable.all_white_background);
-			tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-			tv_safety.setBackgroundResource(R.color.black);
+					getActivity(), reportdataSafetyArrayList);
+			pullToRefreshListView.setAdapter(reportAdapter);
+			textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+			textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+			textviewSafety.setBackgroundResource(R.color.black);
 
-			tv_safety.setTextColor(Color.WHITE);
-			tv_weekly.setTextColor(Color.BLACK);
-			tv_daily.setTextColor(Color.BLACK);
+			textviewSafety.setTextColor(Color.WHITE);
+			textviewWeekly.setTextColor(Color.BLACK);
+			textviewDaily.setTextColor(Color.BLACK);
 			}
 			else if(Prefrences.reportlisttypes==3)
 			{
 			reportAdapter = new ReportListAdapter(
-					getActivity(), reportdataWeekly);
-			reportlist.setAdapter(reportAdapter);
-			tv_daily.setBackgroundResource(R.drawable.all_white_background);
-			tv_weekly.setBackgroundResource(R.drawable.complete_black_background);
-			tv_safety.setBackgroundResource(R.color.white);
+					getActivity(), reportdataWeeklyArrayList);
+			pullToRefreshListView.setAdapter(reportAdapter);
+			textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+			textviewWeekly.setBackgroundResource(R.drawable.complete_black_background);
+			textviewSafety.setBackgroundResource(R.color.white);
 
-			tv_safety.setTextColor(Color.BLACK);
-			tv_weekly.setTextColor(Color.WHITE);
-			tv_daily.setTextColor(Color.BLACK);
-			}
-		}else{
-		if (Prefrences.stopingHit == 1) {
-			Prefrences.stopingHit = 0;
-			if(Prefrences.report_bool==false){
-			if (isInternetPresent) {
-				
-				getProjectReports(Prefrences.selectedProId);
-			} else {
-				String response = sharedpref.getString("reportlistfragment", "");
-				if(response.equalsIgnoreCase("")){
-					Toast.makeText(getActivity(),"No internet connection.", Toast.LENGTH_SHORT).show();
-				}else{
-					registerForContextMenu(reportlist);
-					fillServerData(response);
-				}
-			}
-			}else
-			{
-				JSONObject res = null;
-				try {
-					
-					res = new JSONObject(Prefrences.report_s);
-					Log.v("response ", "" + res.toString(2));
-					JSONArray reportArrray = res
-							.getJSONArray("reports");
-					reportdata = new ArrayList<Report>();
-					reportdataDaily = new ArrayList<Report>();
-					reportdataSafety = new ArrayList<Report>();
-					reportdataWeekly = new ArrayList<Report>();
-					// photo_url=new ArrayList<String>();
-					Log.d("report Array length",
-							"" + reportArrray.length());
-					for (int i = 0; i < reportArrray.length(); i++) {
+			textviewSafety.setTextColor(Color.BLACK);
+			textviewWeekly.setTextColor(Color.WHITE);
+			textviewDaily.setTextColor(Color.BLACK);
+			}	
+			
 
-						person = new ArrayList<ReportPersonnel>();
-						companies= new ArrayList<ReportCompanies>();
-						ReportTopics = new ArrayList<ReportTopics>();
-//						Rcompany = new ArrayList<ReportCompany>();
-						coUsers = new ArrayList<ReportCompanyUsers>();
-						
-						coSubs = new ArrayList<ReportCompanySubcontractors>();
+		}
+//		else if(fromCreateItem==true)
+//		{
+//			fromCreateItem=false;
+//		if(Prefrences.reportTypeDialog==0)
+//			{
+//
+//			reportAdapter = new ReportListAdapter(
+//					getActivity(), reportdata);
+//			reportlist.setAdapter(reportAdapter);
+//			tv_daily.setBackgroundResource(R.drawable.all_white_background);
+//			tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
+//			tv_safety.setBackgroundResource(R.color.white);
+//
+//			tv_safety.setTextColor(Color.BLACK);
+//			tv_weekly.setTextColor(Color.BLACK);
+//			tv_daily.setTextColor(Color.BLACK);
+//						
+//			}
+//		else if(Prefrences.reportTypeDialog==1)
+//			{
+//			reportAdapter = new ReportListAdapter(
+//					getActivity(), reportdataDaily);
+//			reportlist.setAdapter(reportAdapter);
+//			tv_daily.setBackgroundResource(R.drawable.all_black_background);
+//			tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
+//			tv_safety.setBackgroundResource(R.color.white);
+//
+//			tv_safety.setTextColor(Color.BLACK);
+//			tv_weekly.setTextColor(Color.BLACK);
+//			tv_daily.setTextColor(Color.WHITE);
+//			}
+//		else if(Prefrences.reportTypeDialog==2)
+//			{
+//				reportAdapter = new ReportListAdapter(
+//						getActivity(), reportdataSafety);
+//				reportlist.setAdapter(reportAdapter);
+//				tv_daily.setBackgroundResource(R.drawable.all_white_background);
+//				tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
+//				tv_safety.setBackgroundResource(R.color.black);
+//
+//				tv_safety.setTextColor(Color.WHITE);
+//				tv_weekly.setTextColor(Color.BLACK);
+//				tv_daily.setTextColor(Color.BLACK);
+//			}
+//		else if(Prefrences.reportTypeDialog==3)
+//			{
+//					reportAdapter = new ReportListAdapter(
+//							getActivity(), reportdataWeekly);
+//					reportlist.setAdapter(reportAdapter);
+//					tv_daily.setBackgroundResource(R.drawable.all_white_background);
+//					tv_weekly.setBackgroundResource(R.drawable.complete_black_background);
+//					tv_safety.setBackgroundResource(R.color.white);
+//
+//					tv_safety.setTextColor(Color.BLACK);
+//					tv_weekly.setTextColor(Color.WHITE);
+//					tv_daily.setTextColor(Color.BLACK);
+//			}
+//		}
+		else {
+			if (Prefrences.stopingHit == 1) {
+				Prefrences.stopingHit = 0;
+				if (Prefrences.report_bool == false) {
+					if (isInternetPresentBoolean) {
 
-					//	possibleTypesArray = new ArrayList<String>();
-						JSONObject reportobj = reportArrray
-								.getJSONObject(i);
-						String reportId = reportobj.getString("id");
-						Log.d("report_id", "-----------***" + reportId);
-						if (reportId.equals("null")) {
-							reportId = "";
-						}
-						String epochTime = reportobj
-								.getString("epoch_time");
-						if (epochTime.equals("null")) {
-							epochTime = "";
-						}
-						String createdAt = reportobj
-								.getString("created_at");
-						if (createdAt.equals("null")) {
-							createdAt = "";
-						}
-						String updatedat = reportobj
-								.getString("updated_at");
-						if (updatedat.equals("null")) {
-							updatedat = "";
-						}
-						String createdDate = reportobj
-								.getString("date_string");
-						if (createdDate.equals("null")) {
-							createdDate = "";
-						}
-						String title = reportobj.getString("title");
-						if (title.equals("null")) {
-							title = "";
-						}
-						String reportType = reportobj
-								.getString("report_type");
-						String body;
-						if (reportobj.has("body")) {
-							body = reportobj.getString("body");
-							// It exists, do your stuff
+						getProjectReports(Prefrences.selectedProId);
+					} else {
+						String response = sharedpref.getString(
+								"reportlistfragment", "");
+						if (response.equalsIgnoreCase("")) {
+							Toast.makeText(getActivity(),
+									"No internet connection.",
+									Toast.LENGTH_SHORT).show();
 						} else {
-							body = "N/A";
-							// It doesn't exist, do nothing
+							registerForContextMenu(pullToRefreshListView);
+							fillServerData(response);
 						}
+					}
 
-						if (reportType.equals("null")) {
-							reportType = "";
-						}
-						String weather = reportobj.getString("weather");
-						if (weather.equals("null")) {
-							weather = "";
-						}
-						String weathericon = reportobj
-								.getString("weather_icon");
-						if (weathericon.equals("null")) {
-							weathericon = "";
-						}
-						String precip = reportobj.getString("precip");
-						if (precip.equals("null")) {
-							precip = "";
-						}
-						String temp = reportobj.getString("temp");
-						if (temp.equals("null")) {
-							temp = "";
-						}
-						String wind = reportobj.getString("wind");
-						if (wind.equals("null")) {
-							wind = "";
-						}
-						String humidity = reportobj
-								.getString("humidity");
-						if (humidity.equals("null")) {
-							humidity = "";
-						}
+				} else {
+					JSONObject res = null;
+					try {
 
-						
+						res = new JSONObject(Prefrences.report_s);
+						Log.v("response ", "" + res.toString(2));
+						JSONArray reportArrray = res.getJSONArray("reports");
+						reportdataArrayList = new ArrayList<Report>();
+						reportdataDailyArrayList = new ArrayList<Report>();
+						reportdataSafetyArrayList = new ArrayList<Report>();
+						reportdataWeeklyArrayList = new ArrayList<Report>();
+						// photo_url=new ArrayList<String>();
+						Log.d("report Array length", "" + reportArrray.length());
+						for (int i = 0; i < reportArrray.length(); i++) {
 
-						/*------- author object-------*/
-						if (!reportobj.isNull("author")) {
-							author = new ArrayList<Author>();
-							JSONObject authorobj = reportobj
-									.getJSONObject("author");
-							String authorid = authorobj.getString("id");
-							if (authorid.equals("null")) {
-								authorid = "";
+							personArrayList = new ArrayList<ReportPersonnel>();
+							companiesArrayList = new ArrayList<ReportCompanies>();
+							reportTopicsArrayList = new ArrayList<ReportTopics>();
+							// Rcompany = new ArrayList<ReportCompany>();
+							coUsersArrayList = new ArrayList<ReportCompanyUsers>();
+
+							coSubsArrayList = new ArrayList<ReportCompanySubcontractors>();
+
+							// possibleTypesArray = new ArrayList<String>();
+							JSONObject reportobj = reportArrray
+									.getJSONObject(i);
+							String reportId = reportobj.getString("id");
+							Log.d("report_id", "-----------***" + reportId);
+							if (reportId.equals("null")) {
+								reportId = "";
 							}
-							String firstname = authorobj
-									.getString("first_name");
-							if (firstname.equals("null")) {
-								firstname = "";
+							String epochTime = reportobj
+									.getString("epoch_time");
+							if (epochTime.equals("null")) {
+								epochTime = "";
 							}
-							String lastname = authorobj
-									.getString("last_name");
-							if (lastname.equals("null")) {
-								lastname = "";
+							String createdAt = reportobj
+									.getString("created_at");
+							if (createdAt.equals("null")) {
+								createdAt = "";
 							}
-							String fullname = authorobj
-									.getString("full_name");
-							if (fullname.equals("null")) {
-								fullname = "";
+							String updatedat = reportobj
+									.getString("updated_at");
+							if (updatedat.equals("null")) {
+								updatedat = "";
 							}
-							String email = authorobj.getString("email");
-							if (email.equals("null")) {
-								email = "";
+							String createdDate = reportobj
+									.getString("date_string");
+							if (createdDate.equals("null")) {
+								createdDate = "";
 							}
-							String phonenumber = authorobj
-									.getString("phone");
-							if (phonenumber.equals("null")) {
-								phonenumber = "";
+							String title = reportobj.getString("title");
+							if (title.equals("null")) {
+								title = "";
 							}
-							
-							author.add(new Author(authorid, firstname,
-									lastname, fullname, email,
-									phonenumber));
-						} else {
-							author = new ArrayList<Author>();
-							author.add(new Author("", "", "", "", "",
-									""));
-						}
-						/*------- report_fields array-------*/
-						JSONArray report_fields = reportobj
-								.getJSONArray("report_fields");
-						for (int j = 0; j < report_fields.length(); j++) {
-						}
-
-						
-						JSONArray photos = reportobj
-								.getJSONArray("photos");
-						if (photos.length() == 0) {
-							photo = new ArrayList<ProjectPhotos>();
-							Log.d("if", "----photo if null--");
-							photo.add(new ProjectPhotos("", "", "",
-									"drawable", "", "", "", "", "", "",
-									"", "", "", ""));
-							// photo_url.add("http://3.bp.blogspot.com/-1EULR14bUFc/T8srSY2KZqI/AAAAAAAAEOk/vTI6mnpZ43g/s1600/nature-wallpaper-15.jpg");
-						} else {
-							photo = new ArrayList<ProjectPhotos>();
-							for (int k = 0; k < photos.length(); k++) {
-
-								JSONObject photosobj = photos
-										.getJSONObject(k);
-								String photoid = photosobj
-										.getString("id");
-								String url_large = photosobj
-										.getString("url_large");
-								String original = photosobj
-										.getString("original");
-								String photo_url200 = photosobj
-										.getString("url_small");
-								String url100 = photosobj
-										.getString("url_thumb");
-								String photo_epoch_time = photosobj
-										.getString("epoch_time");
-								String photo_url_small = photosobj
-										.getString("url_small");
-								String photo_url_thumb = photosobj
-										.getString("url_thumb");
-								String image_file_size = photosobj
-										.getString("image_file_size");
-								String image_content_type = photosobj
-										.getString("image_content_type");
-
-								String source = photosobj
-										.getString("source");
-								String phase = photosobj
-										.getString("phase");
-								String photo_created_at = photosobj
-										.getString("created_at");
-								String user_name = photosobj
-										.getString("user_name");
-								String name = photosobj
-										.getString("name");
-
-								String desc = photosobj
-										.getString("description");
-								String photo_created_date = photosobj
-										.getString("date_string");
-
-								// Log.d("photosdata ",
-								// "------------------photosdata start----------------------");
-								// Log.d("photoid", ":" + photoid);
-								// Log.d("url_large", ":" + url_large);
-								// Log.d("original", ":" + original);
-								// Log.d("url200", ":" + photo_url200);
-								// Log.d("url100", ":" + url100);
-								// Log.d("epoch_time", ":" +
-								// photo_epoch_time);
-								// Log.d("url_small", ":" +
-								// photo_url_small);
-								// Log.d("url_thumb", ":" +
-								// photo_url_thumb);
-								// Log.d("image_file_size", ":"
-								// + image_file_size);
-								// Log.d("image_content_type", ":"
-								// + image_content_type);
-								// Log.d("source", ":" + source);
-								// Log.d("phase", ":" + phase);
-								// Log.d("created_at", ":" +
-								// photo_created_at);
-								// Log.d("user_name", ":" + user_name);
-								// Log.d("name", ":" + name);
-								// Log.d("created_date", ":"
-								// + photo_created_date);
-								//
-								// Log.d("photosdata ",
-								// "-----------------photosdata end----------------------");
-								// photo_url.add(photo_url200);
-								Log.d("----photo url---", ""
-										+ photo_url200);
-								photo.add(new ProjectPhotos(photoid,
-										url_large, original,
-										photo_url200, url100,
-										image_file_size,
-										image_content_type, source,
-										phase, photo_created_at,
-										user_name, name, desc,
-										photo_created_date));
+							String reportType = reportobj
+									.getString("report_type");
+							String body;
+							if (reportobj.has("body")) {
+								body = reportobj.getString("body");
+								// It exists, do your stuff
+							} else {
+								body = "N/A";
+								// It doesn't exist, do nothing
 							}
-						}
 
-						/*------- personnel array-------*/
+							if (reportType.equals("null")) {
+								reportType = "";
+							}
+							String weather = reportobj.getString("weather");
+							if (weather.equals("null")) {
+								weather = "";
+							}
+							String weathericon = reportobj
+									.getString("weather_icon");
+							if (weathericon.equals("null")) {
+								weathericon = "";
+							}
+							String precip = reportobj.getString("precip");
+							if (precip.equals("null")) {
+								precip = "";
+							}
+							String temp = reportobj.getString("temp");
+							if (temp.equals("null")) {
+								temp = "";
+							}
+							String wind = reportobj.getString("wind");
+							if (wind.equals("null")) {
+								wind = "";
+							}
+							String humidity = reportobj.getString("humidity");
+							if (humidity.equals("null")) {
+								humidity = "";
+							}
 
-						JSONArray personnel = reportobj
-								.getJSONArray("personnel");
-						if (personnel.length() == 0) {
-							// person.add(new ReportPersonnel("",null,
-							// ""));
-						} else {
-							Log.e("", "how many times" + i);
+							/*------- author object-------*/
+							if (!reportobj.isNull("author")) {
+								authorArrayList = new ArrayList<Author>();
+								JSONObject authorobj = reportobj
+										.getJSONObject("author");
+								String authorid = authorobj.getString("id");
+								if (authorid.equals("null")) {
+									authorid = "";
+								}
+								String firstname = authorobj
+										.getString("first_name");
+								if (firstname.equals("null")) {
+									firstname = "";
+								}
+								String lastname = authorobj
+										.getString("last_name");
+								if (lastname.equals("null")) {
+									lastname = "";
+								}
+								String fullname = authorobj
+										.getString("full_name");
+								if (fullname.equals("null")) {
+									fullname = "";
+								}
+								String email = authorobj.getString("email");
+								if (email.equals("null")) {
+									email = "";
+								}
+								String phonenumber = authorobj
+										.getString("phone");
+								if (phonenumber.equals("null")) {
+									phonenumber = "";
+								}
 
-							for (j = 0; j < personnel.length(); j++) {
+								authorArrayList.add(new Author(authorid, firstname,
+										lastname, fullname, email, phonenumber));
+							} else {
+								authorArrayList = new ArrayList<Author>();
+								authorArrayList.add(new Author("", "", "", "", "", ""));
+							}
+							/*------- report_fields array-------*/
+							JSONArray report_fields = reportobj
+									.getJSONArray("report_fields");
+							for (int j = 0; j < report_fields.length(); j++) {
+							}
 
-								JSONObject count = personnel
-										.getJSONObject(j);
-								Log.d("", "count : " + count);
-								if (count.isNull("user")) {
-									
+							JSONArray photos = reportobj.getJSONArray("photos");
+							if (photos.length() == 0) {
+								photoArrayList = new ArrayList<ProjectPhotos>();
+//								Log.d("if", "----photo if null--");
+//								photo.add(new ProjectPhotos("", "", "",
+//										"drawable", "", "", "", "", "", "", "",
+//										"", "", "",null));
+								// photo_url.add("http://3.bp.blogspot.com/-1EULR14bUFc/T8srSY2KZqI/AAAAAAAAEOk/vTI6mnpZ43g/s1600/nature-wallpaper-15.jpg");
+							} else {
+								photoArrayList = new ArrayList<ProjectPhotos>();
+								for (int k = 0; k < photos.length(); k++) {
 
-								} else {
+									JSONObject photosobj = photos
+											.getJSONObject(k);
+									String photoid = photosobj.getString("id");
+									String url_large = photosobj
+											.getString("url_large");
+									String original = photosobj
+											.getString("original");
+									String photo_url200 = photosobj
+											.getString("url_small");
+									String url100 = photosobj
+											.getString("url_thumb");
+									String photo_epoch_time = photosobj
+											.getString("epoch_time");
+									String photo_url_small = photosobj
+											.getString("url_small");
+									String photo_url_thumb = photosobj
+											.getString("url_thumb");
+									String image_file_size = photosobj
+											.getString("image_file_size");
+									String image_content_type = photosobj
+											.getString("image_content_type");
 
-									JSONObject puser = count
-											.getJSONObject("user");
+									String source = photosobj
+											.getString("source");
+									String phase = photosobj.getString("phase");
+									String photo_created_at = photosobj
+											.getString("created_at");
+									String user_name = photosobj
+											.getString("user_name");
+									String name = photosobj.getString("name");
 
-									Log.d("", "puser : " + puser);
-									JSONObject company = puser
-											.getJSONObject("company");// checkitem
+									String desc = photosobj
+											.getString("description");
+									String photo_created_date = photosobj
+											.getString("date_string");
 
-									ArrayList<Company> compny = new ArrayList<Company>();
-									compny.add(new Company(company
-											.getString("id"), company
-											.getString("name")));
-									personnelUser = new ArrayList<ReportPersonnelUser>();
-
-									personnelUser
-											.add(new ReportPersonnelUser(
-													puser.getString("id"),
-													puser.getString("first_name"),
-													puser.getString("last_name"),
-													puser.getString("full_name"),
-													puser.getString("email"),
-													puser.getString("phone"),compny));
-
-									
-									person.add(new ReportPersonnel(
-											count.getString("id"),
-											personnelUser,
-											count.getString("hours")
-											));
+									// Log.d("photosdata ",
+									// "------------------photosdata start----------------------");
+									// Log.d("photoid", ":" + photoid);
+									// Log.d("url_large", ":" + url_large);
+									// Log.d("original", ":" + original);
+									// Log.d("url200", ":" + photo_url200);
+									// Log.d("url100", ":" + url100);
+									// Log.d("epoch_time", ":" +
+									// photo_epoch_time);
+									// Log.d("url_small", ":" +
+									// photo_url_small);
+									// Log.d("url_thumb", ":" +
+									// photo_url_thumb);
+									// Log.d("image_file_size", ":"
+									// + image_file_size);
+									// Log.d("image_content_type", ":"
+									// + image_content_type);
+									// Log.d("source", ":" + source);
+									// Log.d("phase", ":" + phase);
+									// Log.d("created_at", ":" +
+									// photo_created_at);
+									// Log.d("user_name", ":" + user_name);
+									// Log.d("name", ":" + name);
+									// Log.d("created_date", ":"
+									// + photo_created_date);
+									//
+									// Log.d("photosdata ",
+									// "-----------------photosdata end----------------------");
+									// photo_url.add(photo_url200);
+									Log.d("----photo url---", "" + photo_url200);
+									photoArrayList.add(new ProjectPhotos(photoid,
+											url_large, original, photo_url200,
+											url100, image_file_size,
+											image_content_type, source, phase,
+											photo_created_at, user_name, name,
+											desc, photo_created_date,null));
 								}
 							}
-						}
-							Log.d("", "person size=" + person.size());
+
+							/*------- personnel array-------*/
+
+							JSONArray personnel = reportobj
+									.getJSONArray("personnel");
+							if (personnel.length() == 0) {
+								// person.add(new ReportPersonnel("",null,
+								// ""));
+							} else {
+								Log.e("", "how many times" + i);
+
+								for (j = 0; j < personnel.length(); j++) {
+
+									JSONObject count = personnel
+											.getJSONObject(j);
+									Log.d("", "count : " + count);
+									if (count.isNull("user")) {
+
+									} else {
+
+										JSONObject puser = count
+												.getJSONObject("user");
+
+										Log.d("", "puser : " + puser);
+										JSONObject company = puser
+												.getJSONObject("company");// checkitem
+
+										ArrayList<Company> compny = new ArrayList<Company>();
+										compny.add(new Company(company
+												.getString("id"), company
+												.getString("name")));
+										personnelUserArrayList = new ArrayList<ReportPersonnelUser>();
+
+										personnelUserArrayList
+												.add(new ReportPersonnelUser(
+														puser.getString("id"),
+														puser.getString("first_name"),
+														puser.getString("last_name"),
+														puser.getString("full_name"),
+														puser.getString("email"),
+														puser.getString("phone"),
+														compny));
+
+										personArrayList.add(new ReportPersonnel(count
+												.getString("id"),
+												personnelUserArrayList, count
+														.getString("hours")));
+									}
+								}
+							}
+							Log.d("", "person size=" + personArrayList.size());
 							JSONArray reportCompany = reportobj
 									.getJSONArray("report_companies");
 							if (reportCompany.length() == 0) {
@@ -649,217 +719,249 @@ public class ReportFragment extends Fragment {
 									JSONObject count = reportCompany
 											.getJSONObject(j);
 									Log.e("report companies", "times j = " + j);
-									JSONObject company = count.
-											getJSONObject("company");
-									
-//									JSONArray cousers = company.getJSONArray("users");
-//									if(cousers.length()!=0)
-//									{
-//										for(int k=0;k<cousers.length();k++)
-//										{
-//											Log.e("report companies", "times k = " + k);
-//											JSONObject ccount = cousers
-//													.getJSONObject(k);
-//											coUsers.add(new ReportCompanyUsers(ccount.getString("id"), ccount.getString("first_name"), 
-//													ccount.getString("last_name"), ccount.getString("full_name"), ccount.getString("email"), 
-//													ccount.getString("phone")));
-//										}
-//									}
-//									JSONArray cosubs = company.getJSONArray("subcontractors");
-//									coSubUsers = new ArrayList<ReportCompanyUsers>();
-//									if(cosubs.length()!=0)
-//									{
-//										for(int k=0;k<cosubs.length();k++)
-//										{
-//											Log.e("report companies", "times k2 = " + k);
-//											JSONObject ccount = cosubs
-//													.getJSONObject(k);
-//											
-//											JSONArray couser = ccount.getJSONArray("users");
-//											if(couser.length()!=0)
-//											{
-//											for(int m=0;m<couser.length();m++)
-//											{
-//												Log.e("report companies", "times m = " + k);
-//												JSONObject cccount = couser.getJSONObject(m);
-//												
-//												coSubUsers.add(new ReportCompanyUsers(cccount.getString("id"), cccount.getString("first_name"), 
-//													cccount.getString("last_name"), cccount.getString("full_name"), cccount.getString("email"), 
-//													cccount.getString("phone")));
-//												
-//											}
-//											coSubs.add(new ReportCompanySubcontractors(ccount.getString("id"), ccount.getString("name"),
-//													coSubUsers, ccount.getString("users_count")));
-//											}
-//										}
-//									}
-									ArrayList<ReportCompany>Rcompany = new ArrayList<ReportCompany>();
-									Rcompany.add(new ReportCompany(company.getString("id"), company.getString("name"), coUsers, coSubs));
-									
-									companies.add(new ReportCompanies(count.getString("id"), count.getString("count"), Rcompany));
-								
-						
+									ArrayList<ReportCompany> Rcompany = new ArrayList<ReportCompany>();
+									if (count.isNull("company")) {
+										Rcompany.add(new ReportCompany("", "",
+												coUsersArrayList, coSubsArrayList));
+									} else {
+										JSONObject company = count
+												.getJSONObject("company");
+
+										// JSONArray cousers =
+										// company.getJSONArray("users");
+										// if(cousers.length()!=0)
+										// {
+										// for(int k=0;k<cousers.length();k++)
+										// {
+										// Log.e("report companies",
+										// "times k = " + k);
+										// JSONObject ccount = cousers
+										// .getJSONObject(k);
+										// coUsers.add(new
+										// ReportCompanyUsers(ccount.getString("id"),
+										// ccount.getString("first_name"),
+										// ccount.getString("last_name"),
+										// ccount.getString("full_name"),
+										// ccount.getString("email"),
+										// ccount.getString("phone")));
+										// }
+										// }
+										// JSONArray cosubs =
+										// company.getJSONArray("subcontractors");
+										coSubUsersArrayList = new ArrayList<ReportCompanyUsers>();
+										// if(cosubs.length()!=0)
+										// {
+										// for(int k=0;k<cosubs.length();k++)
+										// {
+										// Log.e("report companies",
+										// "times k2 = " + k);
+										// JSONObject ccount = cosubs
+										// .getJSONObject(k);
+										//
+										// JSONArray couser =
+										// ccount.getJSONArray("users");
+										// if(couser.length()!=0)
+										// {
+										// for(int m=0;m<couser.length();m++)
+										// {
+										// Log.e("report companies",
+										// "times m = " + m);
+										// JSONObject cccount =
+										// couser.getJSONObject(m);
+										//
+										// coSubUsers.add(new
+										// ReportCompanyUsers(cccount.getString("id"),
+										// cccount.getString("first_name"),
+										// cccount.getString("last_name"),
+										// cccount.getString("full_name"),
+										// cccount.getString("email"),
+										// cccount.getString("phone")));
+										//
+										// }
+										// coSubs.add(new
+										// ReportCompanySubcontractors(ccount.getString("id"),
+										// ccount.getString("name"),
+										// coSubUsers,
+										// ccount.getString("users_count")));
+										// }
+										// }
+										// }
+
+										Rcompany.add(new ReportCompany(company
+												.getString("id"), company
+												.getString("name"), coUsersArrayList,
+												coSubsArrayList));
+									}
+									companiesArrayList.add(new ReportCompanies(count
+											.getString("id"), count
+											.getString("count"), Rcompany));
+
+								}
 							}
-						}
-//							ReportTopics = new ArrayList<ReportTopics>();
+							// ReportTopics = new ArrayList<ReportTopics>();
 							JSONArray report_topics = reportobj
 									.getJSONArray("report_topics");
 							for (j = 0; j < report_topics.length(); j++) {
 								JSONObject obj = report_topics.getJSONObject(j);
-								safe = new ArrayList<SafetyTopics>();
-								JSONObject safety_topic = obj.getJSONObject("safety_topic");
-								
-								safe.add(new SafetyTopics(safety_topic.getString("id"),
-								safety_topic.getString("title"),
-								safety_topic.getString("info")));
-								
-								ReportTopics.add(new ReportTopics(obj.getString("id"), obj.getString("report_id"), safe));
-								
+								safeArrayList = new ArrayList<SafetyTopics>();
+								JSONObject safety_topic = obj
+										.getJSONObject("safety_topic");
+
+								safeArrayList.add(new SafetyTopics(safety_topic
+										.getString("id"), safety_topic
+										.getString("title"), safety_topic
+										.getString("info")));
+
+								reportTopicsArrayList.add(new ReportTopics(obj
+										.getString("id"), obj
+										.getString("report_id"), safeArrayList));
+
 							}
-							Log.d("Safe ","Size= "+ReportTopics.size());
-							
-//						companies.get(i).
-						//Log.d("","sizecouser= "+coUsers.size()+"cosubs"+coSubs.size()+"cosubuser"+coSubUsers.size()+"company"+companies.size());
-						/*------- possible_types array-------*/
-						JSONArray possible_types = reportobj
-								.getJSONArray("possible_types");
+							Log.d("Safe ", "Size= " + reportTopicsArrayList.size());
 
-						for (int j = 0; j < possible_types.length(); j++) {
+							// companies.get(i).
+							// Log.d("","sizecouser= "+coUsers.size()+"cosubs"+coSubs.size()+"cosubuser"+coSubUsers.size()+"company"+companies.size());
+							/*------- possible_types array-------*/
+							JSONArray possible_types = reportobj
+									.getJSONArray("possible_types");
 
-							type = possible_types.getString(j);
-							// Log.d("possible type", "" + type);
-						//	possibleTypesArray.add(type);
+							for (int j = 0; j < possible_types.length(); j++) {
+
+								typeString = possible_types.getString(j);
+								// Log.d("possible type", "" + type);
+								// possibleTypesArray.add(type);
+
+							}
+							if (reportType.equals("Daily")) {
+								reportdataDailyArrayList.add((new Report(reportId,
+										epochTime, createdAt, updatedat,
+										createdDate, title, reportType, body,
+										weather, weathericon, precip, temp,
+										wind, humidity, authorArrayList, photoArrayList, personArrayList,
+										companiesArrayList, reportTopicsArrayList)));
+							} else if (reportType.equals("Safety")) {
+								reportdataSafetyArrayList.add((new Report(reportId,
+										epochTime, createdAt, updatedat,
+										createdDate, title, reportType, body,
+										weather, weathericon, precip, temp,
+										wind, humidity, authorArrayList, photoArrayList, personArrayList,
+										companiesArrayList, reportTopicsArrayList)));
+							} else if (reportType.equals("Weekly")) {
+								reportdataWeeklyArrayList.add((new Report(reportId,
+										epochTime, createdAt, updatedat,
+										createdDate, title, reportType, body,
+										weather, weathericon, precip, temp,
+										wind, humidity, authorArrayList, photoArrayList, personArrayList,
+										companiesArrayList, reportTopicsArrayList)));
+							}
+							reportdataArrayList.add(new Report(reportId, epochTime,
+									createdAt, updatedat, createdDate, title,
+									reportType, body, weather, weathericon,
+									precip, temp, wind, humidity, authorArrayList,
+									photoArrayList, personArrayList, companiesArrayList, reportTopicsArrayList));
+
+							// Log.d("",""+reportdata.get(i).author);
+							/*------- comments array-------*/
+							JSONArray comments = reportobj
+									.getJSONArray("comments");
+							commntArrayList = new ArrayList<Comments>();
+
+							/*------- report_users array-------*/
+							JSONArray report_users = reportobj
+									.getJSONArray("report_users");
+							for (j = 0; j < report_users.length(); j++) {
+							}
+							/*------- safety_topics array-------*/
+
+							/*------- report_subs array-------*/
+							JSONArray report_subs = reportobj
+									.getJSONArray("report_subs");
+							for (j = 0; j < report_subs.length(); j++) {
+							}
 
 						}
-						if (reportType.equals("Daily")) {
-							reportdataDaily.add((new Report(reportId,
-									epochTime, createdAt, updatedat,
-									createdDate, title, reportType,
-									body, weather, weathericon, precip,
-									temp, wind, humidity, author,
-									photo, person, companies,ReportTopics)));
-						} else if (reportType.equals("Safety")) {
-							reportdataSafety.add((new Report(reportId,
-									epochTime, createdAt, updatedat,
-									createdDate, title, reportType,
-									body, weather, weathericon, precip,
-									temp, wind, humidity, author,
-									photo, person, companies,ReportTopics)));
-						} else if (reportType.equals("Weekly")) {
-							reportdataWeekly.add((new Report(reportId,
-									epochTime, createdAt, updatedat,
-									createdDate, title, reportType,
-									body, weather, weathericon, precip,
-									temp, wind, humidity, author,
-									photo, person, companies,ReportTopics)));
+
+						if (Prefrences.reportlisttypes == 0) {
+							reportAdapter = new ReportListAdapter(
+									getActivity(), reportdataArrayList);
+							pullToRefreshListView.setAdapter(reportAdapter);
+							textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+							textviewWeekly
+									.setBackgroundResource(R.drawable.complete_white_background);
+							textviewSafety.setBackgroundResource(R.color.white);
+
+							textviewSafety.setTextColor(Color.BLACK);
+							textviewWeekly.setTextColor(Color.BLACK);
+							textviewDaily.setTextColor(Color.BLACK);
+						} else if (Prefrences.reportlisttypes == 1) {
+							reportAdapter = new ReportListAdapter(
+									getActivity(), reportdataDailyArrayList);
+							pullToRefreshListView.setAdapter(reportAdapter);
+							textviewDaily.setBackgroundResource(R.drawable.all_black_background);
+							textviewWeekly
+									.setBackgroundResource(R.drawable.complete_white_background);
+							textviewSafety.setBackgroundResource(R.color.white);
+
+							textviewSafety.setTextColor(Color.BLACK);
+							textviewWeekly.setTextColor(Color.BLACK);
+							textviewDaily.setTextColor(Color.WHITE);
+						} else if (Prefrences.reportlisttypes == 2) {
+							reportAdapter = new ReportListAdapter(
+									getActivity(), reportdataSafetyArrayList);
+							pullToRefreshListView.setAdapter(reportAdapter);
+							textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+							textviewWeekly
+									.setBackgroundResource(R.drawable.complete_white_background);
+							textviewSafety.setBackgroundResource(R.color.black);
+
+							textviewSafety.setTextColor(Color.WHITE);
+							textviewWeekly.setTextColor(Color.BLACK);
+							textviewDaily.setTextColor(Color.BLACK);
+						} else if (Prefrences.reportlisttypes == 3) {
+							reportAdapter = new ReportListAdapter(
+									getActivity(), reportdataWeeklyArrayList);
+							pullToRefreshListView.setAdapter(reportAdapter);
+							textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+							textviewWeekly
+									.setBackgroundResource(R.drawable.complete_black_background);
+							textviewSafety.setBackgroundResource(R.color.white);
+
+							textviewSafety.setTextColor(Color.BLACK);
+							textviewWeekly.setTextColor(Color.WHITE);
+							textviewDaily.setTextColor(Color.BLACK);
 						}
-						reportdata.add(new Report(reportId, epochTime,
-								createdAt, updatedat, createdDate,
-								title, reportType, body, weather,
-								weathericon, precip, temp, wind,
-								humidity, author, photo, person, companies,ReportTopics));
-						
-//						Log.d("",""+reportdata.get(i).author);
-						/*------- comments array-------*/
-						JSONArray comments = reportobj
-								.getJSONArray("comments");
-						commnt = new ArrayList<Comments>();
 
-						/*------- report_users array-------*/
-						JSONArray report_users = reportobj
-								.getJSONArray("report_users");
-						for (j = 0; j < report_users.length(); j++) {
+						// reportAdapter.notifyDataSetChanged();
+
+						// Log.d("photourl size",""+photo_url.size());
+						for (int i = 0; i < reportdataDailyArrayList.size(); i++) {
+							// Log.d("photo url",""+reportdata_daily.get(i).photos.get(0).url200);
+							Log.d("photo url",
+									""
+											+ i
+											+ ":"
+											+ reportdataDailyArrayList.get(i).photos
+													.size());
 						}
-						/*------- safety_topics array-------*/
-						
-						/*------- report_subs array-------*/
-						JSONArray report_subs = reportobj
-								.getJSONArray("report_subs");
-						for (j = 0; j < report_subs.length(); j++) {
+						if (pull == true) {
+
+							pull = false;
+							// daily.setBackgroundResource(R.drawable.all_white_background);
+							// weekly.setBackgroundResource(R.drawable.complete_white_background);
+							// safety.setBackgroundResource(R.color.white);
+							//
+							// safety.setTextColor(Color.BLACK);
+							// weekly.setTextColor(Color.BLACK);
+							// daily.setTextColor(Color.BLACK);
+							pullToRefreshListView.onRefreshComplete();
 						}
-
+						reportAdapter.notifyDataSetChanged();
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-					
-					if(Prefrences.reportlisttypes==0)
-					{
-					reportAdapter = new ReportListAdapter(
-							getActivity(), reportdata);
-					reportlist.setAdapter(reportAdapter);
-					tv_daily.setBackgroundResource(R.drawable.all_white_background);
-					tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-					tv_safety.setBackgroundResource(R.color.white);
-
-					tv_safety.setTextColor(Color.BLACK);
-					tv_weekly.setTextColor(Color.BLACK);
-					tv_daily.setTextColor(Color.BLACK);
-					}
-					else if(Prefrences.reportlisttypes==1)
-					{
-					reportAdapter = new ReportListAdapter(
-							getActivity(), reportdataDaily);
-					reportlist.setAdapter(reportAdapter);
-					tv_daily.setBackgroundResource(R.drawable.all_black_background);
-					tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-					tv_safety.setBackgroundResource(R.color.white);
-
-					tv_safety.setTextColor(Color.BLACK);
-					tv_weekly.setTextColor(Color.BLACK);
-					tv_daily.setTextColor(Color.WHITE);
-					}
-					else if(Prefrences.reportlisttypes==2)
-					{
-					reportAdapter = new ReportListAdapter(
-							getActivity(), reportdataSafety);
-					reportlist.setAdapter(reportAdapter);
-					tv_daily.setBackgroundResource(R.drawable.all_white_background);
-					tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-					tv_safety.setBackgroundResource(R.color.black);
-
-					tv_safety.setTextColor(Color.WHITE);
-					tv_weekly.setTextColor(Color.BLACK);
-					tv_daily.setTextColor(Color.BLACK);
-					}
-					else if(Prefrences.reportlisttypes==3)
-					{
-					reportAdapter = new ReportListAdapter(
-							getActivity(), reportdataWeekly);
-					reportlist.setAdapter(reportAdapter);
-					tv_daily.setBackgroundResource(R.drawable.all_white_background);
-					tv_weekly.setBackgroundResource(R.drawable.complete_black_background);
-					tv_safety.setBackgroundResource(R.color.white);
-
-					tv_safety.setTextColor(Color.BLACK);
-					tv_weekly.setTextColor(Color.WHITE);
-					tv_daily.setTextColor(Color.BLACK);
-					}
-					
-//					reportAdapter.notifyDataSetChanged();
-					
-					// Log.d("photourl size",""+photo_url.size());
-					for (int i = 0; i < reportdataDaily.size(); i++) {
-						// Log.d("photo url",""+reportdata_daily.get(i).photos.get(0).url200);
-						Log.d("photo url", "" + i + ":"
-								+ reportdataDaily.get(i).photos.size());
-					}
-					if (pull == true) {
-
-						pull = false;
-//						daily.setBackgroundResource(R.drawable.all_white_background);
-//						weekly.setBackgroundResource(R.drawable.complete_white_background);
-//						safety.setBackgroundResource(R.color.white);
-//
-//						safety.setTextColor(Color.BLACK);
-//						weekly.setTextColor(Color.BLACK);
-//						daily.setTextColor(Color.BLACK);
-						reportlist.onRefreshComplete();
-					}
-					 reportAdapter.notify();
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
+
 			}
-			
-		} 
 		}
 	}
 
@@ -870,10 +972,10 @@ public class ReportFragment extends Fragment {
 		 * Òuser_idÓ : 2, ÒlocationÓ : ÒBasementÓ, Òuser_assigneeÓ : ÒMax
 		 * Haines-StilesÓ }, Òproject_idÓ : {project.id}
 		 */
-
+		if(pull!=true)
 		Prefrences.showLoadingDialog(getActivity(), "Loading...");
 		AsyncHttpClient client = new AsyncHttpClient();
-
+		client.setTimeout(100000);
 		client.addHeader("Content-type", "application/json");
 		client.addHeader("Accept", "application/json");
 		
@@ -887,6 +989,7 @@ public class ReportFragment extends Fragment {
 						editor.putString("reportlistfragment", response);
 						editor.commit();
 						fillServerData(response);
+						if(pull!=true)
 						Prefrences.dismissLoadingDialog();
 
 					}
@@ -896,11 +999,11 @@ public class ReportFragment extends Fragment {
 						Log.e("request fail", arg0.toString());
 						Toast.makeText(getActivity(), "Server Issue",
 								Toast.LENGTH_LONG).show();
-
+						if(pull!=true)
 						Prefrences.dismissLoadingDialog();
 						if (pull == true) {
 							pull = false;
-							reportlist.onRefreshComplete();
+							pullToRefreshListView.onRefreshComplete();
 						}
 					}
 				});
@@ -916,21 +1019,21 @@ public class ReportFragment extends Fragment {
 			Log.v("response ", "" + res.toString(2));
 			
 			JSONArray reportArrray = res.getJSONArray("reports");
-			reportdata = new ArrayList<Report>();
-			reportdataDaily = new ArrayList<Report>();
-			reportdataSafety = new ArrayList<Report>();
-			reportdataWeekly = new ArrayList<Report>();
+			reportdataArrayList = new ArrayList<Report>();
+			reportdataDailyArrayList = new ArrayList<Report>();
+			reportdataSafetyArrayList = new ArrayList<Report>();
+			reportdataWeeklyArrayList = new ArrayList<Report>();
 
 			Log.d("report Array length","" + reportArrray.length());
 			
 			for (int i = 0; i < reportArrray.length(); i++) {
-				companies= new ArrayList<ReportCompanies>();
-				ReportTopics = new ArrayList<ReportTopics>();
-				person= new ArrayList<ReportPersonnel>();
+				companiesArrayList= new ArrayList<ReportCompanies>();
+				reportTopicsArrayList = new ArrayList<ReportTopics>();
+				personArrayList= new ArrayList<ReportPersonnel>();
 
-				coUsers = new ArrayList<ReportCompanyUsers>();
+				coUsersArrayList = new ArrayList<ReportCompanyUsers>();
 				
-				coSubs = new ArrayList<ReportCompanySubcontractors>();
+				coSubsArrayList = new ArrayList<ReportCompanySubcontractors>();
 
 		
 				
@@ -1026,7 +1129,7 @@ public class ReportFragment extends Fragment {
 				
 				/*------- author object-------*/
 				if (!reportobj.isNull("author")) {
-					author = new ArrayList<Author>();
+					authorArrayList = new ArrayList<Author>();
 					
 					JSONObject authorobj = reportobj.getJSONObject("author");
 					
@@ -1066,12 +1169,12 @@ public class ReportFragment extends Fragment {
 					// Log.d("phone_number", "" + phone_number);
 					// Log.d("authorobj",
 					// "-------------authorobj data end---------");
-					author.add(new Author(authorid, firstname,
+					authorArrayList.add(new Author(authorid, firstname,
 							lastname, fullname, email,
 							phonenumber));
 				} else {
-					author = new ArrayList<Author>();
-					author.add(new Author("", "", "", "", "",
+					authorArrayList = new ArrayList<Author>();
+					authorArrayList.add(new Author("", "", "", "", "",
 							""));
 				}
 				/*------- report_fields array-------*/
@@ -1095,14 +1198,14 @@ public class ReportFragment extends Fragment {
 				JSONArray photos = reportobj
 						.getJSONArray("photos");
 				if (photos.length() == 0) {
-					photo = new ArrayList<ProjectPhotos>();
-					Log.d("if", "----photo if null--");
-					photo.add(new ProjectPhotos("", "", "",
-							"drawable", "", "", "", "", "", "",
-							"", "", "", ""));
+					photoArrayList = new ArrayList<ProjectPhotos>();
+//					Log.d("if", "----photo if null--");
+//					photo.add(new ProjectPhotos("", "", "",
+//							"drawable", "", "", "", "", "", "",
+//							"", "", "", ""));
 					// photo_url.add("http://3.bp.blogspot.com/-1EULR14bUFc/T8srSY2KZqI/AAAAAAAAEOk/vTI6mnpZ43g/s1600/nature-wallpaper-15.jpg");
 				} else {
-					photo = new ArrayList<ProjectPhotos>();
+					photoArrayList = new ArrayList<ProjectPhotos>();
 					for (int k = 0; k < photos.length(); k++) {
 
 						JSONObject photosobj = photos
@@ -1175,14 +1278,14 @@ public class ReportFragment extends Fragment {
 						// photo_url.add(photo_url200);
 						Log.d("----photo url---", ""
 								+ photo_url200);
-						photo.add(new ProjectPhotos(photoid,
+						photoArrayList.add(new ProjectPhotos(photoid,
 								url_large, original,
 								photo_url200, url100,
 								image_file_size,
 								image_content_type, source,
 								phase, photo_created_at,
 								user_name, name, desc,
-								photo_created_date));
+								photo_created_date,null));
 					}
 				}
 
@@ -1264,6 +1367,13 @@ public class ReportFragment extends Fragment {
 							JSONObject count = reportCompany
 									.getJSONObject(j);
 							Log.e("report companies", "times j = " + j);
+							ArrayList<ReportCompany>Rcompany = new ArrayList<ReportCompany>();
+							if(count.isNull("company"))
+							{
+								Rcompany.add(new ReportCompany("", "", coUsersArrayList, coSubsArrayList));
+							}
+							else
+							{
 							JSONObject company = count.
 									getJSONObject("company");
 							
@@ -1281,7 +1391,7 @@ public class ReportFragment extends Fragment {
 //								}
 //							}
 //							JSONArray cosubs = company.getJSONArray("subcontractors");
-							coSubUsers = new ArrayList<ReportCompanyUsers>();
+							coSubUsersArrayList = new ArrayList<ReportCompanyUsers>();
 //							if(cosubs.length()!=0)
 //							{
 //								for(int k=0;k<cosubs.length();k++)
@@ -1308,10 +1418,10 @@ public class ReportFragment extends Fragment {
 //									}
 //								}
 //							}
-							ArrayList<ReportCompany>Rcompany = new ArrayList<ReportCompany>();
-							Rcompany.add(new ReportCompany(company.getString("id"), company.getString("name"), coUsers, coSubs));
 							
-							companies.add(new ReportCompanies(count.getString("id"), count.getString("count"), Rcompany));
+							Rcompany.add(new ReportCompany(company.getString("id"), company.getString("name"), coUsersArrayList, coSubsArrayList));
+							}
+							companiesArrayList.add(new ReportCompanies(count.getString("id"), count.getString("count"), Rcompany));
 						
 				
 					}
@@ -1364,9 +1474,9 @@ public class ReportFragment extends Fragment {
 										.getString("name")));
 
 								Log.d("", "puser : " + puser);
-								personnelUser = new ArrayList<ReportPersonnelUser>();
+								personnelUserArrayList = new ArrayList<ReportPersonnelUser>();
 
-								personnelUser
+								personnelUserArrayList
 										.add(new ReportPersonnelUser(
 												puser.getString("id"),
 												puser.getString("first_name"),
@@ -1382,9 +1492,9 @@ public class ReportFragment extends Fragment {
 								// psub,count.getString("count")));
 								// }
 								// else
-								person.add(new ReportPersonnel(
+								personArrayList.add(new ReportPersonnel(
 										count.getString("id"),
-										personnelUser,
+										personnelUserArrayList,
 										count.getString("hours")
 										));
 							}
@@ -1403,17 +1513,17 @@ public class ReportFragment extends Fragment {
 							.getJSONArray("report_topics");
 					for (j = 0; j < report_topics.length(); j++) {
 						JSONObject obj = report_topics.getJSONObject(j);
-						safe = new ArrayList<SafetyTopics>();
+						safeArrayList = new ArrayList<SafetyTopics>();
 						JSONObject safety_topic = obj.getJSONObject("safety_topic");
 						
-						safe.add(new SafetyTopics(safety_topic.getString("id"),
+						safeArrayList.add(new SafetyTopics(safety_topic.getString("id"),
 						safety_topic.getString("title"),
 						safety_topic.getString("info")));
 						
-						ReportTopics.add(new ReportTopics(obj.getString("id"), obj.getString("report_id"), safe));
+						reportTopicsArrayList.add(new ReportTopics(obj.getString("id"), obj.getString("report_id"), safeArrayList));
 						
 					}
-					Log.d("Safe ","Size= "+ReportTopics.size());
+					Log.d("Safe ","Size= "+reportTopicsArrayList.size());
 					
 //				companies.get(i).
 				//Log.d("","sizecouser= "+coUsers.size()+"cosubs"+coSubs.size()+"cosubuser"+coSubUsers.size()+"company"+companies.size());
@@ -1423,44 +1533,44 @@ public class ReportFragment extends Fragment {
 
 				for (int j = 0; j < possible_types.length(); j++) {
 
-					type = possible_types.getString(j);
+					typeString = possible_types.getString(j);
 					// Log.d("possible type", "" + type);
 				//	possibleTypesArray.add(type);
 
 				}
 				if (reportType.equals("Daily")) {
-					reportdataDaily.add((new Report(reportId,
+					reportdataDailyArrayList.add((new Report(reportId,
 							epochTime, createdAt, updatedat,
 							createdDate, title, reportType,
 							body, weather, weathericon, precip,
-							temp, wind, humidity, author,
-							photo, person, companies,ReportTopics)));
+							temp, wind, humidity, authorArrayList,
+							photoArrayList, personArrayList, companiesArrayList,reportTopicsArrayList)));
 				} else if (reportType.equals("Safety")) {
-					reportdataSafety.add((new Report(reportId,
+					reportdataSafetyArrayList.add((new Report(reportId,
 							epochTime, createdAt, updatedat,
 							createdDate, title, reportType,
 							body, weather, weathericon, precip,
-							temp, wind, humidity, author,
-							photo, person, companies,ReportTopics)));
+							temp, wind, humidity, authorArrayList,
+							photoArrayList, personArrayList, companiesArrayList,reportTopicsArrayList)));
 				} else if (reportType.equals("Weekly")) {
-					reportdataWeekly.add((new Report(reportId,
+					reportdataWeeklyArrayList.add((new Report(reportId,
 							epochTime, createdAt, updatedat,
 							createdDate, title, reportType,
 							body, weather, weathericon, precip,
-							temp, wind, humidity, author,
-							photo, person, companies,ReportTopics)));
+							temp, wind, humidity, authorArrayList,
+							photoArrayList, personArrayList, companiesArrayList,reportTopicsArrayList)));
 				}
-				reportdata.add(new Report(reportId, epochTime,
+				reportdataArrayList.add(new Report(reportId, epochTime,
 						createdAt, updatedat, createdDate,
 						title, reportType, body, weather,
 						weathericon, precip, temp, wind,
-						humidity, author, photo, person, companies,ReportTopics));
+						humidity, authorArrayList, photoArrayList, personArrayList, companiesArrayList,reportTopicsArrayList));
 				
 //				Log.d("",""+reportdata.get(i).author);
 				/*------- comments array-------*/
 				JSONArray comments = reportobj
 						.getJSONArray("comments");
-				commnt = new ArrayList<Comments>();
+				commntArrayList = new ArrayList<Comments>();
 				// for (int j = 0; j < comments.length(); j++) {
 				//
 				//
@@ -1581,63 +1691,63 @@ public class ReportFragment extends Fragment {
 			if(Prefrences.reportlisttypes==0)
 			{
 			reportAdapter = new ReportListAdapter(
-					getActivity(), reportdata);
-			reportlist.setAdapter(reportAdapter);
-			tv_daily.setBackgroundResource(R.drawable.all_white_background);
-			tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-			tv_safety.setBackgroundResource(R.color.white);
+					getActivity(), reportdataArrayList);
+			pullToRefreshListView.setAdapter(reportAdapter);
+			textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+			textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+			textviewSafety.setBackgroundResource(R.color.white);
 
-			tv_safety.setTextColor(Color.BLACK);
-			tv_weekly.setTextColor(Color.BLACK);
-			tv_daily.setTextColor(Color.BLACK);
+			textviewSafety.setTextColor(Color.BLACK);
+			textviewWeekly.setTextColor(Color.BLACK);
+			textviewDaily.setTextColor(Color.BLACK);
 			}
 			else if(Prefrences.reportlisttypes==1)
 			{
 			reportAdapter = new ReportListAdapter(
-					getActivity(), reportdataDaily);
-			reportlist.setAdapter(reportAdapter);
-			tv_daily.setBackgroundResource(R.drawable.all_black_background);
-			tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-			tv_safety.setBackgroundResource(R.color.white);
+					getActivity(), reportdataDailyArrayList);
+			pullToRefreshListView.setAdapter(reportAdapter);
+			textviewDaily.setBackgroundResource(R.drawable.all_black_background);
+			textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+			textviewSafety.setBackgroundResource(R.color.white);
 
-			tv_safety.setTextColor(Color.BLACK);
-			tv_weekly.setTextColor(Color.BLACK);
-			tv_daily.setTextColor(Color.WHITE);
+			textviewSafety.setTextColor(Color.BLACK);
+			textviewWeekly.setTextColor(Color.BLACK);
+			textviewDaily.setTextColor(Color.WHITE);
 			}
 			else if(Prefrences.reportlisttypes==2)
 			{
 			reportAdapter = new ReportListAdapter(
-					getActivity(), reportdataSafety);
-			reportlist.setAdapter(reportAdapter);
-			tv_daily.setBackgroundResource(R.drawable.all_white_background);
-			tv_weekly.setBackgroundResource(R.drawable.complete_white_background);
-			tv_safety.setBackgroundResource(R.color.black);
+					getActivity(), reportdataSafetyArrayList);
+			pullToRefreshListView.setAdapter(reportAdapter);
+			textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+			textviewWeekly.setBackgroundResource(R.drawable.complete_white_background);
+			textviewSafety.setBackgroundResource(R.color.black);
 
-			tv_safety.setTextColor(Color.WHITE);
-			tv_weekly.setTextColor(Color.BLACK);
-			tv_daily.setTextColor(Color.BLACK);
+			textviewSafety.setTextColor(Color.WHITE);
+			textviewWeekly.setTextColor(Color.BLACK);
+			textviewDaily.setTextColor(Color.BLACK);
 			}
 			else if(Prefrences.reportlisttypes==3)
 			{
 			reportAdapter = new ReportListAdapter(
-					getActivity(), reportdataWeekly);
-			reportlist.setAdapter(reportAdapter);
-			tv_daily.setBackgroundResource(R.drawable.all_white_background);
-			tv_weekly.setBackgroundResource(R.drawable.complete_black_background);
-			tv_safety.setBackgroundResource(R.color.white);
+					getActivity(), reportdataWeeklyArrayList);
+			pullToRefreshListView.setAdapter(reportAdapter);
+			textviewDaily.setBackgroundResource(R.drawable.all_white_background);
+			textviewWeekly.setBackgroundResource(R.drawable.complete_black_background);
+			textviewSafety.setBackgroundResource(R.color.white);
 
-			tv_safety.setTextColor(Color.BLACK);
-			tv_weekly.setTextColor(Color.WHITE);
-			tv_daily.setTextColor(Color.BLACK);
+			textviewSafety.setTextColor(Color.BLACK);
+			textviewWeekly.setTextColor(Color.WHITE);
+			textviewDaily.setTextColor(Color.BLACK);
 			}
 			
 //			reportAdapter.notifyDataSetChanged();
 			
 			// Log.d("photourl size",""+photo_url.size());
-			for (int i = 0; i < reportdataDaily.size(); i++) {
+			for (int i = 0; i < reportdataDailyArrayList.size(); i++) {
 				// Log.d("photo url",""+reportdata_daily.get(i).photos.get(0).url200);
 				Log.d("photo url", "" + i + ":"
-						+ reportdataDaily.get(i).photos.size());
+						+ reportdataDailyArrayList.get(i).photos.size());
 			}
 			if (pull == true) {
 
@@ -1649,9 +1759,9 @@ public class ReportFragment extends Fragment {
 //				safety.setTextColor(Color.BLACK);
 //				weekly.setTextColor(Color.BLACK);
 //				daily.setTextColor(Color.BLACK);
-				reportlist.onRefreshComplete();
+				pullToRefreshListView.onRefreshComplete();
 			}
-			 reportAdapter.notify();
+			 reportAdapter.notifyDataSetChanged();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

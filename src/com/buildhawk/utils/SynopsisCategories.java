@@ -1,6 +1,5 @@
 package com.buildhawk.utils;
 
-import java.util.ArrayList;
 
 public class SynopsisCategories {
 

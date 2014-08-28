@@ -1,0 +1,77 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativelayoutRootCompany"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".CompanyExpandable"
+    android:layout_gravity="center"
+    >
+
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="115px"
+        android:background="#000"
+        android:gravity="center_vertical" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" >
+
+            <TextView
+                android:id="@+id/companies"
+               android:textColor="@color/white"
+                android:layout_width="200px"
+                android:layout_height="90px"
+                android:gravity="center"
+                android:textSize="30px"
+                
+                android:text="Companies"
+                	android:textStyle="bold"
+                android:visibility="visible" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativelayoutBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@drawable/all_btn_click" >
+
+            <ImageView
+                android:id="@+id/back_img"
+                android:layout_width="58px"
+                android:layout_height="58px"
+                android:layout_centerVertical="true"
+                android:clickable="false"
+                android:duplicateParentState="false"
+                android:src="@drawable/backoff" />
+
+            <TextView
+                android:id="@+id/textviewClickedOn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                   android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/back_img"
+                android:text="Back"
+                android:textColor="@color/white"
+                	android:textStyle="bold"
+                android:textSize="36px" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <ExpandableListView
+        android:id="@+id/expandableListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:groupIndicator="@drawable/white_background"
+        android:layout_below="@+id/topBar" >
+        
+    </ExpandableListView>
+
+</RelativeLayout>

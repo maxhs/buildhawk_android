@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rv"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:id="@+id/relativelayout"
+    android:layout_width="match_parent"
+    android:layout_height="230px"
+    android:background="#fff"
+    android:orientation="horizontal" >
+
+<LinearLayout 
+    android:id="@+id/rv2"
     android:layout_width="match_parent"
     android:layout_height="230px"
     android:background="#fff"
@@ -14,7 +21,7 @@
         android:id="@+id/selected_proj"> 
         
         <TextView 
-            android:id="@+id/proj_name"
+            android:id="@+id/textviewProName"
             android:layout_width="440px"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20px"
@@ -24,7 +31,7 @@
             android:textSize="48px"/>
         
         <TextView 
-            android:id="@+id/proj_add"
+            android:id="@+id/textviewProAdd"
             android:layout_width="440px"
             android:layout_height="wrap_content"
             android:singleLine="true"
@@ -32,6 +39,7 @@
             android:layout_marginLeft="20px"
             android:textColor="@color/grey"
             android:textSize="36px"/>
+
         </LinearLayout>
     
     <ImageView 
@@ -41,7 +49,7 @@
         android:layout_marginBottom="7px"
         android:background="@color/grey"/>
     <TextView 
-        android:id="@+id/proj_perc"
+        android:id="@+id/textviewProPerc"
         android:layout_width="240px"
         android:layout_height="230px"
         android:gravity="center_vertical|center_horizontal"
@@ -51,3 +59,13 @@
 
    
 </LinearLayout>
+
+<TextView
+    android:id="@+id/textviewHeaderprogress"
+    android:layout_width="match_parent"
+    android:layout_height="1px"
+    android:background="@color/grey"
+    android:layout_alignParentBottom="true"
+    android:text="" />
+
+</RelativeLayout>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/linear2"
+    android:id="@+id/linearlayoutRoot"
     android:layout_width="720px"
     android:layout_height="1184px"
     android:orientation="horizontal" >
 
     <RelativeLayout
-        android:id="@+id/lin4"
+        android:id="@+id/relativelayoutComment"
         android:layout_width="720px"
         android:layout_height="200px"
         android:background="@drawable/background_draw"

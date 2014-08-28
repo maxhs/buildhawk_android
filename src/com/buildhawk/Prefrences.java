@@ -18,6 +18,10 @@ import com.buildhawk.utils.CommentsChecklistItem;
 import com.buildhawk.utils.PhotosCheckListItem;
 
 public class Prefrences {
+	
+
+	
+	//    public static final String flurryKey = "DK448W5SYC23TFWQM8F8";
 	private static ProgressDialog progressDial;
 	public static String userId = "";
 	public static String firstName = "";
@@ -62,12 +66,13 @@ public class Prefrences {
 	public static String projectComName[];
 	public static String selectedProId;
 	public static String selectedProName;
+	public static String selectedProAddress;
 	public static String projectUsersId[];
 
 	public static int deletePicFlag;
 	public static String selectedlocation;
 	public static int selectedPic;
-//	public static int selectedCheckitem;
+	public static int selectedCheckitemSynopsis;
 	public static int stopingHit;
 	public static int well;
 	public static int reportTypeDialog;
@@ -80,14 +85,14 @@ public class Prefrences {
 	public static String personelHours;
 	public static int sizeofname = 0;
 	public static int resumeflag;
-	static Double currentLatitude=0.0, currentLongitude=0.0;
-	public static String url = "http://www.buildhawk.com/api/v2";
+	public static String currentLatitude="0", currentLongitude="0";
+	public static String url = "https://www.buildhawk.com/api/v2";
 
 	static String companyId;
 	static String reportID;
 	static int pageFlag = 1;
 //	public static String assigneename="";
-	public static String assigneeID;
+	public static String assigneeID="";
 
 	
 	public static int checklistHitStop=0;
@@ -115,12 +120,37 @@ public class Prefrences {
 	public static int statusCompleted=0;
 	public static String report_body_edited="";
 	public static int ReportPosition;
+	
 	public static String removeCompanyID;
 	public static String removeUserID;
 	public static String removeReportID;
+	public static String removeSafetyID;
+	public static int removeFlag=0;					
+	
 	public static String assignee_str="";
 	public static String location_str="";
 //	public static int searchFlag=0;
+	public static String selectedCompnyId="";
+	public static String selectedCompanyName="";
+	
+	public static String notificationID="";
+	public static String worklistNotification="";
+	public static String checklistNotification="";
+	public static String reportNotification="";
+	public static String projectNotification="";
+	public static String userNotification="";
+	
+	public static int comingFrom=0;
+	
+	public static String LastSelectedProId="";
+	public static String LastDocument_s="";
+	public static String LastReport_s = "";
+	public static  String LastChecklist_s = "";
+	public static  String LastWorklist_s = "";
+	
+	public static int PrefillFlag=0;
+	
+	
 
 	public static Typeface helveticaNeuelt(Context appContext) { // accessing
 																	// fonts
@@ -142,13 +172,14 @@ public class Prefrences {
 		return helveticaNeueBd;
 	}
 
-	public static void saveDateDaily(String token, Context context, String type) {
+	public static void saveDateDaily(String token, Context context, String type, String projectId) {
 		SharedPreferences prefDaily = PreferenceManager
 				.getDefaultSharedPreferences(context);
 	//	type="Daily";
 		Editor editor = prefDaily.edit();
 		editor.putString("accessDateDaily", token);
 		editor.putString("typeDaily", type);
+		editor.putString("projectId", projectId);
 		editor.commit();
 	}
 
@@ -166,14 +197,22 @@ public class Prefrences {
 		return pref.getString("typeDaily", "");
 
 	}
+	public static String getProjectId(Context context) {
 
-	public static void saveDateSafety(String token, Context context, String type) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString("projectId", "");
+
+	}
+
+	public static void saveDateSafety(String token, Context context, String type, String projectId) {
 		SharedPreferences prefSafety = PreferenceManager
 				.getDefaultSharedPreferences(context);
 //		type="Safety";
 		Editor editor = prefSafety.edit();
 		editor.putString("accessDateSafety", token);
 		editor.putString("typeSafety", type);
+		editor.putString("projectId", projectId);
 		editor.commit();
 	}
 
@@ -193,13 +232,14 @@ public class Prefrences {
 
 	}
 	
-	public static void saveDateWeekly(String token, Context context, String type) {
+	public static void saveDateWeekly(String token, Context context, String type, String projectId) {
 		SharedPreferences prefSafety = PreferenceManager
 				.getDefaultSharedPreferences(context);
 //		type="Safety";
 		Editor editor = prefSafety.edit();
 		editor.putString("accessDateWeekly", token);
 		editor.putString("typeWeekly", type);
+		editor.putString("projectId", projectId);
 		editor.commit();
 	}
 
@@ -220,13 +260,14 @@ public class Prefrences {
 	}
 	
 	public static void saveAccessToken(String userID, String email,
-			String password, Context context) {
+			String password, String regId, Context context) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		Editor editor = pref.edit();
 		editor.putString("userId", userID);
 		editor.putString("email", email);
 		editor.putString("password", password);
+		editor.putString("regId", regId);
 		editor.commit();
 	}
 
@@ -243,7 +284,8 @@ public class Prefrences {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		return new String[] { pref.getString("email", ""),
-				pref.getString("password", "") };
+				pref.getString("password", ""),
+				pref.getString("regId", "")};
 	}
 
 	/**

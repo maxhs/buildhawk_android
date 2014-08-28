@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rellay"
+    android:id="@+id/relativelayoutRootDetails"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
@@ -21,7 +21,7 @@
             android:layout_centerVertical="true">
 
             <TextView
-                android:id="@+id/proName"
+                android:id="@+id/textviewProName"
                 android:layout_width="300px"
                 android:layout_height="90px"
                 android:gravity="center"
@@ -31,7 +31,7 @@
                 android:textSize="36px" />
 
             <Button
-                android:id="@+id/selectdate"
+                android:id="@+id/buttonSelectdate"
                 style="?android:attr/buttonStyleSmall"
                 	android:textStyle="bold"
                 android:layout_width="80px"
@@ -40,12 +40,12 @@
                 android:text=""
                 android:textSize="30px"
                 android:visibility="gone" 
-                android:layout_toRightOf="@+id/proName"/>
+                android:layout_toRightOf="@+id/textviewProName"/>
 
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/back"
+            android:id="@+id/relativelayoutBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -63,7 +63,7 @@
         </RelativeLayout>
 
         <ImageView
-            android:id="@+id/searchimg"
+            android:id="@+id/imageviewSearchimg"
             android:layout_width="65px"
             android:layout_height="65px"
             android:layout_alignParentRight="true"
@@ -72,7 +72,7 @@
             android:src="@drawable/search" />
 
         <ImageView
-            android:id="@+id/addWorkitem"
+            android:id="@+id/imageviewAddWorkitem"
             android:layout_width="58px"
             android:layout_height="58px"
             android:layout_alignParentRight="true"
@@ -93,25 +93,25 @@
         android:orientation="horizontal" >
 
         <RelativeLayout
-            android:id="@+id/checklist"
+            android:id="@+id/relativelayoutChecklist"
             android:layout_width="180px"
             android:layout_height="120px"
             android:layout_marginTop="2px"
             android:background="@color/white" >
 
             <ImageView
-                android:id="@+id/checklist_img"
+                android:id="@+id/imageviewChecklistimg"
                 android:layout_width="56px"
                 android:layout_height="43px"
               android:layout_marginBottom="4px"
                 android:layout_centerHorizontal="true"
-            android:layout_above="@+id/checklist_txt"
+            android:layout_above="@+id/textviewChecklisttxt"
                 android:tag="mwar"
                 android:clickable="false"
                 android:src="@drawable/btmcheck_off" />
 
             <TextView
-                android:id="@+id/checklist_txt"
+                android:id="@+id/textviewChecklisttxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -124,25 +124,25 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/documents"
+            android:id="@+id/relativelayoutDocument"
             android:layout_width="180px"
             android:layout_height="120px"
             android:layout_marginTop="2px"
             android:background="@color/black" >
 
             <ImageView
-                android:id="@+id/documents_img"
+                android:id="@+id/imageviewDocumentimg"
                 android:layout_width="60px"
                 android:layout_height="49px"
                 android:layout_marginBottom="4px"
                 android:layout_centerHorizontal="true"
-            	android:layout_above="@+id/documents_txt"
+            	android:layout_above="@+id/textviewDocumenttxt"
                 android:clickable="false"
                 android:tag="mwar"
                 android:src="@drawable/btmdocs_on" />
 
             <TextView
-                android:id="@+id/documents_txt"
+                android:id="@+id/textviewDocumenttxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                android:layout_alignParentBottom="true"
@@ -155,25 +155,25 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/reports"
+            android:id="@+id/relativelayoutReport"
             android:layout_width="180px"
             android:layout_height="120px"
             android:layout_marginTop="2px"
             android:background="@color/black" >
 
             <ImageView
-                 android:id="@+id/reports_img"
+                 android:id="@+id/imageviewReportimg"
                 android:layout_width="58px"
                 android:layout_height="58px"
                 android:layout_marginBottom="4px"
                 android:layout_centerHorizontal="true"
-           	 	android:layout_above="@+id/reports_txt"
+           	 	android:layout_above="@+id/textviewReporttxt"
                 android:clickable="false"
                 android:tag="mwar"
                 android:src="@drawable/btmreports_on" />
 
             <TextView
-                android:id="@+id/reports_txt"
+                android:id="@+id/textviewReporttxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -185,25 +185,25 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/worklist"
+            android:id="@+id/relativelayoutWorklist"
             android:layout_width="180px"
             android:layout_height="120px"
             android:layout_marginTop="2px"
             android:background="@color/black" >
 
             <ImageView
-                 android:id="@+id/worklist_img"
+                 android:id="@+id/imageviewWorklistimg"
                 android:layout_width="70px"
                 android:layout_height="48px"
                 android:layout_marginBottom="4px"
                 android:layout_centerHorizontal="true"
-            	android:layout_above="@+id/worklist_txt"
+            	android:layout_above="@+id/textviewWorklisttxt"
                 android:clickable="false"
                 android:tag="mwar"
                 android:src="@drawable/btmworklist_on" />
 
             <TextView
-                android:id="@+id/worklist_txt"
+                android:id="@+id/textviewWorklisttxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"

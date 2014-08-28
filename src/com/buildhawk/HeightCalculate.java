@@ -12,11 +12,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 public class HeightCalculate {
-	public static void getListViewSize(ListView myListView) {
+	public static int getListViewSize(ListView myListView) {
 		ListAdapter myListAdapter = myListView.getAdapter();
 		if (myListAdapter == null) {
 
-			return;
+			return 0;
 		}
 		int totalHeight = 0;
 		for (int size = 0; size < myListAdapter.getCount(); size++) {
@@ -36,6 +36,7 @@ public class HeightCalculate {
 		params.height = totalHeight
 				+ (myListView.getDividerHeight() * (myListAdapter.getCount() - 1));
 		myListView.setLayoutParams(params);
+		return totalHeight;
 
 		// Log.i("height of listItem:", String.valueOf(totalHeight));
 	}

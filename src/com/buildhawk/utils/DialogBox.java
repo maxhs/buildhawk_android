@@ -1,28 +1,17 @@
 package com.buildhawk.utils;
 
-import java.util.ArrayList;
-
 import rmn.androidscreenlibrary.ASSL;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.sax.StartElementListener;
-import android.support.v4.view.GravityCompat;
-import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
-import android.widget.AbsListView.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.buildhawk.CheckItemClick;
-import com.buildhawk.ChecklistFragment.progressAdapter;
 import com.buildhawk.Prefrences;
-import com.buildhawk.ProjectsAdapter;
 import com.buildhawk.R;
 import com.buildhawk.SubsList;
 import com.buildhawk.UsersList;

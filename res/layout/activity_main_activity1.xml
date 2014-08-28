@@ -1,11 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rl"
+    android:id="@+id/relativelayoutRootSelected"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SelectedImageView"
     android:layout_gravity="center"
-    >
+    tools:context=".SelectedImageView" >
 
     <RelativeLayout
         android:id="@+id/topBar"
@@ -21,27 +20,26 @@
             android:layout_centerVertical="true" >
 
             <TextView
-                android:id="@+id/num"
-               android:textColor="@color/white"
+                android:id="@+id/textviewNum"
                 android:layout_width="150px"
                 android:layout_height="90px"
                 android:gravity="center"
-                android:textSize="30px"
-                
                 android:text="num"
-                	android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="30px"
+                android:textStyle="bold"
                 android:visibility="visible" />
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/back"
+            android:id="@+id/relativeLayoutBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:background="@drawable/all_btn_click" >
 
             <ImageView
-                android:id="@+id/back_img"
+                android:id="@+id/imageviewBackimg"
                 android:layout_width="58px"
                 android:layout_height="58px"
                 android:layout_centerVertical="true"
@@ -50,16 +48,15 @@
                 android:src="@drawable/backoff" />
 
             <TextView
-                android:id="@+id/clickedOn"
+                android:id="@+id/textviewClickedOn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                   android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/back_img"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/imageviewBackimg"
                 android:text="Back"
                 android:textColor="@color/white"
-                	android:textStyle="bold"
-                android:textSize="36px" />
-
+                android:textSize="36px"
+                android:textStyle="bold" />
         </RelativeLayout>
 
         <ImageView
@@ -75,28 +72,25 @@
     </RelativeLayout>
 
     <ViewFlipper
-        android:id="@+id/flipper"
+        android:id="@+id/relativelayoutReportClickRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        
+        android:layout_above="@+id/textviewHeaderProjSynopsis"
         android:layout_below="@+id/topBar"
-       android:layout_above="@+id/textView1"
-       android:layout_marginBottom="150px"
-         >
-
+        android:layout_marginBottom="150px" >
     </ViewFlipper>
 
     <TextView
-        android:id="@+id/description"
+        android:id="@+id/textviewDescription"
         android:layout_width="match_parent"
         android:layout_height="150px"
-       	android:layout_alignParentBottom="true"
-       	android:singleLine="false"
-       	android:scrollbars="vertical"
-       	android:background="@color/light_black"
-       	android:textSize="36px"
-       	android:padding="20px"
-       	android:maxLines="4"
-        android:text="" />
+        android:layout_alignParentBottom="true"
+        android:background="@color/light_black"
+        android:maxLines="4"
+        android:padding="20px"
+        android:scrollbars="vertical"
+        android:singleLine="false"
+        android:text=""
+        android:textSize="36px" />
 
 </RelativeLayout>

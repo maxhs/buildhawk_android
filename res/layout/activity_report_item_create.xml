@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relaycreateitem"
+    android:id="@+id/relativelayoutRootcreateitem"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ReportItemCreate" >
@@ -17,7 +17,7 @@
             android:gravity="center" >
 
             <Button
-                android:id="@+id/back"
+                android:id="@+id/buttonBack"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
@@ -29,7 +29,7 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/save"
+                android:id="@+id/buttonSave"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
@@ -48,7 +48,7 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/texttype"
+                    android:id="@+id/textviewType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
@@ -57,10 +57,10 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textdate"
+                    android:id="@+id/textviewDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/texttype"
+                    android:layout_toRightOf="@+id/textviewType"
                     android:textColor="@color/white"
                     android:text="textdate"
                     android:textSize="36px"
@@ -69,7 +69,7 @@
         </RelativeLayout>
 
         <ScrollView
-            android:id="@+id/scrollView1"
+            android:id="@+id/pullToRefreshScrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
@@ -79,7 +79,7 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/textviewHeaderRecentDocs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -94,24 +94,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="150px"
                     android:layout_alignParentLeft="true"
-                    android:layout_below="@+id/textView3"
+                    android:layout_below="@+id/textviewHeaderRecentDocs"
                     android:background="@color/white" >
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/buttonDate"
                         android:layout_width="300px"
                         android:layout_height="wrap_content"
-                        android:layout_alignBaseline="@+id/button1"
-                        android:layout_alignBottom="@+id/button1"
+                        android:layout_alignBaseline="@+id/buttonType"
+                        android:layout_alignBottom="@+id/buttonType"
                         android:layout_marginLeft="110px"
                         android:layout_marginTop="30px"
-                        android:layout_toRightOf="@+id/button1"
+                        android:layout_toRightOf="@+id/buttonType"
                         android:background="@drawable/black_background"
                         android:text="Date"
                         android:textSize="36px" />
 
                     <Button
-                        android:id="@+id/button1"
+                        android:id="@+id/buttonType"
                         android:layout_width="200px"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
@@ -124,16 +124,16 @@
                 </RelativeLayout>
 
                 <LinearLayout
-                    android:id="@+id/weatherlayout"
+                    android:id="@+id/linearlayoutWeather"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/textView1"
+                    android:layout_below="@+id/textviewHeaderProjSynopsis"
                     android:layout_centerHorizontal="true"
                     android:background="@color/white"
                     android:orientation="vertical" >
 
                     <TextView
-                        android:id="@+id/textView1"
+                        android:id="@+id/textviewHeaderProjSynopsis"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/light_black"
@@ -156,7 +156,7 @@
                             android:textSize="28px" />
 
                         <TextView
-                            android:id="@+id/wind"
+                            android:id="@+id/textviewWind"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="10px"
@@ -174,7 +174,7 @@
                             android:textSize="28px" />
 
                         <TextView
-                            android:id="@+id/temp"
+                            android:id="@+id/textviewTemp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="10px"
@@ -187,7 +187,7 @@
                         android:layout_height="wrap_content" >
 
                         <TextView
-                            android:id="@+id/textView2"
+                            android:id="@+id/textviewHeaderprogress"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="10px"
@@ -196,7 +196,7 @@
                             android:textSize="28px" />
 
                         <TextView
-                            android:id="@+id/precip"
+                            android:id="@+id/textviewPrecip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="10px"
@@ -204,7 +204,7 @@
                             android:textSize="28px" />
 
                         <TextView
-                            android:id="@+id/textView5"
+                            android:id="@+id/textviewHeaderRecentItems"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="170px"
@@ -214,7 +214,7 @@
                             android:textSize="28px" />
 
                         <TextView
-                            android:id="@+id/humidity"
+                            android:id="@+id/textviewHumidity"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="10px"
@@ -228,10 +228,10 @@
                         android:layout_height="wrap_content" >
 
                         <TextView
-                            android:id="@+id/body"
+                            android:id="@+id/textviewWeather"
                             android:layout_width="520px"
                             android:layout_height="wrap_content"
-                            android:layout_alignBaseline="@+id/imgview"
+                            android:layout_alignBaseline="@+id/imageviewWeatherIcon"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentTop="true"
                             android:padding="10px"
@@ -241,11 +241,11 @@
                             android:textSize="28px" />
 
                         <ImageView
-                            android:id="@+id/imgview"
+                            android:id="@+id/imageviewWeatherIcon"
                             android:layout_width="100px"
                             android:layout_height="100px"
                             android:layout_alignParentTop="true"
-                            android:layout_toRightOf="@+id/body"
+                            android:layout_toRightOf="@+id/textviewWeather"
                             android:padding="20px" />
                     </RelativeLayout>
                 </LinearLayout>
@@ -271,7 +271,7 @@
                         android:textSize="36px" />
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/buttonPersonnel"
                         android:layout_width="600px"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20px"
@@ -292,7 +292,7 @@
                         android:textSize="36px" />
 
                     <LinearLayout
-                        android:id="@+id/personnelLayout"
+                        android:id="@+id/linearlayoutPersonel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -303,7 +303,7 @@
                             android:layout_height="100px" >
 
                             <TextView
-                                android:id="@+id/textView1"
+                                android:id="@+id/textviewHeaderProjSynopsis"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentLeft="true"
@@ -315,21 +315,22 @@
                                 android:textSize="36px" />
 
                             <TextView
-                                android:id="@+id/textView2"
+                                android:id="@+id/textviewHeaderprogress"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentTop="true"
-                                android:layout_centerHorizontal="true"
+                                android:layout_toLeftOf="@+id/textviewHeaderRecentDocs"
+                                android:layout_centerVertical="true"
                                 android:gravity="center"
                                 android:padding="20px"
+                                android:layout_marginRight="20px"
                                 android:text="# Hours"
                                 android:textColor="@color/black"
                                 android:textSize="36px" />
 
                             <TextView
-                                android:id="@+id/textView3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="80px"
+                                android:id="@+id/textviewHeaderRecentDocs"
+                                android:layout_width="88px"
+                                android:layout_height="88px"
                                 android:layout_alignParentRight="true"
                                 android:layout_alignParentTop="true"
                                 android:gravity="center"
@@ -345,7 +346,7 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/onsite"
+                        android:id="@+id/linearlayoutOnsite"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -371,18 +372,19 @@
                                 android:id="@+id/TextView02"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentTop="true"
-                                android:layout_centerHorizontal="true"
+                                android:layout_toLeftOf="@+id/TextView05"
+                                android:layout_centerVertical="true"
                                 android:gravity="center"
                                 android:padding="20px"
+                                android:layout_marginRight="20px"
                                 android:text="# Counts"
                                 android:textColor="@color/black"
                                 android:textSize="36px" />
 
                             <TextView
                                 android:id="@+id/TextView05"
-                                android:layout_width="wrap_content"
-                                android:layout_height="80px"
+                                android:layout_width="88px"
+                                android:layout_height="88px"
                                 android:layout_alignParentRight="true"
                                 android:layout_alignParentTop="true"
                                 android:gravity="center"
@@ -398,7 +400,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/safetyTopicslayout"
+                    android:id="@+id/linearlayoutSafetytopic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/textView09"
@@ -418,7 +420,7 @@
                         android:textSize="36px" />
 
                     <Button
-                        android:id="@+id/addtopics"
+                        android:id="@+id/buttonSafetytopic"
                         android:layout_width="600px"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="20px"
@@ -457,24 +459,26 @@
                     android:background="@color/white" >
 
                     <LinearLayout
-                        android:id="@+id/scrolllayout2"
+                        android:id="@+id/linearlayoutLin2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@color/transparent"
                         android:orientation="horizontal" >
 
                         <ImageView
-                            android:id="@+id/photogallery"
+                            android:id="@+id/imageviewGallery"
                             android:layout_width="102px"
                             android:layout_height="102px"
                             android:layout_margin="15px"
+                            android:layout_gravity="center_vertical"
                             android:src="@drawable/library_btn" />
 
                         <ImageView
-                            android:id="@+id/camera"
+                            android:id="@+id/imageviewCamera"
                             android:layout_width="102px"
                             android:layout_height="102px"
                             android:layout_margin="15px"
+                            android:layout_gravity="center_vertical"
                             android:src="@drawable/camera_btn" />
                     </LinearLayout>
                 </HorizontalScrollView>
@@ -492,7 +496,7 @@
                     android:textSize="36px" />
 
                 <EditText
-                    android:id="@+id/notes"
+                    android:id="@+id/edittextNotes"
                     android:layout_width="match_parent"
                     android:layout_height="400px"
                     android:layout_alignParentBottom="true"

@@ -17,12 +17,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.buildhawk.utils.Report;
 import com.squareup.picasso.Picasso;
 
 public class ReportListAdapter extends BaseAdapter {
-	ArrayList<Report> reportdata_adp = new ArrayList<Report>();
+	ArrayList<Report> reportdata_adpArrayList = new ArrayList<Report>();
 
 	LayoutInflater inflator;
 	Activity activity;
@@ -31,11 +32,11 @@ public class ReportListAdapter extends BaseAdapter {
 
 	int index;
 
-	public ReportListAdapter(Activity activity, ArrayList<Report> reportdata) {
+	public ReportListAdapter(Activity activity, ArrayList<Report> reportdataArrayList) {
 		this.activity = activity;
 		inflator = (LayoutInflater) activity
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		this.reportdata_adp = reportdata;
+		this.reportdata_adpArrayList = reportdataArrayList;
 		// set1= new setValue();
 
 	}
@@ -43,7 +44,7 @@ public class ReportListAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 
-		return reportdata_adp.size();
+		return reportdata_adpArrayList.size();
 	}
 
 	@Override
@@ -77,7 +78,7 @@ public class ReportListAdapter extends BaseAdapter {
 			holder = new ViewHolder();
 			holder.personelOnsite = (TextView) view
 					.findViewById(R.id.personnel_onsite);
-			holder.notes = (TextView) view.findViewById(R.id.notes);
+			holder.notes = (TextView) view.findViewById(R.id.edittextNotes);
 
 			holder.root = (LinearLayout) view.findViewById(R.id.root);
 			holder.report_date = (TextView) view
@@ -118,46 +119,80 @@ public class ReportListAdapter extends BaseAdapter {
 		holder.notesValue.setTag(holder);
 		holder.image_count.setTag(holder);
 		holder.photo.setTag(holder);
-		holder.report_date.setText(reportdata_adp.get(position).created_date);
+		holder.report_date.setText(reportdata_adpArrayList.get(position).created_date);
 
-		Log.i("photo[report_id]", reportdata_adp.get(position).report_id.toString());
+		Log.i("photo[report_id]", reportdata_adpArrayList.get(position).report_id.toString());
 
-		holder.notesValue.setText(reportdata_adp.get(position).body);
+		holder.notesValue.setText(reportdata_adpArrayList.get(position).body);
 		// try{
-		if (reportdata_adp.get(position).report_type.equalsIgnoreCase("Daily")) {
-			holder.reportType.setText(reportdata_adp.get(position).report_type
+		if (reportdata_adpArrayList.get(position).report_type.equalsIgnoreCase("Daily")) {
+			holder.reportType.setText(reportdata_adpArrayList.get(position).report_type
 					+ " Report - ");
-		} else if (reportdata_adp.get(position).report_type
+		} else if (reportdata_adpArrayList.get(position).report_type
 				.equalsIgnoreCase("Safety")) {
-			holder.reportType.setText(reportdata_adp.get(position).report_type
+			holder.reportType.setText(reportdata_adpArrayList.get(position).report_type
 					+ " Report - ");
-		} else if (reportdata_adp.get(position).report_type
+		} else if (reportdata_adpArrayList.get(position).report_type
 				.equalsIgnoreCase("Weekly")) {
-			holder.reportType.setText(reportdata_adp.get(position).report_type
+			holder.reportType.setText(reportdata_adpArrayList.get(position).report_type
 					+ " Report - ");
 		}
 
-		if (reportdata_adp.get(position).personnel != null) {
+		int onsiteTotal = 0,onsiteTemp=0;
+		int companiesPos=0;
+		String onsitevalues="";
+		
+		onsiteTemp=reportdata_adpArrayList.get(position).personnel.size();
+		companiesPos=reportdata_adpArrayList.get(position).companies.size();
+		if(companiesPos>0)
+		{
+		for(int i=0;i<companiesPos;i++)
+		{
+		onsitevalues=reportdata_adpArrayList.get(position).companies.get(i).coCount;
+		Log.d("onsitevalues","onsitevalues"+onsitevalues);
+		if(onsitevalues.equals("null"))
+		{
+			
+		}
+		else{
+		onsiteTotal= onsiteTotal + Integer.parseInt(onsitevalues);
+		}
+		Log.d("***********","**********"+onsitevalues);
+		}
+		}
+		else{}
+		onsiteTotal=onsiteTotal+onsiteTemp;
+		
+		
+		if (onsiteTotal!=0) {
 			// set1.setty(holder.personnel_value, position);
 			Log.e("", "how many times" + position);
-			holder.personnel_value.setText(" "
-					+ reportdata_adp.get(position).personnel.size());
+			holder.personnel_value.setText(" "+ onsiteTotal);
 		} else
 			holder.personnel_value.setText("0");
+		
+//		if (reportdata_adp.get(position).personnel != null) {
+//			// set1.setty(holder.personnel_value, position);
+//			Log.e("", "how many times" + position);
+//			holder.personnel_value.setText(" "
+//					+ reportdata_adp.get(position).personnel.size());
+//		} else
+//			holder.personnel_value.setText("0");
+		
 		// Log.d("","position"+position+"size"+reportdata.get(position).personnel.size());
 		// }
 		// catch(Exception e){}
-		if (!reportdata_adp.get(position).photos.get(0).url200.equals("drawable")) {
+		if (reportdata_adpArrayList.get(position).photos.size()!=0){//get(0).url200.equals("drawable")) {
 			Picasso.with(activity)
-					.load(reportdata_adp.get(position).photos.get(0).url200)
+					.load(reportdata_adpArrayList.get(position).photos.get(0).url200)
 					.placeholder(R.drawable.default_200)
 					.into(holder.photo);
 			holder.image_count.setText(""
-					+ reportdata_adp.get(position).photos.size());
+					+ reportdata_adpArrayList.get(position).photos.size());
 			Log.d("if", "----if---");
 		} else {
 			holder.photo.setImageResource(R.drawable.default_200);
-			holder.image_count.setText("");
+			holder.image_count.setText(" ");
 			Log.d("if", "----else---");
 
 		}
@@ -166,12 +201,17 @@ public class ReportListAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+			if(ConnectionDetector.isConnectingToInternet()){
 				Log.e("CLICK", ",, "+Prefrences.reportlisttypes);
 				Intent intent = new Intent(activity, ReportItemClick.class);
 				intent.putExtra("pos", position);
 				activity.startActivity(intent);
 				activity.overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);
+			}
+			else{
+				Toast.makeText(activity, "No internet connection", Toast.LENGTH_LONG).show();
+			}
 			}
 		});
 		//
@@ -183,7 +223,7 @@ public class ReportListAdapter extends BaseAdapter {
 		}
 
 		void setty(final TextView txtview, int pos) {
-			int num = reportdata_adp.get(pos).personnel.size();
+			int num = reportdata_adpArrayList.get(pos).personnel.size();
 			txtview.setText("" + num);
 
 		}

@@ -17,5 +17,9 @@
     <string name="title_activity_company_list">CompanyList</string>
     <string name="title_activity_subs_list">SubsList</string>
     <string name="title_activity_add_user">AddUser</string>
+    <string name="title_activity_safety_topics_list">SafetyTopicsList</string>
+    <string name="title_activity_selected_folder">SelectedFolder</string>
+    <string name="title_activity_selected_image">SelectedImage</string>
+    <string name="title_activity_document_image_view">DocumentImageView</string>
 
 </resources>

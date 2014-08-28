@@ -1,8 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rl"
+    android:id="@+id/linearlayoutroot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:layout_gravity="center"
     android:orientation="vertical"
     tools:context=".AddUser" >
@@ -21,8 +22,8 @@
             android:layout_centerVertical="true" >
 
             <TextView
-                android:id="@+id/txt_company"
-                android:layout_width="150px"
+                android:id="@+id/textviewCompany"
+                android:layout_width="match_parent"
                 android:layout_height="90px"
                 android:gravity="center"
                 android:text="company"
@@ -33,7 +34,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/back"
+            android:id="@+id/relativelayoutBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -49,7 +50,7 @@
                 android:src="@drawable/backoff" />
 
             <TextView
-                android:id="@+id/clickedOn"
+                android:id="@+id/textviewClickedOn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -59,192 +60,219 @@
                 android:textSize="36px"
                 android:textStyle="bold" />
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/textviewAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/white"
+                android:textSize="36px"
+                android:layout_marginRight="20px"
+                android:textStyle="bold" 
+            android:text="Add" />
+
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/textView1"
+    <ScrollView
+        android:id="@+id/scrollViewAdduser"
         android:layout_width="match_parent"
-        android:layout_height="200px"
-        android:background="@color/shaded_gray"
-        android:padding="30px"
-        android:text="Please enter the email/phone number of\nthe person you&apos;d like to add, or simply\npull their info from your address book."
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@color/black"
-        android:textSize="36px" />
+        android:layout_height="wrap_content" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical" >
-
-        <RelativeLayout
-            android:id="@+id/pullcontacts"
+        <LinearLayout
             android:layout_width="match_parent"
-            
-            android:layout_height="100px" >
-
-            <ImageView
-                android:id="@+id/img_contacts"
-                android:layout_width="80px"
-                android:layout_height="80px"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_launcher" />
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/txt_contacts"
+                android:id="@+id/textviewHeaderProjSynopsis"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="20px"
+                android:layout_height="200px"
+                android:background="@color/shaded_gray"
+                android:padding="30px"
+                android:text="Please enter the email/phone number of\nthe person you&apos;d like to add, or simply\npull their info from your address book."
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/black"
-                android:layout_toRightOf="@+id/img_contacts"
-                android:text="Pull from address book"
                 android:textSize="36px" />
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="2px"
-                android:background="@color/shaded_gray"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="100px" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/RelativeLayout02"
-            android:layout_width="match_parent"
-            android:layout_height="100px" >
-
-            <ImageView
-                android:id="@+id/email"
-                android:layout_width="80px"
-                android:layout_height="80px"
-                android:layout_centerVertical="true"
-                android:src="@drawable/email_btn" />
-
-            <TextView
-                android:id="@+id/txt_email"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="20px"
-                android:layout_toRightOf="@+id/email"
-                android:text=""
-                android:hint="Email address"
-                android:textSize="36px" />
+                android:background="@color/white"
+                android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/TextView04"
-                android:layout_width="match_parent"
-                android:layout_height="2px"
-                android:layout_alignParentBottom="true"
-                android:background="@color/shaded_gray"
-                android:layout_marginLeft="100px" />
-        </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/relativelayoutPullContacts"
+                    android:layout_width="match_parent"
+                    android:layout_height="100px" >
 
-        <RelativeLayout
-            android:id="@+id/RelativeLayout01"
-            android:layout_width="match_parent"
-            android:layout_height="100px" >
+                    <ImageView
+                        android:id="@+id/img_contacts"
+                        android:layout_width="63px"
+                        android:layout_height="63px"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10px"
+                        android:src="@drawable/user_adduser" />
 
-            <ImageView
-                android:id="@+id/phone"
-                android:layout_width="80px"
-                android:layout_height="80px"
-                android:layout_centerVertical="true"
-                android:src="@drawable/mobile" />
+                    <TextView
+                        android:id="@+id/txt_contacts"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="30px"
+                        android:layout_toRightOf="@+id/img_contacts"
+                        android:text="Pull from address book"
+                        android:textColor="@color/black"
+                        android:textSize="36px" />
 
-            <TextView
-                android:id="@+id/txt_phone"
+                    <TextView
+                        android:id="@+id/textviewHeaderRecentDocs"
+                        android:layout_width="match_parent"
+                        android:layout_height="2px"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="100px"
+                        android:background="@color/shaded_gray" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/RelativeLayout02"
+                    android:layout_width="match_parent"
+                    android:layout_height="100px" >
+
+                    <ImageView
+                        android:id="@+id/email"
+                        android:layout_width="63px"
+                        android:layout_height="63px"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10px"
+                        android:src="@drawable/mail_adduser" />
+
+                    <EditText
+                        android:id="@+id/edittextEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10px"
+                        android:layout_toRightOf="@+id/email"
+                        android:hint="Email address"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/black"
+                        android:textSize="36px" >
+
+                        <requestFocus />
+                    </EditText>
+
+                    <TextView
+                        android:id="@+id/TextView04"
+                        android:layout_width="match_parent"
+                        android:layout_height="2px"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="100px"
+                        android:background="@color/shaded_gray" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/RelativeLayout01"
+                    android:layout_width="match_parent"
+                    android:layout_height="100px" >
+
+                    <ImageView
+                        android:id="@+id/phone"
+                        android:layout_width="63px"
+                        android:layout_height="63px"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10px"
+                        android:src="@drawable/call_adduser" />
+
+                    <EditText
+                        android:id="@+id/edittextPhoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10px"
+                        android:layout_toRightOf="@+id/phone"
+                        android:hint="Phone number"
+                        android:inputType="number"
+                        android:textColor="@color/black"
+                        android:textSize="36px" />
+
+                    <TextView
+                        android:id="@+id/TextView02"
+                        android:layout_width="match_parent"
+                        android:layout_height="2px"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="100px" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="20px"
-                android:layout_toRightOf="@+id/phone"
-                android:text=""
-                android:hint="Phone number"
-                android:textSize="36px" />
+                android:background="@color/white"
+                android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/TextView02"
-                android:layout_width="match_parent"
-                android:layout_height="2px"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="100px" />
-        </RelativeLayout>
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/textviewHeaderprogress"
+                    android:layout_width="match_parent"
+                    android:layout_height="100px"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/shaded_gray"
+                    android:gravity="center"
+                    android:text="CONTACT INFO"
+                    android:textColor="@color/black"
+                    android:textSize="36px" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/white" >
+                <EditText
+                    android:id="@+id/edittextFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="100px"
+                    android:background="@color/white"
+                    android:gravity="center_vertical|left"
+                    android:hint="first name"
+                    android:padding="20px"
+                    android:textColor="@color/black"
+                    android:textSize="36px" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="100px"
-            android:background="@color/shaded_gray"
-            android:layout_alignParentBottom="true"
-            android:text="CONTACT INFO"
-            android:textSize="36px"
-            android:textColor="@color/black"
-            android:gravity="center"
-           
-             />
-        
-        <TextView
-            android:id="@+id/firstname"
-            android:layout_width="match_parent"
-            android:layout_height="100px"
-            android:background="@color/white"
-            android:padding="20px"
-            android:text="first name"
-            android:textSize="36px"
-            android:textColor="@color/black"
-            android:gravity="center_vertical|left"
-           
-             />
-        <TextView
-                android:id="@+id/TextView06"
-                android:layout_width="match_parent"
-                android:layout_height="2px"
-                android:layout_alignParentBottom="true"
-                android:background="@color/shaded_gray"
-                android:layout_marginLeft="20px" />
-        <TextView
-            android:id="@+id/lastname"
-            android:layout_width="match_parent"
-            android:layout_height="100px"
-            android:background="@color/white"
-           android:padding="20px"
-            android:text="last name"
-            android:textSize="36px"
-            android:textColor="@color/black"
-           android:gravity="center_vertical|left"
-           
-             />
-        <TextView
-                android:id="@+id/TextView05"
-                android:layout_width="match_parent"
-                android:layout_height="2px"
-                
-                android:background="@color/shaded_gray"
-                android:layout_marginLeft="20px" />
-        <TextView
-            android:id="@+id/companyname"
-            android:layout_width="match_parent"
-            android:layout_height="100px"
-            android:background="@color/white"
-        	android:padding="20px"
-            android:text="company name"
-            android:textSize="36px"
-            android:textColor="@color/black"
-            android:gravity="center_vertical|left"
-           
-             />
+                <TextView
+                    android:id="@+id/TextView06"
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="20px"
+                    android:background="@color/shaded_gray" />
 
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/edittextLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="100px"
+                    android:background="@color/white"
+                    android:gravity="center_vertical|left"
+                    android:hint="last name"
+                    android:padding="20px"
+                    android:textColor="@color/black"
+                    android:textSize="36px" />
+
+                <TextView
+                    android:id="@+id/TextView05"
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:layout_marginLeft="20px"
+                    android:background="@color/shaded_gray" />
+
+                <EditText
+                    android:id="@+id/edittextCompanyName"
+                    android:layout_width="match_parent"
+                    android:layout_height="100px"
+                    android:background="@color/white"
+                    android:gravity="center_vertical|left"
+                    android:hint="company name"
+                    android:padding="20px"
+                    android:textColor="@color/black"
+                    android:textSize="36px" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

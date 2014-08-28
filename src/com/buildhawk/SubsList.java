@@ -31,34 +31,34 @@ import android.widget.Toast;
 
 public class SubsList extends Activity {
 
-	ListView lstvw;
-	ArrayList<Users> array;
+	ListView listview;
+	ArrayList<Users> arraylist;
 	InputMethodManager imm;
-	TextView tv_back;
+	TextView textviewBack;
 	Context con;
-	LinearLayout relLay;
+	LinearLayout linearLayout;
 	Dialog popup;
-	Button btn_Submit, btn_Cancel;
-	EditText txt_hours, txt_location;
-	TextView tv_expiry_alert;
-	RelativeLayout list_outside;
+	Button buttonSubmit, buttonCancel;
+	EditText edittextHours, edittextLocation;
+	TextView textviewExpiryAlert;
+	RelativeLayout relativelayoutListOutside;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_subs_list);
-		relLay = (LinearLayout) findViewById(R.id.LinearLayoutuserlist);
-		new ASSL(this, relLay, 1134, 720, false);
+		linearLayout = (LinearLayout) findViewById(R.id.LinearLayoutuserlist);
+		new ASSL(this, linearLayout, 1134, 720, false);
 
 		con = SubsList.this;
-		tv_back = (TextView) findViewById(R.id.back);
+		textviewBack = (TextView) findViewById(R.id.relativeLayoutBack);
 
-		lstvw = (ListView) findViewById(R.id.subslist);
+		listview = (ListView) findViewById(R.id.subslist);
 
-		tv_back.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		textviewBack.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 
-		array = ProjectsAdapter.user2;
-		tv_back.setOnClickListener(new OnClickListener() {
+		arraylist = ProjectsAdapter.user2ArrayList;
+		textviewBack.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -68,8 +68,8 @@ public class SubsList extends Activity {
 						R.anim.slide_out_right);
 			}
 		});
-		adapter adp = new adapter(con, array);
-		lstvw.setAdapter(adp);
+		adapter adp = new adapter(con, arraylist);
+		listview.setAdapter(adp);
 	}
 
 	@Override
@@ -89,26 +89,26 @@ public class SubsList extends Activity {
 
 	public class adapter extends BaseAdapter {
 
-		ArrayList<Users> array;
+		ArrayList<Users> arrayList;
 		Context con;
 
-		public adapter(Context con, ArrayList<Users> array) {
+		public adapter(Context con, ArrayList<Users> arrayList) {
 			// TODO Auto-generated constructor stub
-			this.array = array;
+			this.arrayList = arrayList;
 			this.con = con;
 		}
 
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			Log.d("sublist", "Size=========" + array.size());
-			return array.size();
+			Log.d("sublist", "Size=========" + arrayList.size());
+			return arrayList.size();
 		}
 
 		@Override
 		public Object getItem(int position) {
 			// TODO Auto-generated method stub
-			return array.get(position);
+			return arrayList.get(position);
 		}
 
 		@Override

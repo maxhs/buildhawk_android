@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.method.ScrollingMovementMethod;
@@ -23,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.buildhawk.R.drawable;
@@ -34,7 +36,7 @@ import com.squareup.picasso.Picasso;
 public class SelectedImageView extends Activity {
 	ViewFlipper viewFlipper;
 	SwipeDetector swipe;
-	RelativeLayout rlayout;
+	
 	Bitmap bitmap;
 	// static int x;
 	
@@ -46,16 +48,16 @@ public class SelectedImageView extends Activity {
 	ArrayList<String> pic;
 	ArrayList<String> ids;
 	ArrayList<String> desc;
-	ImageView img_deletepic;
+	ImageView imageviewDeletePic;
 //	ImageView photo;
 	int position, finalposition;
 	// int r;
-	String finalId;
-	String idGet, key;
-	TextView tv_description;
-	RelativeLayout back;
-	TextView tv_num, tv_clickedOn;
-	RelativeLayout relLay;
+	String finalIdString;
+	String idGetString, keyString;
+	TextView textviewDescription;
+	RelativeLayout relativeLayoutBack;
+	TextView textviewNum, textviewClickedOn;
+	RelativeLayout relativelayoutRoot;
 	// ArrayList<SynopsisRecentDocuments>pic =new
 	// ArrayList<SynopsisRecentDocuments>();
 
@@ -68,20 +70,20 @@ public class SelectedImageView extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_activity1);
 
-		relLay = (RelativeLayout) findViewById(R.id.rl);
-		new ASSL(this, relLay, 1134, 720, false);
+		relativelayoutRoot = (RelativeLayout) findViewById(R.id.relativelayoutRootSelected);
+		new ASSL(this, relativelayoutRoot, 1134, 720, false);
 
-		viewFlipper = (ViewFlipper) findViewById(R.id.flipper);
-		tv_description = (TextView) findViewById(R.id.description);
+		viewFlipper = (ViewFlipper) findViewById(R.id.relativelayoutReportClickRoot);
+		textviewDescription = (TextView) findViewById(R.id.textviewDescription);
 	//	photo=(ImageView)findViewById(R.id.imageView1);
-		rlayout = (RelativeLayout) findViewById(R.id.rl);
-		back = (RelativeLayout) findViewById(R.id.back);
 		
-		tv_num = (TextView) findViewById(R.id.num);
+		relativeLayoutBack = (RelativeLayout) findViewById(R.id.relativeLayoutBack);
 		
-		tv_num.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
-		tv_clickedOn = (TextView) findViewById(R.id.clickedOn);
-		tv_clickedOn.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		textviewNum = (TextView) findViewById(R.id.textviewNum);
+		
+		textviewNum.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		textviewClickedOn = (TextView) findViewById(R.id.textviewClickedOn);
+		textviewClickedOn.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 		swipe = new SwipeDetector();
 		// pic.add(" http://upload.wikimedia.org/wikipedia/commons/a/ab/Caonima_word-150x150.jpg");
 		// pic.add("http://www.biofortified.org/wp-content/uploads/2010/12/GE_wheat_400-400.jpg");
@@ -90,8 +92,8 @@ public class SelectedImageView extends Activity {
 		// pic.add("http://www.abilities365.com/uploads/sponsor/17/products/9765-Samba%20400_400x400.jpg");
 
 		Bundle bundle = getIntent().getExtras();
-		idGet = bundle.getString("id");
-		key = bundle.getString("key");
+		idGetString = bundle.getString("id");
+		keyString = bundle.getString("key");
 
 		pic = (ArrayList<String>) getIntent().getSerializableExtra("array");
 		ids = (ArrayList<String>) getIntent().getSerializableExtra("ids");
@@ -113,30 +115,30 @@ public class SelectedImageView extends Activity {
 		worklistphase = bundle.getStringArrayList("worklist_phase");
 		reportphase = bundle.getStringArrayList("report_phase");
 		allphase = bundle.getStringArrayList("all_phase");
-		Log.d("", "------778887----" + key + idGet);
+		Log.d("", "------778887----" + keyString + idGetString);
 
-		img_deletepic = (ImageView) findViewById(R.id.deletepic);
+		imageviewDeletePic = (ImageView) findViewById(R.id.deletepic);
 		position = Prefrences.selectedPic;
 		finalposition = ids.size();
 		Log.d("-----", "----" + position);
 
 		// clickedOn.setText(key.toString());
-		tv_num.setText((position + 1) + " of " + finalposition);
+		textviewNum.setText((position + 1) + " of " + finalposition);
 		if (Prefrences.pageFlag == 1) {
-			if (!desc.get(position).toString().equals("null")) {
-				tv_description.setText(desc.get(position).toString());
-				Log.d("log for p", "log for p " + position
-						+ desc.get(position).toString());
-			} else {
-				tv_description.setText("");
-				Log.d("log for p", "log for else p ");
-			}
-			tv_description.setMovementMethod(new ScrollingMovementMethod());
+//			if (!desc.get(position).toString().equals("null")) {
+//				tv_description.setText(desc.get(position).toString());
+//				Log.d("log for p", "log for p " + position
+//						+ desc.get(position).toString());
+//			} else {
+//				tv_description.setText("");
+//				Log.d("log for p", "log for else p ");
+//			}
+			textviewDescription.setMovementMethod(new ScrollingMovementMethod());
 		} else {
 			Log.d("-----", "-------------");
 		}
 
-		back.setOnClickListener(new OnClickListener() {
+		relativeLayoutBack.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -147,8 +149,8 @@ public class SelectedImageView extends Activity {
 
 					Intent intent = new Intent(getApplicationContext(),
 							ImageActivity.class);
-					Log.d("", "------77777----" + key);
-					intent.putExtra("key", key);
+					Log.d("", "------77777----" + keyString);
+					intent.putExtra("key", keyString);
 
 					intent.putStringArrayListExtra("doc", docuser);
 					intent.putStringArrayListExtra("work", workuser);
@@ -177,7 +179,7 @@ public class SelectedImageView extends Activity {
 			}
 		});
 
-		img_deletepic.setOnClickListener(new OnClickListener() {
+		imageviewDeletePic.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -210,249 +212,256 @@ public class SelectedImageView extends Activity {
 										//archive(Prefrences.selectedProId);
 										
 
-										
-										
-										if ((position == 0 && len == 0) || (position == -1 && len == 0)
-												|| (position == 1 && len == 0)) {
-											position = 0;
-											viewFlipper.removeViewAt(position);
-
-											// String final_id=ids.get(p).toString();
-											// //delete_photo(final_id);
-											// Log.d(" finnallu","finally"+final_id);
-
-										} else if (position == 0 || position == -1) {
-											position = 0;
-											viewFlipper.removeViewAt(position);
-											// viewFlipper.showNext();
-
-										} else if (position == len)// || p==len+1)
+										if(ConnectionDetector.isConnectingToInternet())
 										{
-											position = position - 1;
-											viewFlipper.removeViewAt(position);
-											// viewFlipper.showPrevious();
-										} else if (len == 0) {
-											position = len;
-											viewFlipper.removeViewAt(position);
-											// viewFlipper.showPrevious();
-										} else {
-											viewFlipper.removeViewAt(position);
-										}
-										// if(p==len==1)
-										Log.d("", "array of ids == " + ids);
+											if ((position == 0 && len == 0) || (position == -1 && len == 0)
+													|| (position == 1 && len == 0)) {
+												position = 0;
+												viewFlipper.removeViewAt(position);
 
-										if (Prefrences.well != 1) {
-											finalId = ids.get(position).toString();
-											deletePhoto(finalId);
-											Prefrences.stopingHit = 1;
-											Log.d(" finnallu", "finally" + finalId);
-										} else {
-											finalId = ids.get(position).toString();
+												// String final_id=ids.get(p).toString();
+												// //delete_photo(final_id);
+												// Log.d(" finnallu","finally"+final_id);
 
-											if (key.equals("All")) {
-												for (int l = 0; l < DocumentFragment.photosList.size(); l++) {
-													if (DocumentFragment.photosList.get(l).id
-															.equals(finalId)) {
-														DocumentFragment.photosList.remove(l);
-													}
+											} else if (position == 0 || position == -1) {
+												position = 0;
+												viewFlipper.removeViewAt(position);
+												// viewFlipper.showNext();
 
-												}
-												alldates.clear();
-												allphase.clear();
-												allusers.clear();
-												// DocumentFragment.photosList.remove(p);
-												for (int k = 0; k < DocumentFragment.photosList.size(); k++) {
-													if (DocumentFragment.photosList.get(k).userName
-															.equals("null")) {
-														allusers.add("kanika(null)");
-													} else {
-														allusers.add(DocumentFragment.photosList.get(k).userName);
-													}
-
-													if (DocumentFragment.photosList.get(k).phase
-															.equals("null")) {
-														allphase.add("kanika_phase(null)");
-													} else {
-														allphase.add(DocumentFragment.photosList.get(k).phase);
-													}
-
-													alldates.add(DocumentFragment.photosList.get(k).createdDate);
-												}
-											} else if (key.equals("Report")) {
-												for (int l = 0; l < DocumentFragment.photosList5.size(); l++) {
-													Log.d("",
-															"000066669999"
-																	+ finalId
-																	+ ""
-																	+ l
-																	+ DocumentFragment.photosList5
-																			.get(l).id.toString());
-													if (DocumentFragment.photosList5.get(l).id
-															.equals(finalId)) {
-														DocumentFragment.photosList5.remove(l);
-													}
-
-												}
-
-												reportdate.clear();
-												reportphase.clear();
-												reportuser.clear();
-												// DocumentFragment.photosList5.remove(p);
-												for (int k = 0; k < DocumentFragment.photosList5.size(); k++) {
-													if (DocumentFragment.photosList5.get(k).userName
-															.equals("null")) {
-														reportuser.add("kanika(null)");
-													} else {
-														reportuser.add(DocumentFragment.photosList5
-																.get(k).userName);
-													}
-
-													if (DocumentFragment.photosList5.get(k).phase
-															.equals("null")) {
-														reportphase.add("kanika_phase(null)");
-													} else {
-														reportphase.add(DocumentFragment.photosList5
-																.get(k).phase);
-													}
-
-													reportdate.add(DocumentFragment.photosList5.get(k).createdDate);
-												}
-											} else if (key.equals("Worklist")) {
-												for (int l = 0; l < DocumentFragment.photosList4.size(); l++) {
-													Log.d("",
-															"000066669999"
-																	+ finalId
-																	+ ""
-																	+ l
-																	+ DocumentFragment.photosList4
-																			.get(l).id.toString());
-													if (DocumentFragment.photosList4.get(l).id
-															.equals(finalId)) {
-														DocumentFragment.photosList4.remove(l);
-													}
-
-												}
-												workdate.clear();
-												workuser.clear();
-												worklistphase.clear();
-												// DocumentFragment.photosList4.remove(p);
-												for (int k = 0; k < DocumentFragment.photosList4.size(); k++) {
-													if (DocumentFragment.photosList4.get(k).userName
-															.equals("null")) {
-														workuser.add("kanika(null)");
-													} else {
-														workuser.add(DocumentFragment.photosList4
-																.get(k).userName);
-													}
-
-													if (DocumentFragment.photosList4.get(k).phase
-															.equals("null")) {
-														worklistphase.add("kanika_phase(null)");
-													} else {
-														worklistphase.add(DocumentFragment.photosList4
-																.get(k).phase);
-													}
-
-													workdate.add(DocumentFragment.photosList4.get(k).createdDate);
-												}
-											} else if (key.equals("Project Docs")) {
-												for (int l = 0; l < DocumentFragment.photosList2.size(); l++) {
-													Log.d("",
-															"000066669999"
-																	+ finalId
-																	+ ""
-																	+ l
-																	+ DocumentFragment.photosList2
-																			.get(l).id.toString());
-													if (DocumentFragment.photosList2.get(l).id
-															.equals(finalId)) {
-														DocumentFragment.photosList2.remove(l);
-													}
-
-												}
-
-												docdate.clear();
-												docphase.clear();
-												docuser.clear();
-												// DocumentFragment.photosList2.remove(p);
-												for (int k = 0; k < DocumentFragment.photosList2.size(); k++) {
-													if (DocumentFragment.photosList2.get(k).userName
-															.equals("null")) {
-														docuser.add("kanika(null)");
-													} else {
-														docuser.add(DocumentFragment.photosList2.get(k).userName);
-													}
-
-													if (DocumentFragment.photosList2.get(k).phase
-															.equals("null")) {
-														docphase.add("kanika_phase(null)");
-													} else {
-														docphase.add(DocumentFragment.photosList2
-																.get(k).phase);
-													}
-
-													docdate.add(DocumentFragment.photosList2.get(k).createdDate);
-												}
-
-											} else if (key.equals("Checklist")) {
-												for (int l = 0; l < DocumentFragment.photosList3.size(); l++) {
-													Log.d("",
-															"000066669999"
-																	+ finalId
-																	+ ""
-																	+ l
-																	+ DocumentFragment.photosList3
-																			.get(l).id.toString());
-													if (DocumentFragment.photosList3.get(l).id
-															.equals(finalId)) {
-														DocumentFragment.photosList3.remove(l);
-													}
-
-												}
-												checkuser.clear();
-												checkdate.clear();
-												checklistphase.clear();
-												// DocumentFragment.photosList3.remove(p);
-												for (int k = 0; k < DocumentFragment.photosList3.size(); k++) {
-													if (DocumentFragment.photosList3.get(k).userName
-															.equals("null")) {
-														checkuser.add("kanika(null)");
-													} else {
-														checkuser.add(DocumentFragment.photosList3
-																.get(k).userName);
-													}
-
-													if (DocumentFragment.photosList3.get(k).phase
-															.equals("null")) {
-														checklistphase.add("kanika_phase(null)");
-													} else {
-														checklistphase.add(DocumentFragment.photosList3
-																.get(k).phase);
-													}
-
-													checkdate.add(DocumentFragment.photosList3.get(k).createdDate);
-												}
-												// doc_user.remove(p);
-												// doc_phase.remove(p);
-												// doc_date.remove(p);
+											} else if (position == len)// || p==len+1)
+											{
+												position = position - 1;
+												viewFlipper.removeViewAt(position);
+												// viewFlipper.showPrevious();
+											} else if (len == 0) {
+												position = len;
+												viewFlipper.removeViewAt(position);
+												// viewFlipper.showPrevious();
+											} else {
+												viewFlipper.removeViewAt(position);
 											}
-											deletePhoto(finalId);
-											Prefrences.stopingHit = 1;
-										}
-										ids.remove(position);
-										pic.remove(position);
-										Log.d("------", "size of pics" + pic.size() + "size of ids"
-												+ ids.size());
-										len = pic.size(); // pic=array
-										for (int i = 0; i < len; i++) { //
-											// This will create dynamic image view and add them to
-											// ViewFlipper
-											// Log.i("In", "---------in for loop---------" + len);
-											setFlipperImage(i);
-											// Log.d("","length val= "+i);
-										}
+											// if(p==len==1)
+											Log.d("", "array of ids == " + ids);
 
-										Prefrences.deletePicFlag = 1;
+											if (Prefrences.well != 1) {
+												finalIdString = ids.get(position).toString();
+												deletePhoto(finalIdString);
+												Prefrences.stopingHit = 1;
+												Log.d(" finnallu", "finally" + finalIdString);
+											} else {
+												
+												finalIdString = ids.get(position).toString();
+
+												if (keyString.equals("All")) {
+													for (int l = 0; l < DocumentFragment.photosListArrayList.size(); l++) {
+														if (DocumentFragment.photosListArrayList.get(l).id
+																.equals(finalIdString)) {
+															DocumentFragment.photosListArrayList.remove(l);
+														}
+
+													}
+													alldates.clear();
+													allphase.clear();
+													allusers.clear();
+													// DocumentFragment.photosList.remove(p);
+													for (int k = 0; k < DocumentFragment.photosListArrayList.size(); k++) {
+														if (DocumentFragment.photosListArrayList.get(k).userName
+																.equals("null")) {
+															allusers.add("others(null)");
+														} else {
+															allusers.add(DocumentFragment.photosListArrayList.get(k).userName);
+														}
+
+														if (DocumentFragment.photosListArrayList.get(k).phase
+																.equals("null")) {
+															allphase.add("others_phase(null)");
+														} else {
+															allphase.add(DocumentFragment.photosListArrayList.get(k).phase);
+														}
+
+														alldates.add(DocumentFragment.photosListArrayList.get(k).createdDate);
+													}
+												} else if (keyString.equals("Report")) {
+													for (int l = 0; l < DocumentFragment.photosList5ArrayList.size(); l++) {
+														Log.d("",
+																"000066669999"
+																		+ finalIdString
+																		+ ""
+																		+ l
+																		+ DocumentFragment.photosList5ArrayList
+																				.get(l).id.toString());
+														if (DocumentFragment.photosList5ArrayList.get(l).id
+																.equals(finalIdString)) {
+															DocumentFragment.photosList5ArrayList.remove(l);
+														}
+
+													}
+
+													reportdate.clear();
+													reportphase.clear();
+													reportuser.clear();
+													// DocumentFragment.photosList5.remove(p);
+													for (int k = 0; k < DocumentFragment.photosList5ArrayList.size(); k++) {
+														if (DocumentFragment.photosList5ArrayList.get(k).userName
+																.equals("null")) {
+															reportuser.add("others(null)");
+														} else {
+															reportuser.add(DocumentFragment.photosList5ArrayList
+																	.get(k).userName);
+														}
+
+														if (DocumentFragment.photosList5ArrayList.get(k).phase
+																.equals("null")) {
+															reportphase.add("others_phase(null)");
+														} else {
+															reportphase.add(DocumentFragment.photosList5ArrayList
+																	.get(k).phase);
+														}
+
+														reportdate.add(DocumentFragment.photosList5ArrayList.get(k).createdDate);
+													}
+												} else if (keyString.equals("Worklist")) {
+													for (int l = 0; l < DocumentFragment.photosList4ArrayList.size(); l++) {
+														Log.d("",
+																"000066669999"
+																		+ finalIdString
+																		+ ""
+																		+ l
+																		+ DocumentFragment.photosList4ArrayList
+																				.get(l).id.toString());
+														if (DocumentFragment.photosList4ArrayList.get(l).id
+																.equals(finalIdString)) {
+															DocumentFragment.photosList4ArrayList.remove(l);
+														}
+
+													}
+													workdate.clear();
+													workuser.clear();
+													worklistphase.clear();
+													// DocumentFragment.photosList4.remove(p);
+													for (int k = 0; k < DocumentFragment.photosList4ArrayList.size(); k++) {
+														if (DocumentFragment.photosList4ArrayList.get(k).userName
+																.equals("null")) {
+															workuser.add("others(null)");
+														} else {
+															workuser.add(DocumentFragment.photosList4ArrayList
+																	.get(k).userName);
+														}
+
+														if (DocumentFragment.photosList4ArrayList.get(k).phase
+																.equals("null")) {
+															worklistphase.add("others_phase(null)");
+														} else {
+															worklistphase.add(DocumentFragment.photosList4ArrayList
+																	.get(k).phase);
+														}
+
+														workdate.add(DocumentFragment.photosList4ArrayList.get(k).createdDate);
+													}
+												} else if (keyString.equals("Project Docs")) {
+													for (int l = 0; l < DocumentFragment.photosList2ArrayList.size(); l++) {
+														Log.d("",
+																"000066669999"
+																		+ finalIdString
+																		+ ""
+																		+ l
+																		+ DocumentFragment.photosList2ArrayList
+																				.get(l).id.toString());
+														if (DocumentFragment.photosList2ArrayList.get(l).id
+																.equals(finalIdString)) {
+															DocumentFragment.photosList2ArrayList.remove(l);
+														}
+
+													}
+
+													docdate.clear();
+													docphase.clear();
+													docuser.clear();
+													// DocumentFragment.photosList2.remove(p);
+													for (int k = 0; k < DocumentFragment.photosList2ArrayList.size(); k++) {
+														if (DocumentFragment.photosList2ArrayList.get(k).userName
+																.equals("null")) {
+															docuser.add("others(null)");
+														} else {
+															docuser.add(DocumentFragment.photosList2ArrayList.get(k).userName);
+														}
+
+														if (DocumentFragment.photosList2ArrayList.get(k).phase
+																.equals("null")) {
+															docphase.add("others_phase(null)");
+														} else {
+															docphase.add(DocumentFragment.photosList2ArrayList
+																	.get(k).phase);
+														}
+
+														docdate.add(DocumentFragment.photosList2ArrayList.get(k).createdDate);
+													}
+
+												} else if (keyString.equals("Checklist")) {
+													for (int l = 0; l < DocumentFragment.photosList3ArrayList.size(); l++) {
+														Log.d("",
+																"000066669999"
+																		+ finalIdString
+																		+ ""
+																		+ l
+																		+ DocumentFragment.photosList3ArrayList
+																				.get(l).id.toString());
+														if (DocumentFragment.photosList3ArrayList.get(l).id
+																.equals(finalIdString)) {
+															DocumentFragment.photosList3ArrayList.remove(l);
+														}
+
+													}
+													checkuser.clear();
+													checkdate.clear();
+													checklistphase.clear();
+													// DocumentFragment.photosList3.remove(p);
+													for (int k = 0; k < DocumentFragment.photosList3ArrayList.size(); k++) {
+														if (DocumentFragment.photosList3ArrayList.get(k).userName
+																.equals("null")) {
+															checkuser.add("others(null)");
+														} else {
+															checkuser.add(DocumentFragment.photosList3ArrayList
+																	.get(k).userName);
+														}
+
+														if (DocumentFragment.photosList3ArrayList.get(k).phase
+																.equals("null")) {
+															checklistphase.add("others_phase(null)");
+														} else {
+															checklistphase.add(DocumentFragment.photosList3ArrayList
+																	.get(k).phase);
+														}
+
+														checkdate.add(DocumentFragment.photosList3ArrayList.get(k).createdDate);
+													}
+													// doc_user.remove(p);
+													// doc_phase.remove(p);
+													// doc_date.remove(p);
+												}
+												deletePhoto(finalIdString);
+												
+											}
+											ids.remove(position);
+											pic.remove(position);
+											Log.d("------", "size of pics" + pic.size() + "size of ids"
+													+ ids.size());
+											len = pic.size(); // pic=array
+											for (int i = 0; i < len; i++) { //
+												// This will create dynamic image view and add them to
+												// ViewFlipper
+												// Log.i("In", "---------in for loop---------" + len);
+												setFlipperImage(i);
+												// Log.d("","length val= "+i);
+											}
+
+											Prefrences.deletePicFlag = 1;
+										}
+										else
+										{
+											Toast.makeText(getApplicationContext(), "No internet access", Toast.LENGTH_SHORT).show();
+										}
+										
 										
 										
 										
@@ -515,8 +524,8 @@ public class SelectedImageView extends Activity {
 
 			Intent intent = new Intent(getApplicationContext(),
 					ImageActivity.class);
-			Log.d("", "------77777----" + key);
-			intent.putExtra("key", key);
+			Log.d("", "------77777----" + keyString);
+			intent.putExtra("key", keyString);
 
 			intent.putStringArrayListExtra("doc", docuser);
 			intent.putStringArrayListExtra("work", workuser);
@@ -549,7 +558,7 @@ public class SelectedImageView extends Activity {
 		image.setId(res);
 		// description.setId(res);
 		Log.d("pic","pic"+pic.get(res).toString()+"size = "+pic.size());
-		Picasso.with(SelectedImageView.this).load(pic.get(res).toString())//.placeholder(prog) //
+		Picasso.with(SelectedImageView.this).load(pic.get(res).toString()).placeholder(drawable.processing_image) //
 				.into(image);
 
 		// Log.d("log for res", "log for res" + res + desc.get(res).toString());
@@ -579,20 +588,20 @@ public class SelectedImageView extends Activity {
 							if (Prefrences.pageFlag == 1) {
 								if (!desc.get(position).toString()
 										.equals("null")) {
-									tv_description.setText(desc.get(position)
+									textviewDescription.setText(desc.get(position)
 											.toString());
 									Log.d("log for p", "log for p " + position
 											+ desc.get(position).toString());
 								} else {
-									tv_description.setText("");
+									textviewDescription.setText("");
 									Log.d("log for p", "log for else p ");
 								}
-								tv_description
+								textviewDescription
 										.setMovementMethod(new ScrollingMovementMethod());
 							} else {
 								Log.d("-----", "-------------");
 							}
-							tv_num.setText(position + 1 + " of " + finalposition);
+							textviewNum.setText(position + 1 + " of " + finalposition);
 						}
 					} else {
 						position = position + 1;
@@ -609,20 +618,20 @@ public class SelectedImageView extends Activity {
 							if (Prefrences.pageFlag == 1) {
 								if (!desc.get(position).toString()
 										.equals("null")) {
-									tv_description.setText(desc.get(position)
+									textviewDescription.setText(desc.get(position)
 											.toString());
 									Log.d("log for p", "log for p " + position
 											+ desc.get(position).toString());
 								} else {
-									tv_description.setText("");
+									textviewDescription.setText("");
 									Log.d("log for p", "log for else p ");
 								}
-								tv_description
+								textviewDescription
 										.setMovementMethod(new ScrollingMovementMethod());
 							} else {
 								Log.d("-----", "-------------");
 							}
-							tv_num.setText(position + 1 + " of " + finalposition);
+							textviewNum.setText(position + 1 + " of " + finalposition);
 						}
 					}
 				}
@@ -666,8 +675,9 @@ public class SelectedImageView extends Activity {
 						if(finalposition==1)
 							finish();
 						finalposition=finalposition-1;
-						tv_num.setText((position + 1) + " of " + (finalposition));
-						
+						textviewNum.setText((position + 1) + " of " + (finalposition));
+						Prefrences.document_bool = false;
+						Prefrences.stopingHit=1;
 						Prefrences.dismissLoadingDialog();
 					}
 
@@ -680,3 +690,4 @@ public class SelectedImageView extends Activity {
 	}
 
 }
+

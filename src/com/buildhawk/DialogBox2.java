@@ -26,22 +26,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.buildhawk.utils.Users;
-
+/*
+ *  Dialog Box which shows the list of locations with add button.
+ * 
+ */
 public class DialogBox2 extends Dialog {
 
 	public Activity activity;
-	LinearLayout linearLay;
+	LinearLayout linearlayoutRoot;
 	public Dialog dialog;
-	public Button btnCancel, btnAddCLicked;
-	TextView who;
-	ArrayList<String> array = new ArrayList<String>();
-	ArrayList<Users> usrs = new ArrayList<Users>();
+	public Button buttonCancelClicked, buttonAddCLicked;
+	TextView textviewWho;
+	ArrayList<String> arrayArrayList = new ArrayList<String>();
+	ArrayList<Users> usrsArrayList = new ArrayList<Users>();
 	Dialog popup;
 	InputMethodManager imm;
-	Button submit, cancel;
-	EditText hours, location;
-	TextView expiryAlert;
-	ListView dialoglist;
+	Button buttonSubmit, buttonCancel;
+	EditText edittextHours, edittextLocation;
+	TextView textviewExpiryAlert;
+	ListView listviewDialoglist;
 
 	public DialogBox2(Activity activity) {
 		super(activity);
@@ -54,16 +57,16 @@ public class DialogBox2 extends Dialog {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.dialogbox2);
-		linearLay = (LinearLayout) findViewById(R.id.db);
-		new ASSL(activity, linearLay, 1134, 720, false);
+		linearlayoutRoot = (LinearLayout) findViewById(R.id.linearlayoutRoot);
+		new ASSL(activity, linearlayoutRoot, 1134, 720, false);
 
-		dialoglist = (ListView) findViewById(R.id.dialoglist);
-		who = (TextView) findViewById(R.id.txt_who);
-		who.setTypeface(Prefrences.helveticaNeuelt(activity));
+		listviewDialoglist = (ListView) findViewById(R.id.listviewDialoglist);
+		textviewWho = (TextView) findViewById(R.id.textviewWho);
+		textviewWho.setTypeface(Prefrences.helveticaNeuelt(activity));
 		if (Prefrences.text == 5 || Prefrences.text == 6) {
-			array = WorkItemClick.locs;
+			arrayArrayList = WorkItemClick.locs;
 		} else if (Prefrences.text == 4 || Prefrences.text == 7) {
-			array = WorkItemClick.asss;
+			arrayArrayList = WorkItemClick.asss;
 		}
 		// else if(Prefrences.text==1 || Prefrences.text==2 ||
 		// Prefrences.text==3)
@@ -71,15 +74,15 @@ public class DialogBox2 extends Dialog {
 
 		// btn_users.setOnClickListener(this);
 		// btn_sub.setOnClickListener(this);
-		btnCancel = (Button) findViewById(R.id.cancel);
-		btnAddCLicked = (Button) findViewById(R.id.addClicked);
-		btnAddCLicked.setTypeface(Prefrences.helveticaNeuelt(activity));
-		btnCancel.setTypeface(Prefrences.helveticaNeuelt(activity));
+		buttonCancelClicked = (Button) findViewById(R.id.buttonCancelClicked);
+		buttonAddCLicked = (Button) findViewById(R.id.buttonAddCLicked);
+		buttonAddCLicked.setTypeface(Prefrences.helveticaNeuelt(activity));
+		buttonCancelClicked.setTypeface(Prefrences.helveticaNeuelt(activity));
 
 		
 		if(Prefrences.text==5)
 		{
-		btnAddCLicked.setOnClickListener(new View.OnClickListener() {
+		buttonAddCLicked.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
@@ -93,43 +96,43 @@ public class DialogBox2 extends Dialog {
 				RelativeLayout expiryMain = (RelativeLayout) popup
 						.findViewById(R.id.list_outside);
 				// expiry_main.setInAnimation(R.anim.slide_in_from_top);
-				submit = (Button) popup.findViewById(R.id.submit);
-				hours = (EditText) popup.findViewById(R.id.hours);
-				location = (EditText) popup.findViewById(R.id.location);
-				hours.setVisibility(View.GONE);
-				location.setVisibility(View.VISIBLE);
+				buttonSubmit = (Button) popup.findViewById(R.id.buttonSubmit);
+				edittextHours = (EditText) popup.findViewById(R.id.edittextHours);
+				edittextLocation = (EditText) popup.findViewById(R.id.edittextLocation);
+				edittextHours.setVisibility(View.GONE);
+				edittextLocation.setVisibility(View.VISIBLE);
 
 				InputMethodManager mgr = (InputMethodManager) activity
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
 				// only will trigger it if no physical keyboard is open
-				mgr.showSoftInput(location, InputMethodManager.SHOW_IMPLICIT);
+				mgr.showSoftInput(edittextLocation, InputMethodManager.SHOW_IMPLICIT);
 				// ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
 				// .toggleSoftInput(InputMethodManager.SHOW_FORCED,
 				// InputMethodManager.HIDE_IMPLICIT_ONLY);
-				cancel = (Button) popup.findViewById(R.id.cancel);
-				submit.setTypeface(Prefrences.helveticaNeuelt(activity));
-				cancel.setTypeface(Prefrences.helveticaNeuelt(activity));
-				hours.setTypeface(Prefrences.helveticaNeuelt(activity));
+				buttonCancel = (Button) popup.findViewById(R.id.cancel);
+				buttonSubmit.setTypeface(Prefrences.helveticaNeuelt(activity));
+				buttonCancel.setTypeface(Prefrences.helveticaNeuelt(activity));
+				edittextHours.setTypeface(Prefrences.helveticaNeuelt(activity));
 				// expiry_alert.setTypeface(Prefrences.HelveticaNeueLt(getApplicationContext()));
 				// expiry_alert = (TextView)popup.findViewById(R.id.alert_text);
 				// expiry_alert.setText("# of Hours ");
 				if (Prefrences.text == 5) {
 					popup.setTitle("Add Location ");
-					location.setHint("Location");
+					edittextLocation.setHint("Location");
 				} else if (Prefrences.text == 4) {
 					popup.setTitle("Add Assignee ");
-					location.setHint("Assignee");
+					edittextLocation.setHint("Assignee");
 				}
 				new ASSL(activity, expiryMain, 1134, 720, false);
 
-				submit.setOnClickListener(new View.OnClickListener() {
+				buttonSubmit.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
-						if (!location.getText().toString().equals("")) {
+						if (!edittextLocation.getText().toString().equals("")) {
 							if (Prefrences.text == 5) {
 								
-								String output = Character.toUpperCase(location.getText()
-										.toString().charAt(0)) + location.getText()
+								String output = Character.toUpperCase(edittextLocation.getText()
+										.toString().charAt(0)) + edittextLocation.getText()
 										.toString().substring(1);
 								Log.d("output","output"+output);
 								WorkItemClick.locs.add(output);
@@ -145,7 +148,7 @@ public class DialogBox2 extends Dialog {
 
 							imm = (InputMethodManager) activity
 									.getSystemService(Context.INPUT_METHOD_SERVICE);
-							imm.hideSoftInputFromWindow(hours.getWindowToken(),
+							imm.hideSoftInputFromWindow(edittextHours.getWindowToken(),
 									0);
 							// try {
 							//
@@ -171,12 +174,12 @@ public class DialogBox2 extends Dialog {
 
 				});
 
-				cancel.setOnClickListener(new View.OnClickListener() {
+				buttonCancel.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
 						imm = (InputMethodManager) activity
 								.getSystemService(Context.INPUT_METHOD_SERVICE);
-						imm.hideSoftInputFromWindow(hours.getWindowToken(), 0);
+						imm.hideSoftInputFromWindow(edittextHours.getWindowToken(), 0);
 						// try {
 						//
 						// InputMethodManager imm = (InputMethodManager)
@@ -203,19 +206,20 @@ public class DialogBox2 extends Dialog {
 		
 	}
 	else if(Prefrences.text==4){
-		btnAddCLicked.setOnClickListener(new View.OnClickListener() {
+		buttonAddCLicked.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				
-				Intent intent = new Intent(activity,AddUser.class);
+				Intent intent = new Intent(activity,CompanyExpandable.class);
 				activity.startActivity(intent);
+				dismiss();
 			}
 		});
 	}
 
-		btnCancel.setOnClickListener(new View.OnClickListener() {
+		buttonCancelClicked.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
@@ -226,29 +230,29 @@ public class DialogBox2 extends Dialog {
 		});
 
 		if (Prefrences.text == 1) {
-			who.setText("Who do you want to email?");
+			textviewWho.setText("Who do you want to email?");
 		} else if (Prefrences.text == 2) {
-			who.setText("Who do you want to call?");
+			textviewWho.setText("Who do you want to call?");
 		} else if (Prefrences.text == 3) {
-			who.setText("Who do you want to message?");
+			textviewWho.setText("Who do you want to message?");
 		} else if (Prefrences.text == 4) {
-			who.setText("Assignee");
+			textviewWho.setText("Assignee");
 		} else if (Prefrences.text == 5) {
-			who.setText("Location");
+			textviewWho.setText("Location");
 		}
-		adapter adp = new adapter(activity, array);
-		dialoglist.setAdapter(adp);
+		adapter adp = new adapter(activity, arrayArrayList);
+		listviewDialoglist.setAdapter(adp);
 	}
 
 	public class adapter extends BaseAdapter {
 
-		ArrayList<String> array;
+		ArrayList<String> array2ArrayList;
 		// ArrayList<Users>usr;
 		Context con;
 
-		public adapter(Context con, ArrayList<String> array) {
+		public adapter(Context con, ArrayList<String> arrayArrayList) {
 			// TODO Auto-generated constructor stub
-			this.array = array;
+			this.array2ArrayList = arrayArrayList;
 			this.con = con;
 			// this.usr=usrs;
 		}
@@ -258,13 +262,13 @@ public class DialogBox2 extends Dialog {
 			// TODO Auto-generated method stub
 			// Log.d("userlist","Size========="+array.size());
 			// if()
-			return array.size();
+			return array2ArrayList.size();
 		}
 
 		@Override
 		public Object getItem(int position) {
 			// TODO Auto-generated method stub
-			return array.get(position);
+			return array2ArrayList.get(position);
 		}
 
 		@Override
@@ -289,19 +293,19 @@ public class DialogBox2 extends Dialog {
 				LayoutInflater inflater = (LayoutInflater) con
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = inflater.inflate(R.layout.dialog2list_item, null);
-				holder.linear = (LinearLayout) convertView
+				holder.linearlayout = (LinearLayout) convertView
 						.findViewById(R.id.dialoglinear);
-				holder.linear.setLayoutParams(new ListView.LayoutParams(
+				holder.linearlayout.setLayoutParams(new ListView.LayoutParams(
 						ListView.LayoutParams.MATCH_PARENT, 80));
-				ASSL.DoMagic(holder.linear);
+				ASSL.DoMagic(holder.linearlayout);
 				convertView.setTag(holder);
 			} else {
 				holder = (viewholder) convertView.getTag();
 			}
-			holder.txtview = (TextView) convertView.findViewById(R.id.array);
-			holder.txtview.setTypeface(Prefrences.helveticaNeuelt(con));
-			holder.txtview.setText(array.get(position).toString());
-			holder.txtview.setOnClickListener(new View.OnClickListener() {
+			holder.textview = (TextView) convertView.findViewById(R.id.array);
+			holder.textview.setTypeface(Prefrences.helveticaNeuelt(con));
+			holder.textview.setText(array2ArrayList.get(position).toString());
+			holder.textview.setOnClickListener(new View.OnClickListener() {
 
 				public void onClick(View view) {
 					// TODO Auto-generated method stub
@@ -311,11 +315,11 @@ public class DialogBox2 extends Dialog {
 					// Toast.makeText(c, ""+Prefrences.selectedlocation,
 					// Toast.LENGTH_SHORT).show();
 					if (Prefrences.text == 5) {
-						Prefrences.location_str = array.get(position).toString();
+						Prefrences.location_str = array2ArrayList.get(position).toString();
 						WorkItemClick.btnS_location.setText("Location: " + Prefrences.location_str);
 					} else if (Prefrences.text == 4) {
 						
-						Prefrences.assignee_str = array.get(position).toString();
+						Prefrences.assignee_str = array2ArrayList.get(position).toString();
 						WorkItemClick.btnS_assigned.setText("Assignee: "+Prefrences.assignee_str);
 					}
 
@@ -333,8 +337,8 @@ public class DialogBox2 extends Dialog {
 	}
 
 	private static class viewholder {
-		TextView txtview;
-		LinearLayout linear;
+		TextView textview;
+		LinearLayout linearlayout;
 	}
 }
 

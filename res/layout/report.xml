@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/linearlay"
+    android:id="@+id/linearlayoutReportRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0000"
@@ -17,7 +17,7 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:id="@+id/daily"
+            android:id="@+id/textviewDaily"
             android:layout_width="226px"
             android:layout_height="match_parent"
             android:layout_marginBottom="2px"
@@ -35,7 +35,7 @@
             android:background="@color/black" />
 
         <TextView
-            android:id="@+id/safety"
+            android:id="@+id/textviewSafety"
             android:layout_width="226px"
             android:layout_height="match_parent"
             android:layout_marginBottom="2px"
@@ -52,7 +52,7 @@
             android:background="@color/black" />
 
         <TextView
-            android:id="@+id/weekly"
+            android:id="@+id/textviewWeekly"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="2px"

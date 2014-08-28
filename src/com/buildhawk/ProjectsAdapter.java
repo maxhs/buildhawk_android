@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.sax.StartElementListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.LayoutInflater.Filter;
@@ -42,6 +43,7 @@ import com.buildhawk.utils.SynopsisRecentlyCompleted;
 import com.buildhawk.utils.SynopsisUpcomingItems;
 import com.buildhawk.utils.Users;
 import com.buildhawk.utils.subcontractors;
+import com.flurry.android.FlurryAgent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -55,13 +57,15 @@ public class ProjectsAdapter extends BaseAdapter {
 	private Filter filter;
 	ViewHolder holder;
 	ConnectionDetector connDect;
-	Boolean isInternetPresent = false;
-	public static ArrayList<Users> user2 = new ArrayList<Users>();
+	Boolean isInternetPresentBoolean = false;
+	public static ArrayList<Users> user2ArrayList = new ArrayList<Users>();
+	public static ArrayList<Company>compny2ArrayList=new ArrayList<Company>();
 //	public static ArrayList<subcontractors> sub2 = new ArrayList<subcontractors>();
-	public static ArrayList<String> usr = new ArrayList<String>();
-	public static ArrayList<String> compny = new ArrayList<String>();
-	public static ArrayList<String> compnyId = new ArrayList<String>();
-	public static ArrayList<String> userid = new ArrayList<String>();
+	public static ArrayList<String> usrArrayList = new ArrayList<String>();
+	public static ArrayList<String> compnyArrayList = new ArrayList<String>();
+	public static ArrayList<String> compnyIdArrayList = new ArrayList<String>();
+	public static ArrayList<String> useridArrayList = new ArrayList<String>();
+	
 	// public static ArrayList<Categories> categList = new
 	// ArrayList<Categories>();
 	//
@@ -95,7 +99,7 @@ public class ProjectsAdapter extends BaseAdapter {
 	// public static ArrayList<SubCategories> PsubCatList;
 	// public static int k=0;
 
-	public ArrayList<ProjectsFields> projectsListAll = new ArrayList<ProjectsFields>();
+	public ArrayList<ProjectsFields> projectsListAllArrayList = new ArrayList<ProjectsFields>();
 
 	public ProjectsAdapter(Activity act) {
 		activity = act;
@@ -103,13 +107,13 @@ public class ProjectsAdapter extends BaseAdapter {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		Log.v("in adapter", "in adapter");
 		connDect = new ConnectionDetector(activity);
-		isInternetPresent = connDect.isConnectingToInternet();
+		isInternetPresentBoolean = connDect.isConnectingToInternet();
 
-		projectsListAll.addAll(Homepage.projectsList);
+		projectsListAllArrayList.addAll(Homepage.projectsArrayList);
 	}
 
 	public int getCount() {
-		return Homepage.projectsList.size();
+		return Homepage.projectsArrayList.size();
 	}
 
 	public Object getItem(int position) {
@@ -117,7 +121,7 @@ public class ProjectsAdapter extends BaseAdapter {
 	}
 
 	public long getItemId(int position) {
-		return Homepage.projectsList.size();
+		return Homepage.projectsArrayList.size();
 	}
 
 	public View getView(final int position, View convertView, ViewGroup parent) {
@@ -129,74 +133,87 @@ public class ProjectsAdapter extends BaseAdapter {
 
 		vi = inflater.inflate(R.layout.project_item, null);
 		vi.setTag(holder);
-		holder.linearLay = (LinearLayout) vi.findViewById(R.id.rv);
-		holder.proName = (TextView) vi.findViewById(R.id.proj_name);
-		holder.proAdd = (TextView) vi.findViewById(R.id.proj_add);
-		holder.proPerc = (TextView) vi.findViewById(R.id.proj_perc);
-		holder.selectedPro = (LinearLayout) vi.findViewById(R.id.selected_proj);
+		holder.relativelayout = (RelativeLayout) vi.findViewById(R.id.relativelayout);
+		holder.textviewProName = (TextView) vi.findViewById(R.id.textviewProName);
+		holder.textviewProAdd = (TextView) vi.findViewById(R.id.textviewProAdd);
+		holder.textviewProPerc = (TextView) vi.findViewById(R.id.textviewProPerc);
+		holder.linearlayoutSelectedPro = (LinearLayout) vi.findViewById(R.id.selected_proj);
 
-		holder.proName.setTypeface(Prefrences.helveticaNeuelt(activity));
-		holder.proAdd.setTypeface(Prefrences.helveticaNeuelt(activity));
-		holder.proPerc.setTypeface(Prefrences.helveticaNeuelt(activity));
-		holder.proName.setText(Homepage.projectsList.get(position).name);
-		holder.proAdd
-				.setText(Homepage.projectsList.get(position).address.formattedAddress);
-		holder.proPerc.setText(Homepage.projectsList.get(position).progress);
-		holder.linearLay.setLayoutParams(new ListView.LayoutParams(720, 230));
+		holder.textviewProName.setTypeface(Prefrences.helveticaNeuelt(activity));
+		holder.textviewProAdd.setTypeface(Prefrences.helveticaNeuelt(activity));
+		holder.textviewProPerc.setTypeface(Prefrences.helveticaNeuelt(activity));
+		holder.textviewProName.setText(Homepage.projectsArrayList.get(position).name);
+		holder.textviewProAdd
+				.setText(Homepage.projectsArrayList.get(position).address.formattedAddress);
+		holder.textviewProPerc.setText(Homepage.projectsArrayList.get(position).progress);
+		holder.relativelayout.setLayoutParams(new ListView.LayoutParams(720, 230));
 
-		ASSL.DoMagic(holder.linearLay);
+		ASSL.DoMagic(holder.relativelayout);
 
-		holder.proPerc.setOnClickListener(new OnClickListener() {
+		holder.textviewProPerc.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				// projectDetail();
-				Prefrences.selectedProId = Homepage.projectsList.get(position).id;
-				Prefrences.selectedProName = Homepage.projectsList
-						.get(position).name;
+				Prefrences.selectedProId = Homepage.projectsArrayList.get(position).id;
+				Prefrences.selectedProName = Homepage.projectsArrayList.get(position).name;
+				Prefrences.selectedProAddress = Homepage.projectsArrayList.get(position).address.formattedAddress;
 				Prefrences.stopingHit = 1;
 				
-				Prefrences.companyId = Homepage.projectsList.get(position).users
-						.get(position).company.coId;
-				
+				Prefrences.companyId = Homepage.projectsArrayList.get(position).company.coId;
+				if(ConnectionDetector.isConnectingToInternet())
+				{
 				GetUsers();
-				
+//				FlurryAgent.onEvent("Percentage button clicked which takes you to Project Synopsis");
 				activity.startActivity(new Intent(activity, Synopsis.class));
 				activity.overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);
+				}
+				else{
+					Toast.makeText(activity, "No internet connection", Toast.LENGTH_LONG).show();
+				}
 
 			}
 		});
 
-		holder.selectedPro.setOnClickListener(new OnClickListener() {
+		holder.linearlayoutSelectedPro.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				Prefrences.pageFlag = 1;
 
-				Prefrences.selectedProId = Homepage.projectsList.get(position).id;
-				Prefrences.selectedProName = Homepage.projectsList
-						.get(position).name;
+				Prefrences.selectedProId = Homepage.projectsArrayList.get(position).id;
+				Prefrences.selectedProName = Homepage.projectsArrayList.get(position).name;
+				Prefrences.currentLatitude= Homepage.projectsArrayList.get(position).address.latitude.toString();
+				Prefrences.currentLongitude= Homepage.projectsArrayList.get(position).address.longitude.toString();
+				if(ConnectionDetector.isConnectingToInternet())
+				{
+//				Toast.makeText(activity, ""+Prefrences.selectedProId, Toast.LENGTH_LONG).show();
 				GetUsers();
-				
+//				FlurryAgent.onEvent("Project name clicked which takes you to Project Details");
+
 					Prefrences.stopingHit = 1;
-					Prefrences.companyId = Homepage.projectsList.get(position).users
-							.get(position).company.coId;
+					Prefrences.companyId = Homepage.projectsArrayList.get(position).company.coId;
 					Log.i("Prefrences.companyId", Prefrences.companyId);
 					activity.startActivity(new Intent(activity,
 							ProjectDetail.class));
 					activity.overridePendingTransition(R.anim.slide_in_right,
 							R.anim.slide_out_left);
+				}
+				else
+				{
+					Toast.makeText(activity, "No internet connection", Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 		
-		holder.selectedPro.setOnLongClickListener(new OnLongClickListener() {
+		holder.linearlayoutSelectedPro.setOnLongClickListener(new OnLongClickListener() {
 			
 			@Override
 			public boolean onLongClick(View v) {
 				// TODO Auto-generated method stub
-				Prefrences.selectedProId = Homepage.projectsList.get(position).id;
+				Prefrences.selectedProId = Homepage.projectsArrayList.get(position).id;
 
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 						activity);
@@ -252,13 +269,13 @@ public class ProjectsAdapter extends BaseAdapter {
 	public void search(String text) {
 
 		text = text.toLowerCase();
-		Homepage.projectsList.clear();
+		Homepage.projectsArrayList.clear();
 		if (text.length() == 0) {
-			Homepage.projectsList.addAll(projectsListAll);
+			Homepage.projectsArrayList.addAll(projectsListAllArrayList);
 		} else {
-			for (ProjectsFields projectsFields : projectsListAll) {
+			for (ProjectsFields projectsFields : projectsListAllArrayList) {
 				if (projectsFields.name.toLowerCase().contains(text)) {
-					Homepage.projectsList.add(projectsFields);
+					Homepage.projectsArrayList.add(projectsFields);
 				}
 			}
 		}
@@ -268,9 +285,9 @@ public class ProjectsAdapter extends BaseAdapter {
 
 	class ViewHolder {
 
-		private TextView proName, proAdd, proPerc;
-		LinearLayout linearLay;
-		LinearLayout selectedPro;
+		private TextView textviewProName, textviewProAdd, textviewProPerc;
+		RelativeLayout relativelayout;
+		LinearLayout linearlayoutSelectedPro;
 
 	}
 
@@ -341,11 +358,12 @@ public class ProjectsAdapter extends BaseAdapter {
 							Log.d("RESPONSE","RESPONSE"+res.toString(2));
 																		
 								JSONObject project = res.getJSONObject("project");
-						user2.clear();
-						usr.clear();
-						compny.clear();
-						compnyId.clear();
-						userid.clear();
+						user2ArrayList.clear();
+						compny2ArrayList.clear();
+						usrArrayList.clear();
+						compnyArrayList.clear();
+						compnyIdArrayList.clear();
+						useridArrayList.clear();
 						
 							JSONArray users = project.getJSONArray("users");
 
@@ -375,7 +393,7 @@ public class ProjectsAdapter extends BaseAdapter {
 												.getString("id"), uCompany
 												.getString("name"))));
 								// if(!uCount.getString("full_name").equals("null"))
-								usr.add(uCount.getString("full_name"));
+								usrArrayList.add(uCount.getString("full_name"));
 
 								usrid.add(user.get(j).uId.toString());
 								
@@ -396,17 +414,23 @@ public class ProjectsAdapter extends BaseAdapter {
 								Log.d("companieeeesss", "companiess... "
 										+ CompaniesArray.get(j).coId);
 							}
-							user2.addAll(user);
-							compny.addAll(cmpny);
-							compnyId.addAll(cmpnyid);
-							userid.addAll(usrid);
+							user2ArrayList.addAll(user);
+							compny2ArrayList.addAll(CompaniesArray);
+							compnyArrayList.addAll(cmpny);
+							compnyIdArrayList.addAll(cmpnyid);
+							useridArrayList.addAll(usrid);
 							
 							Log.d("usssrrsrsrsrsr",
-									"sizeeee" + compny.size());
+									"sizeeee" + compnyArrayList.size());
 
 							Log.d("usssrrsrsrsrsr",
-									"sizeeee" + compnyId.size());
+									"sizeeee" + compnyIdArrayList.size());
 							
+							Log.d("compny2",
+									"compny2" + compnyIdArrayList.size());
+							
+//							Intent in = new Intent(activity,CompanyExpandable.class);
+//							activity.startActivity(in);
 							
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block

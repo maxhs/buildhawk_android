@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:id="@+id/root">
+    android:id="@+id/relativelayoutParent">
 
     <LinearLayout
         android:id="@+id/LinearLayout1"
@@ -14,7 +14,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv101"
+            android:id="@+id/textviewCategoryName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingRight="15px"
@@ -24,7 +24,7 @@
             android:textSize="56px" />
 
         <TextView
-            android:id="@+id/subcat"
+            android:id="@+id/textviewSubcatCount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView" 
@@ -41,4 +41,4 @@
 <!--         android:src="@drawable/divider"  -->
 <!--         android:layout_below="@+id/LinearLayout1"/> -->
 
-</RelativeLayout>
+</LinearLayout>

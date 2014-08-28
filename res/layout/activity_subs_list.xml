@@ -17,7 +17,7 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/back"
+            android:id="@+id/relativeLayoutBack"
             android:layout_width="wrap_content"
             android:layout_height="90px"
             android:gravity="center_vertical"
@@ -49,7 +49,7 @@
 <!--             android:hint="Search" /> -->
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/textviewHeaderProjSynopsis"
             android:layout_width="match_parent"
             android:layout_height="80px"
             android:textSize="40px"

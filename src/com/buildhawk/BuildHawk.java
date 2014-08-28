@@ -1,7 +1,10 @@
 package com.buildhawk;
 
+/*
+ *  Its a SplashScreen and in background it is fetching location and device token.
+ * 
+ */
 import java.util.Timer;
-import java.util.TimerTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,23 +12,17 @@ import org.json.JSONObject;
 
 import rmn.androidscreenlibrary.ASSL;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract.Contacts.Data;
 import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gcm.GCMRegistrar;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -33,13 +30,13 @@ import com.loopj.android.http.RequestParams;
 
 public class BuildHawk extends Activity {
 	Handler handler;
-	static String regId, email, password;
-	RelativeLayout relLay;
+	public static String regIdString, emailString, passwordString;
+	RelativeLayout relativeLayoutRoot;
 	ConnectionDetector connDect;
 	Boolean isInternetPresent = false;
 	// LocationManager locationManager = null;
 	// Boolean network_enabled, attempt = false;
-	ProgressDialog dialog1;
+	ProgressDialog progressdialog;
 	Timer timer;
 	int counter = 0;
 	double longi = 0, lati = 0;
@@ -48,12 +45,15 @@ public class BuildHawk extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Crashlytics.start(this);
 		setContentView(R.layout.splash);
-		relLay = (RelativeLayout) findViewById(R.id.rellay);
-		new ASSL(this, relLay, 1134, 720, false);
+		relativeLayoutRoot = (RelativeLayout) findViewById(R.id.relativeLayoutRoot);
+		new ASSL(this, relativeLayoutRoot, 1134, 720, false);
 		connDect = new ConnectionDetector(getApplicationContext());
-		isInternetPresent = connDect.isConnectingToInternet();
+		isInternetPresent = ConnectionDetector.isConnectingToInternet();
 		Log.e("BuildHawk", "msg");
+		
+		
 		sharedpref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
 		
 	
@@ -72,33 +72,37 @@ public class BuildHawk extends Activity {
 			Log.e("error", "" + e.toString());
 		}
 
-		email = Prefrences.getCredential(getApplicationContext())[0];
-		password = Prefrences.getCredential(getApplicationContext())[1];
-
-		Log.v("saved...", "" + email + ", " + password);
+		emailString = Prefrences.getCredential(getApplicationContext())[0];
+		passwordString = Prefrences.getCredential(getApplicationContext())[1];
+		regIdString = Prefrences.getCredential(getApplicationContext())[2];
+		
+		Log.v("saved...", "" + emailString + ", " + passwordString + ", "+ regIdString);
 
 		if (Prefrences.getAccessToken(getApplicationContext()).isEmpty()) {
 			Handler handler = new Handler();
 			handler.postDelayed(new Runnable() {
 				@Override
 				public void run() {
-					GPSTracker gps = new GPSTracker(BuildHawk.this);
+//					GPSTracker gps = new GPSTracker(BuildHawk.this);
 					// To check whether current location is got through network
 					// or wifi
-					if (gps.isLocationEnabled(BuildHawk.this)) {
-						gps.start(BuildHawk.this);
-						Prefrences.currentLatitude = gps.getLatitude();
-						Prefrences.currentLongitude = gps.getLongitude();
-						Log.e("lat", ",RVB, " + gps.getLatitude());
-						finish();
+//					if (gps.isLocationEnabled(BuildHawk.this)) {
+//						gps.start(BuildHawk.this);
+//						Prefrences.currentLatitude = gps.getLatitude();
+//						Prefrences.currentLongitude = gps.getLongitude();
+//						Log.e("lat", ",RVB, " + gps.getLatitude());
+						
 						startActivity(new Intent(BuildHawk.this,
 								MainActivity.class));
+						finish();
+						overridePendingTransition(R.anim.slide_in_right,
+								R.anim.slide_out_left);
 						// findLoc = new FinderClass();
-					}
-					// Ask user to turn on gps
-					else {
-						buildAlertMessageNoGps();
-					}
+//					}
+//					// Ask user to turn on gps
+//					else {
+//						buildAlertMessageNoGps();
+//					}
 					// finish();
 					// startActivity(new Intent(BuildHawk.this,
 					// MainActivity.class));
@@ -107,20 +111,20 @@ public class BuildHawk extends Activity {
 		} else {
 		
 			if (isInternetPresent) {
-				GPSTracker gps = new GPSTracker(BuildHawk.this);
+//				GPSTracker gps = new GPSTracker(BuildHawk.this);
 				// To check whether current location is got through network or
 				// wifi
-				if (gps.isLocationEnabled(BuildHawk.this)) {
-					gps.start(BuildHawk.this);
-					Prefrences.currentLatitude = gps.getLatitude();
-					Prefrences.currentLongitude = gps.getLongitude();
-					Log.e("lat", ",, " + gps.getLatitude());
-					// findLoc = new FinderClass();
-				}
-				// Ask user to turn on gps
-				else {
-					buildAlertMessageNoGps();
-				}
+//				if (gps.isLocationEnabled(BuildHawk.this)) {
+//					gps.start(BuildHawk.this);
+////					Prefrences.currentLatitude = gps.getLatitude();
+////					Prefrences.currentLongitude = gps.getLongitude();
+//					Log.e("lat", ",, " + gps.getLatitude());
+//					// findLoc = new FinderClass();
+//				}
+//				// Ask user to turn on gps
+//				else {
+//					buildAlertMessageNoGps();
+//				}
 				
 					sessionData();
 				
@@ -131,8 +135,8 @@ public class BuildHawk extends Activity {
 					Log.e("noid", ".. "+response);
 					Toast.makeText(getApplicationContext(),	"No internet connection.", Toast.LENGTH_SHORT).show();
 				}else{
-					Prefrences.currentLatitude = Double.parseDouble(sharedpref.getString("lat", "0.0"));
-					Prefrences.currentLongitude = Double.parseDouble(sharedpref.getString("longi", "0.0"));
+//					Prefrences.currentLatitude = Double.parseDouble(sharedpref.getString("lat", "0.0"));
+//					Prefrences.currentLongitude = Double.parseDouble(sharedpref.getString("longi", "0.0"));
 					fillServerData(response);
 				}
 			}
@@ -140,27 +144,44 @@ public class BuildHawk extends Activity {
 		}
 		
 	}
+	
+//	 @Override
+//	    protected void onStart() {
+//
+//	        super.onStart();
+//	        FlurryAgent.onStartSession(BuildHawk.this, Prefrences.flurryKey); 
+//	        FlurryAgent.onEvent("Splash screen started");
+//	    }
+//
+//	    @Override
+//	    protected void onStop() {
+//	        super.onStop();
+//	        FlurryAgent.onEndSession(this);
+//	        FlurryAgent.endTimedEvent("Article_Read");
+//	    }
+	
+	
 
 	// ******* getting device token for push notification. **************//
 	private void registerWithGCM() {
-		GCMRegistrar.checkDevice(this);
-		GCMRegistrar.checkManifest(this);
-		regId = GCMRegistrar.getRegistrationId(this);
-		if (regId.equals("")) {
-			GCMRegistrar.register(this, "454876423564"); // Note: get the sender
-			Log.v("reg id1 ", "" + regId); // id from
+		//GCMRegistrar.checkDevice(this);
+		//GCMRegistrar.checkManifest(this);
+		regIdString = GCMRegistrar.getRegistrationId(this);
+		if (regIdString.equals("")) {
+			GCMRegistrar.register(this, "149110570482"); // Note: get the sender 149110570482   //981259510888
+			Log.v("reg id1 ", "" + regIdString); // id from 
 			// configuration.
 			Editor editor =  sharedpref.edit();
-			editor.putString("regId", regId);
+			editor.putString("New regId", regIdString);
 			editor.commit();
 			
 		} else {
 			// Data.device_tok = regId;
-			Log.v("reg id2 ", "" + regId); 
+			Log.v("reg id2 ", "" + regIdString); 
 			Editor editor =  sharedpref.edit();
-			editor.putString("regId", regId);
+			editor.putString("regId", regIdString);
 			editor.commit();
-			Log.v("Registration", "Already registered, regId: " + regId);
+			Log.v("Registration", "Already registered, regId: " + regIdString);
 		}
 	}
 
@@ -170,11 +191,14 @@ public class BuildHawk extends Activity {
 
 		RequestParams params = new RequestParams();
 
-		params.put("email", email);// "test@ristrettolabs.com" );//email);
-		params.put("password", password); // password);
-		params.put("device_token", regId);
+		params.put("email", emailString);
+		params.put("password", passwordString); // password);
+		params.put("device_token", regIdString);
+		Log.d("reg id HITTTED ", "" + regIdString);
+		params.put("device_type", "3");
+		
 		Editor editor =  sharedpref.edit();
-		editor.putString("regId", regId);
+		editor.putString("regId", regIdString);
 		editor.commit();
 		AsyncHttpClient client = new AsyncHttpClient();
 
@@ -205,61 +229,61 @@ public class BuildHawk extends Activity {
 	 * buildAlertMessageNoGps() is used ask the user to turn on gps
 	 */
 
-	private void buildAlertMessageNoGps() {
-
-		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-		builder.setTitle("Location services disabled")
-
-				.setMessage(
-
-				"BuildHawk needs access to your location, Please turn on your location access.")
-
-				.setCancelable(false)
-
-				.setPositiveButton("Settings",
-
-				new DialogInterface.OnClickListener() {
-
-					public void onClick(final DialogInterface dialog,
-
-					int intValue) {
-
-						startActivity(new Intent(
-
-								android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-
-						overridePendingTransition(R.anim.slide_in_left,
-
-						R.anim.slide_out_left);
-
-						finish();
-
-						// setting_page = true;
-
-					}
-
-				})
-
-				.setNegativeButton("No", new DialogInterface.OnClickListener() {
-
-					public void onClick(final DialogInterface dialog,
-
-					int intValue) {
-
-						dialog.cancel();
-
-						finish();
-
-					}
-
-				});
-
-		final AlertDialog alert = builder.create();
-
-		alert.show();
-
-	}
+//	private void buildAlertMessageNoGps() {
+//
+//		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//		builder.setTitle("Location services disabled")
+//
+//				.setMessage(
+//
+//				"BuildHawk needs access to your location, Please turn on your location access.")
+//
+//				.setCancelable(false)
+//
+//				.setPositiveButton("Settings",
+//
+//				new DialogInterface.OnClickListener() {
+//
+//					public void onClick(final DialogInterface dialog,
+//
+//					int intValue) {
+//
+//						startActivity(new Intent(
+//
+//								android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+//
+//						overridePendingTransition(R.anim.slide_in_left,
+//
+//						R.anim.slide_out_left);
+//
+//						finish();
+//
+//						// setting_page = true;
+//
+//					}
+//
+//				})
+//
+//				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+//
+//					public void onClick(final DialogInterface dialog,
+//
+//					int intValue) {
+//
+//						dialog.cancel();
+//
+//						finish();
+//
+//					}
+//
+//				});
+//
+//		final AlertDialog alert = builder.create();
+//
+//		alert.show();
+//
+//	}
 	
 	public void fillServerData(String response){
 		JSONObject res;
@@ -324,10 +348,11 @@ public class BuildHawk extends Activity {
 						.getString("url_thumb");
 			}
 			
-			finish();
+			
 			startActivity(new Intent(BuildHawk.this, Homepage.class));
 			overridePendingTransition(R.anim.slide_in_right,
 					R.anim.slide_out_left);
+			finish();
 
 		} catch (JSONException e) {
 			e.printStackTrace();

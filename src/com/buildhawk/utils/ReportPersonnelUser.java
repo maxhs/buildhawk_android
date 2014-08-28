@@ -23,4 +23,11 @@ public class ReportPersonnelUser {
 	this.company=company;
 	}
 
+	public ReportPersonnelUser(String uId, String uFullName) {
+		super();
+		this.uId = uId;
+		this.uFullName = uFullName;
+	}
+
+	
 }
