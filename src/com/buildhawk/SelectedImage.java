@@ -30,6 +30,8 @@ public class SelectedImage extends Activity {
 
 	ListView listview;
 	public static ArrayList<ProjectPhotos> arraylist;
+	ArrayList<String> type;
+	
 	RelativeLayout relativelayoutBack;
 	String keyString;
 	Context con;
@@ -53,6 +55,8 @@ public class SelectedImage extends Activity {
 
 		listview = (ListView) findViewById(R.id.subslist);
 		textviewSelectedFolder = (TextView)findViewById(R.id.textviewSelectedFolder);
+		
+		
 
 //		relativelayoutBack.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 		textviewSelectedFolder.setText(keyString);
@@ -175,7 +179,7 @@ public class SelectedImage extends Activity {
 
 					Intent intent = new Intent(con, DocumentImageView.class);
 					intent.putExtra("position",position);
-//					intent.putExtra("array", arr);
+					intent.putExtra("type", type);
 //					intent.putExtra("ids", ids);
 //					intent.putExtra("desc", desc);
 //					intent.putExtra("id", photosArrayList

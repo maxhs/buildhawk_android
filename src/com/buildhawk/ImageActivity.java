@@ -4,6 +4,7 @@ package com.buildhawk;
  *  This file shows the gallery  and sorting of all photos.
  */
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -14,6 +15,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -53,6 +56,9 @@ public class ImageActivity extends Activity {
 	ArrayList<String> arrArrayList = new ArrayList<String>();
 	ArrayList<String> idsArrayList = new ArrayList<String>();
 	ArrayList<String> descArrayList = new ArrayList<String>();
+	ArrayList<String> contenttype = new ArrayList<String>();
+	
+	
 	Dialog dialog;
 	int flag = 0;
 	LinearLayout linearlayout;
@@ -155,6 +161,7 @@ public class ImageActivity extends Activity {
 				arrArrayList.clear();
 				idsArrayList.clear();
 				descArrayList.clear();
+				contenttype.clear();
 
 				finish();
 				overridePendingTransition(R.anim.slide_in_left,
@@ -209,18 +216,18 @@ public class ImageActivity extends Activity {
 					buttonSort.setText("By Taken/Uploaded");
 					buttonUsers.setText("By Date");
 					buttonSub.setText("By Default");
-				} else if (keyString.equals("Checklist")) {
+				} else if (keyString.equals("Checklist Pictures")) {
 					buttonSort.setVisibility(View.VISIBLE);
 					buttonSort.setText("By Taken/Uploaded");
 					buttonUsers.setText("By Date");
 					buttonSub.setText("By Default");
-				} else if (keyString.equals("Worklist")) {
+				} else if (keyString.equals("Task Pictures")) {
 					buttonSort.setVisibility(View.VISIBLE);
 					buttonSort.setText("By Taken/Uploaded");
 					buttonUsers.setText("By Date");
 					buttonSub.setText("By Default");
 
-				} else if (keyString.equals("Report")) {
+				} else if (keyString.equals("Report Pictures")) {
 					buttonSort.setVisibility(View.GONE);
 					// btn_sort.setText("By Taken/Uploaded");
 					buttonUsers.setText("By Taken/Uploaded");
@@ -247,7 +254,7 @@ public class ImageActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						if (keyString.equals("Report")) {
+						if (keyString.equals("Report Pictures")) {
 							byName(keyString);
 						} else if (keyString.equals("Project Docs")) {
 							byName(keyString);
@@ -263,13 +270,13 @@ public class ImageActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						if (keyString.equals("Checklist")) {
+						if (keyString.equals("Checklist Pictures")) {
 							byPhase(keyString);
 						} else if (keyString.equals("All")) {
 							byAll(keyString);
-						} else if (keyString.equals("Report")) {
+						} else if (keyString.equals("Report Pictures")) {
 							byDate(keyString);
-						} else if (keyString.equals("Worklist")) {
+						} else if (keyString.equals("Task Pictures")) {
 							byAll(keyString);
 						} else if (keyString.equals("Project Docs")) {
 							byAll(keyString);
@@ -300,13 +307,13 @@ public class ImageActivity extends Activity {
 			}
 		});
 
-		if (keyString.equals("Checklist")) {
+		if (keyString.equals("Checklist Pictures")) {
 			byPhase(keyString);
 		} else if (keyString.equals("All")) {
 			byAll(keyString);
-		} else if (keyString.equals("Report")) {
+		} else if (keyString.equals("Report Pictures")) {
 			byDate(keyString);
-		} else if (keyString.equals("Worklist")) {
+		} else if (keyString.equals("Task Pictures")) {
 			byAll(keyString);
 		} else if (keyString.equals("Project Docs")) {
 			byAll(keyString);
@@ -356,16 +363,17 @@ public class ImageActivity extends Activity {
 		arrArrayList.clear();
 		idsArrayList.clear();
 		descArrayList.clear();
+		contenttype.clear();
 		arraylist.clear();
 		if (str.equals("All")) {
 			arraylist.addAll(DocumentFragment.photosListArrayList);
-		} else if (str.equals("Report")) {
+		} else if (str.equals("Report Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList5ArrayList);
-		} else if (str.equals("Worklist")) {
+		} else if (str.equals("Task Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList4ArrayList);
 		} else if (str.equals("Project Docs")) {
 			arraylist.addAll(DocumentFragment.photosList2ArrayList);
-		} else if (str.equals("Checklist")) {
+		} else if (str.equals("Checklist Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList3ArrayList);
 		}
 
@@ -381,7 +389,8 @@ public class ImageActivity extends Activity {
 			do {
 				arrArrayList.add(arraylist.get(pos).urlLarge);
 				idsArrayList.add(arraylist.get(pos).id);
-				descArrayList.add(arraylist.get(pos).description);
+				descArrayList.add(arraylist.get(pos).original);
+				contenttype.add(arraylist.get(pos).imageContentType);
 				imageview = new ImageView(this);
 				if (rowValue < 3) {
 					rowValue++;
@@ -399,6 +408,7 @@ public class ImageActivity extends Activity {
 					Picasso.with(this)
 							.load(arraylist.get(pos).url200.toString())
 							.placeholder(R.drawable.default_200)
+							.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 							.into(imageview);
 					linearlayout.addView(imageview);
 				} else {
@@ -415,6 +425,7 @@ public class ImageActivity extends Activity {
 					Picasso.with(this)
 							.load(arraylist.get(pos).url200.toString())
 							.placeholder(R.drawable.default_200)
+							.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 							.into(imageview);
 					linearlayout.addView(imageview);
 
@@ -426,18 +437,33 @@ public class ImageActivity extends Activity {
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						
-					if (isInternetPresentBoolean) {
+					if (connDect.isConnectingToInternet()) {
 								
 							
 							Log.i("Tag Value", "" + Prefrences.selectedPic);
 							Prefrences.selectedPic = (Integer) v.getTag();
 							Log.i("Tag Value", "" + Prefrences.selectedPic);
+							
+//							Intent intent = new Intent();
+//				            intent.setAction(Intent.ACTION_VIEW);
+//				            String str="https://dw9f6h00eoolt.cloudfront.net/photo_image_147_original.pdf?1387432463";
+//				            Uri uri = Uri.parse(str);
+//				            intent.setDataAndType(uri, "application/pdf");
+//				            startActivity(intent);
 	
+//				            WebView mWebView=new WebView(ImageActivity.this);
+//				            mWebView.getSettings().setJavaScriptEnabled(true);
+//				            mWebView.getSettings().setPluginsEnabled(true);
+//				            mWebView.loadUrl("https://docs.google.com/gview?embedded=true&url="+"https://dw9f6h00eoolt.cloudfront.net/photo_image_147_original.pdf?1387432463");
+//				            setContentView(mWebView);
+				            
+				            
 							Intent intent = new Intent(ImageActivity.this,
 									SelectedImageView.class);
 							intent.putExtra("array", arrArrayList);
 							intent.putExtra("ids", idsArrayList);
 							intent.putExtra("desc", descArrayList);
+							intent.putExtra("type", contenttype);
 							intent.putExtra("key", keyString);
 							Log.d("", "----0000000----" + keyString);
 							intent.putExtra("id",arraylist.get(Prefrences.selectedPic).id);
@@ -479,6 +505,7 @@ public class ImageActivity extends Activity {
 		arrArrayList.clear();
 		idsArrayList.clear();
 		descArrayList.clear();
+		contenttype.clear();
 		keyString = s;
 		// Log.d("work size", "" + work_user.size());
 		// Log.d("check size", "" + check_user.size());
@@ -495,16 +522,16 @@ public class ImageActivity extends Activity {
 			arraylist.addAll(DocumentFragment.photosList2ArrayList);
 			usersArrayList.addAll(docuserArrayList);
 			tempusersArrayList.addAll(docuserArrayList);
-		} else if (s.equals("Checklist")) {
+		} else if (s.equals("Checklist Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList3ArrayList);
 
 			usersArrayList.addAll(checkuserArrayList);
 			tempusersArrayList.addAll(checkuserArrayList);
-		} else if (s.equals("Worklist")) {
+		} else if (s.equals("Task Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList4ArrayList);
 			usersArrayList.addAll(workuserArrayList);
 			tempusersArrayList.addAll(workuserArrayList);
-		} else if (s.equals("Report")) {
+		} else if (s.equals("Report Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList5ArrayList);
 			usersArrayList.addAll(reportuserArrayList);
 			tempusersArrayList.addAll(reportuserArrayList);
@@ -586,7 +613,8 @@ public class ImageActivity extends Activity {
 				// Log.d("", "------3------"+index);
 				arrArrayList.add(arraylist.get(index).urlLarge);
 				idsArrayList.add(arraylist.get(index).id);
-				descArrayList.add(arraylist.get(index).description);
+				descArrayList.add(arraylist.get(index).original);
+				contenttype.add(arraylist.get(pos).imageContentType);
 				if (rowValue < 3) {
 					rowValue++;
 					imageview.setTag(pos);
@@ -599,6 +627,7 @@ public class ImageActivity extends Activity {
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
+							.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 							.into(imageview);
 					linearlayout.addView(imageview);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -618,6 +647,7 @@ public class ImageActivity extends Activity {
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
+							.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 							.into(imageview);
 					linearlayout.addView(imageview);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -639,6 +669,7 @@ public class ImageActivity extends Activity {
 						intent.putExtra("array", arrArrayList);
 						intent.putExtra("ids", idsArrayList);
 						intent.putExtra("desc", descArrayList);
+						intent.putExtra("type", contenttype);
 						intent.putExtra("key", keyString);
 						Log.d("", "----0000000----" + keyString);
 						intent.putExtra("id",
@@ -684,6 +715,7 @@ public class ImageActivity extends Activity {
 		arrArrayList.clear();
 		idsArrayList.clear();
 		descArrayList.clear();
+		contenttype.clear();
 		// Log.d("work date size", "" + work_date.size());
 		// Log.d("check date size", "" + check_date.size());
 		// Log.d("report date size", "" + report_date.size());
@@ -698,15 +730,15 @@ public class ImageActivity extends Activity {
 			arraylist.addAll(DocumentFragment.photosList2ArrayList);
 			datesArrayList.addAll(docdateArrayList);
 			tempdatesArrayList.addAll(docdateArrayList);
-		} else if (str.equals("Checklist")) {
+		} else if (str.equals("Checklist Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList3ArrayList);
 			datesArrayList.addAll(checkdateArrayList);
 			tempdatesArrayList.addAll(checkdateArrayList);
-		} else if (str.equals("Worklist")) {
+		} else if (str.equals("Task Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList4ArrayList);
 			datesArrayList.addAll(workdateArrayList);
 			tempdatesArrayList.addAll(workdateArrayList);
-		} else if (str.equals("Report")) {
+		} else if (str.equals("Report Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList5ArrayList);
 			datesArrayList.addAll(reportdateArrayList);
 			tempdatesArrayList.addAll(reportdateArrayList);
@@ -793,7 +825,8 @@ public class ImageActivity extends Activity {
 				Log.d("", "-----3----" + tempdatesArrayList.size());
 				arrArrayList.add(arraylist.get(index).urlLarge);
 				idsArrayList.add(arraylist.get(index).id);
-				descArrayList.add(arraylist.get(index).description);
+				descArrayList.add(arraylist.get(index).original);
+				contenttype.add(arraylist.get(pos).imageContentType);
 
 				if (rowValue < 3) {
 					rowValue++;
@@ -825,6 +858,7 @@ public class ImageActivity extends Activity {
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
+							.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 							.into(imageview);
 					linearlayout.addView(imageview);
 					// Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -845,6 +879,7 @@ public class ImageActivity extends Activity {
 						intent.putExtra("array", arrArrayList);
 						intent.putExtra("ids", idsArrayList);
 						intent.putExtra("desc", descArrayList);
+						intent.putExtra("type", contenttype);
 						intent.putExtra("key", keyString);
 						Log.d("", "----0000000----" + keyString);
 						intent.putExtra("id",
@@ -890,6 +925,7 @@ public class ImageActivity extends Activity {
 		arrArrayList.clear();
 		idsArrayList.clear();
 		descArrayList.clear();
+		contenttype.clear();
 		Log.d("work phase size", "" + worklistphaseArrayList.size());
 		Log.d("check phase size", "" + checklistphaseArrayList.size());
 		Log.d("report phase size", "" + reportphaseArrayList.size());
@@ -904,15 +940,15 @@ public class ImageActivity extends Activity {
 			arraylist.addAll(DocumentFragment.photosList2ArrayList);
 			phaseArrayList.addAll(docphaseArrayList);
 			tempphaseArrayList.addAll(docphaseArrayList);
-		} else if (str.equals("Checklist")) {
+		} else if (str.equals("Checklist Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList3ArrayList);
 			phaseArrayList.addAll(checklistphaseArrayList);
 			tempphaseArrayList.addAll(checklistphaseArrayList);
-		} else if (str.equals("Worklist")) {
+		} else if (str.equals("Task Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList4ArrayList);
 			phaseArrayList.addAll(worklistphaseArrayList);
 			tempphaseArrayList.addAll(worklistphaseArrayList);
-		} else if (str.equals("Report")) {
+		} else if (str.equals("Report Pictures")) {
 			arraylist.addAll(DocumentFragment.photosList5ArrayList);
 			phaseArrayList.addAll(reportphaseArrayList);
 			tempphaseArrayList.addAll(reportphaseArrayList);
@@ -999,7 +1035,8 @@ public class ImageActivity extends Activity {
 				Log.d("", "-----3----" + tempphaseArrayList.size());
 				arrArrayList.add(arraylist.get(index).urlLarge);
 				idsArrayList.add(arraylist.get(index).id);
-				descArrayList.add(arraylist.get(index).description);
+				descArrayList.add(arraylist.get(index).original);
+				contenttype.add(arraylist.get(pos).imageContentType);
 				if (rowValue < 3) {
 					rowValue++;
 					imageview.setTag(pos);
@@ -1012,6 +1049,7 @@ public class ImageActivity extends Activity {
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
+							.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 							.into(imageview);
 					linearlayout.addView(imageview);
 					Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -1030,6 +1068,7 @@ public class ImageActivity extends Activity {
 					Picasso.with(this)
 							.load(arraylist.get(index).url200.toString())
 							.placeholder(R.drawable.default_200)
+							.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 							.into(imageview);
 					linearlayout.addView(imageview);
 					Log.d("actual uri", arraylist.get(index).urlLarge);
@@ -1040,7 +1079,7 @@ public class ImageActivity extends Activity {
 					@Override
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
-						if (isInternetPresentBoolean) {
+						if (connDect.isConnectingToInternet()) {
 							
 						
 						Log.i("Tag Value", "" + Prefrences.selectedPic);
@@ -1052,6 +1091,7 @@ public class ImageActivity extends Activity {
 						intent.putExtra("array", arrArrayList);
 						intent.putExtra("ids", idsArrayList);
 						intent.putExtra("desc", descArrayList);
+						intent.putExtra("type", contenttype);
 						intent.putExtra("key", keyString);
 						Log.d("", "----0000000----" + keyString);
 						intent.putExtra("id",

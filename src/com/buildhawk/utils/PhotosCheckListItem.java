@@ -11,7 +11,7 @@ public class PhotosCheckListItem {
 	public String imageContentType;
 	public String source;
 	public String phase;
-	public String createdAt;
+//	public String createdAt;
 	public String userName;
 	public String name;
 	public String description;
@@ -19,7 +19,9 @@ public class PhotosCheckListItem {
 
 	
 	public PhotosCheckListItem(String id, String urlLarge, String original, String urlSmall, String urlThumb, String imageFileSize, String imageContentType
-			, String source, String phase, String createdAt, String userName, String name,String description, String createdDate){
+			, String source, String phase, 
+//			String createdAt, 
+			String userName, String name,String description, String createdDate){
 		this.id = id;
 		this.urlLarge = urlLarge;
 		this.original = original;
@@ -29,7 +31,7 @@ public class PhotosCheckListItem {
 		this.imageContentType = imageContentType;
 		this.source = source;
 		this.phase = phase;
-		this.createdAt = createdAt;
+//		this.createdAt = createdAt;
 		this.userName = userName;
 		this.name = name;
 		this.description=description;

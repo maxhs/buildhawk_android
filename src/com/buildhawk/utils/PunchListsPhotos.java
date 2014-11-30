@@ -12,7 +12,7 @@ public class PunchListsPhotos {
 	public String imageContentType;
 	public String source;
 	public String phase;
-	public String createdAt;
+//	public String createdAt;
 	public String userName;
 	public String name;
 	public String description;
@@ -20,7 +20,9 @@ public class PunchListsPhotos {
 	//public String  assignee;
 	
 	public PunchListsPhotos(String id, String urlLarge, String original,String epochTime, String urlSmall, String urlThumb, String imageFileSize, String imageContentType
-			, String source, String phase, String createdAt, String userName, String name,String description, String createdDate){//String assignee
+			, String source, String phase,
+//			String createdAt,
+			String userName, String name,String description, String createdDate){//String assignee
 		this.id = id;
 		this.urlLarge = urlLarge;
 		this.original = original;
@@ -31,7 +33,7 @@ public class PunchListsPhotos {
 		this.imageContentType = imageContentType;
 		this.source = source;
 		this.phase = phase;
-		this.createdAt = createdAt;
+//		this.createdAt = createdAt;
 		this.userName = userName;
 		this.name = name;
 		this.description=description;

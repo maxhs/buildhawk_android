@@ -61,7 +61,7 @@
                     android:layout_gravity="bottom"
                     android:gravity="bottom"
                     android:padding="15px"
-                    android:text="SnC"
+                    android:text="@string/snc"
                     android:textSize="36px" />
 
                 <LinearLayout
@@ -76,7 +76,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="15px"
-                        android:text="Construction should have :\n Full set of \n Working Drawings"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textSize="36px" />
 
@@ -187,24 +187,12 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:background="@drawable/background_draw" >
-
-                    <HorizontalScrollView
-                        android:id="@+id/horizontalScrollView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
-
-                        <LinearLayout
-                            android:id="@+id/linearlayoutLin2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal" >
-
-                            <ImageView
+							<ImageView
                                 android:id="@+id/imageviewGallery"
                                 android:layout_width="102px"
                                 android:layout_height="102px"
                                 android:layout_margin="15px"
-                                android:layout_gravity="center_vertical"
+                                android:layout_centerVertical="true"
                                 android:src="@drawable/library_btn" />
 
                             <ImageView
@@ -212,8 +200,22 @@
                                 android:layout_width="102px"
                                 android:layout_height="102px"
                                 android:layout_margin="15px"
-                                android:layout_gravity="center_vertical"
+                                android:layout_toRightOf="@+id/imageviewGallery"
+                                android:layout_centerVertical="true"
                                 android:src="@drawable/camera_btn" />
+                    <HorizontalScrollView
+                        android:id="@+id/horizontalScrollView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/imageviewCamera" >
+
+                        <LinearLayout
+                            android:id="@+id/linearlayoutLin2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal" >
+
+                            
                         </LinearLayout>
                     </HorizontalScrollView>
                 </RelativeLayout>
@@ -223,13 +225,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/shaded_gray"
-                    android:text="" />
+                    android:text=""
+                    android:visibility="gone" />
                 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:background="@drawable/background_draw" >
+                    android:background="@drawable/background_draw" 
+                    android:visibility="gone">
                     
                     <ImageView
                                 android:id="@+id/imageviewReminder"
@@ -242,7 +246,7 @@
                     android:id="@+id/textviewReminder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="36px"
+                    android:textSize="32px"
                     android:textColor="@color/black"
                     android:layout_toRightOf="@+id/reminder"
                     android:layout_marginLeft="20px"

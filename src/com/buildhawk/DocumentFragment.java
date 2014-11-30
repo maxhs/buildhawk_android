@@ -46,7 +46,7 @@ public class DocumentFragment extends Fragment {
 
 	PullToRefreshListView pullToRefreshListView;
 	ConnectionDetector connDect;
-	Boolean isInternetPresentBoolean = false;
+//	Boolean isInternetPresentBoolean = false;
 	Boolean pullBoolean = false;
 	public static ArrayList<ProjectPhotos> photosListArrayList = new ArrayList<ProjectPhotos>();
 	public static ArrayList<ProjectPhotos> photosList2ArrayList = new ArrayList<ProjectPhotos>();
@@ -105,6 +105,11 @@ public class DocumentFragment extends Fragment {
 				Prefrences.document_s=Prefrences.LastDocument_s;			
 				Prefrences.document_bool = true;
 			}
+			else{
+				if (Prefrences.document_s.equalsIgnoreCase("")) {
+					Prefrences.document_bool = false;
+				}
+			}
 		}
 		else
 		{
@@ -118,7 +123,7 @@ public class DocumentFragment extends Fragment {
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 				// TODO Auto-generated method stub
 
-				if (isInternetPresentBoolean) {
+				if (connDect.isConnectingToInternet()) {
 					pullBoolean = true;
 //					pullToRefreshListView.onRefreshComplete();
 					projectPhotos();
@@ -145,13 +150,13 @@ public class DocumentFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onResume();
 		connDect = new ConnectionDetector(getActivity());
-		isInternetPresentBoolean = connDect.isConnectingToInternet();
+//		isInternetPresentBoolean = connDect.isConnectingToInternet();
 		if (Prefrences.stopingHit == 1) {
 			Prefrences.stopingHit = 0;
 
 			if (Prefrences.document_bool == false ) {
 				
-				if (isInternetPresentBoolean) {
+				if (connDect.isConnectingToInternet()) {
 
 					projectPhotos();
 				} else {
@@ -232,7 +237,8 @@ public class DocumentFragment extends Fragment {
 											.getString("image_file_size"), count
 											.getString("image_content_type"), count
 											.getString("source"), count.getString("phase"),
-									count.getString("created_at"), count
+//									count.getString("created_at"), 
+									count
 											.getString("user_name"), count
 											.getString("name"), count
 											.getString("description"), count
@@ -269,7 +275,7 @@ public class DocumentFragment extends Fragment {
 												.getString("image_content_type"), count
 												.getString("source"), count
 												.getString("phase"), count
-												.getString("created_at"), count
+//												.getString("created_at"), count
 												.getString("user_name"), count
 												.getString("name"), count
 												.getString("description"), count
@@ -310,7 +316,7 @@ public class DocumentFragment extends Fragment {
 												.getString("image_content_type"), count
 												.getString("source"), count
 												.getString("phase"), count
-												.getString("created_at"), count
+//												.getString("created_at"), count
 												.getString("user_name"), count
 												.getString("name"), count
 												.getString("description"), count
@@ -331,7 +337,7 @@ public class DocumentFragment extends Fragment {
 
 								checklistDatesArrayList.add(count.getString("date_string"));
 							} else if (photosListArrayList.get(i).source
-									.equalsIgnoreCase("Worklist")) {
+									.equalsIgnoreCase("Tasklist")) {
 								worklistImgArrayList.add(count.getString("source"));
 								photosList4ArrayList.add(new ProjectPhotos(count.getString("id"),
 										count.getString("url_large"), count
@@ -342,7 +348,7 @@ public class DocumentFragment extends Fragment {
 												.getString("image_content_type"), count
 												.getString("source"), count
 												.getString("phase"), count
-												.getString("created_at"), count
+//												.getString("created_at"), count
 												.getString("user_name"), count
 												.getString("name"), count
 												.getString("description"), count
@@ -373,7 +379,7 @@ public class DocumentFragment extends Fragment {
 												.getString("image_content_type"), count
 												.getString("source"), count
 												.getString("phase"), count
-												.getString("created_at"), count
+//												.getString("created_at"), count
 												.getString("user_name"), count
 												.getString("name"), count
 												.getString("description"), count
@@ -406,7 +412,8 @@ public class DocumentFragment extends Fragment {
 											.getString("image_file_size"), count
 											.getString("image_content_type"), count
 											.getString("source"), count.getString("phase"),
-									count.getString("created_at"), count
+//									count.getString("created_at"), 
+									count
 											.getString("user_name"), count
 											.getString("name"), count
 											.getString("description"), count
@@ -441,7 +448,7 @@ public class DocumentFragment extends Fragment {
 												.getString("image_content_type"), count
 												.getString("source"), count
 												.getString("phase"), count
-												.getString("created_at"), count
+//												.getString("created_at"), count
 												.getString("user_name"), count
 												.getString("name"), count
 												.getString("description"), count
@@ -485,7 +492,7 @@ public class DocumentFragment extends Fragment {
 												.getString("image_content_type"), count
 												.getString("source"), count
 												.getString("phase"), count
-												.getString("created_at"), count
+//												.getString("created_at"), count
 												.getString("user_name"), count
 												.getString("name"), count
 												.getString("description"), count
@@ -504,7 +511,7 @@ public class DocumentFragment extends Fragment {
 
 								checklistDatesArrayList.add(count.getString("date_string"));
 							} else if (photosListArrayList.get(i).source
-									.equalsIgnoreCase("Worklist")) {
+									.equalsIgnoreCase("Tasklist")) {
 								worklistImgArrayList.add(count.getString("source"));
 								photosList4ArrayList.add(new ProjectPhotos(count.getString("id"),
 										count.getString("url_large"), count
@@ -515,7 +522,7 @@ public class DocumentFragment extends Fragment {
 												.getString("image_content_type"), count
 												.getString("source"), count
 												.getString("phase"), count
-												.getString("created_at"), count
+//												.getString("created_at"), count
 												.getString("user_name"), count
 												.getString("name"), count
 												.getString("description"), count
@@ -544,7 +551,7 @@ public class DocumentFragment extends Fragment {
 												.getString("image_content_type"), count
 												.getString("source"), count
 												.getString("phase"), count
-												.getString("created_at"), count
+//												.getString("created_at"), count
 												.getString("user_name"), count
 												.getString("name"), count
 												.getString("description"), count
@@ -640,7 +647,7 @@ public class DocumentFragment extends Fragment {
 		private LayoutInflater inflater;
 		ViewHolder holder;
 		String proDocImages[] = new String[] { "All", "Project Docs",
-				"Checklist", "Worklist", "Report" };
+				"Checklist Pictures", "Task Pictures", "Report Pictures" };
 		ArrayList<String> proDocSize = new ArrayList<String>();
 
 		public LazyAdapter() {
@@ -724,6 +731,7 @@ public class DocumentFragment extends Fragment {
 					Picasso.with(ProjectDetail.activity)
 							.load(photosListArrayList.get(0).url200.toString())
 							.placeholder(R.drawable.default_200)
+							.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 							.into(holder.imageview);
 					else
 						holder.imageview.setImageResource(R.drawable.default_200);
@@ -734,6 +742,7 @@ public class DocumentFragment extends Fragment {
 						Picasso.with(ProjectDetail.activity)
 								.load(photosList2ArrayList.get(0).url200.toString())
 								.placeholder(R.drawable.default_200)
+								.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 								.into(holder.imageview);
 					else
 						holder.imageview.setImageResource(R.drawable.default_200);
@@ -742,6 +751,7 @@ public class DocumentFragment extends Fragment {
 						Picasso.with(ProjectDetail.activity)
 								.load(photosList3ArrayList.get(0).url200.toString())
 								.placeholder(R.drawable.default_200)
+								.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 								.into(holder.imageview);
 					else
 						holder.imageview.setImageResource(R.drawable.default_200);
@@ -751,6 +761,7 @@ public class DocumentFragment extends Fragment {
 								.load(photosList4ArrayList.get(0).url200
 										.toString())
 								.placeholder(R.drawable.default_200)
+								.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 								.into(holder.imageview);
 					else
 						holder.imageview.setImageResource(R.drawable.default_200);
@@ -760,6 +771,7 @@ public class DocumentFragment extends Fragment {
 								.load(photosList5ArrayList.get(0).url200
 										.toString())
 								.placeholder(R.drawable.default_200)
+								.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
 								.into(holder.imageview);
 					else
 						holder.imageview.setImageResource(R.drawable.default_200);
@@ -793,13 +805,13 @@ public class DocumentFragment extends Fragment {
 						if (proDocImages[position].equals("Project Docs")) {
 							count_checker = photosList2ArrayList.size();
 
-						} else if (proDocImages[position].equals("Checklist")) {
+						} else if (proDocImages[position].equals("Checklist Pictures")) {
 							count_checker = photosList3ArrayList.size();
 
-						} else if (proDocImages[position].equals("Worklist")) {
+						} else if (proDocImages[position].equals("Task Pictures")) {
 							count_checker = photosList4ArrayList.size();
 
-						} else if (proDocImages[position].equals("Report")) {
+						} else if (proDocImages[position].equals("Report Pictures")) {
 							count_checker = photosList5ArrayList.size();
 
 						}
@@ -951,7 +963,8 @@ public class DocumentFragment extends Fragment {
 									.getString("image_file_size"), count
 									.getString("image_content_type"), count
 									.getString("source"), count.getString("phase"),
-							count.getString("created_at"), count
+//							count.getString("created_at"), 
+							count
 									.getString("user_name"), count
 									.getString("name"), count
 									.getString("description"), count
@@ -988,7 +1001,7 @@ public class DocumentFragment extends Fragment {
 										.getString("image_content_type"), count
 										.getString("source"), count
 										.getString("phase"), count
-										.getString("created_at"), count
+//										.getString("created_at"), count
 										.getString("user_name"), count
 										.getString("name"), count
 										.getString("description"), count
@@ -1029,7 +1042,7 @@ public class DocumentFragment extends Fragment {
 										.getString("image_content_type"), count
 										.getString("source"), count
 										.getString("phase"), count
-										.getString("created_at"), count
+//										.getString("created_at"), count
 										.getString("user_name"), count
 										.getString("name"), count
 										.getString("description"), count
@@ -1050,7 +1063,7 @@ public class DocumentFragment extends Fragment {
 
 						checklistDatesArrayList.add(count.getString("date_string"));
 					} else if (photosListArrayList.get(i).source
-							.equalsIgnoreCase("Worklist")) {
+							.equalsIgnoreCase("Tasklist")) {
 						worklistImgArrayList.add(count.getString("source"));
 						photosList4ArrayList.add(new ProjectPhotos(count.getString("id"),
 								count.getString("url_large"), count
@@ -1061,7 +1074,7 @@ public class DocumentFragment extends Fragment {
 										.getString("image_content_type"), count
 										.getString("source"), count
 										.getString("phase"), count
-										.getString("created_at"), count
+//										.getString("created_at"), count
 										.getString("user_name"), count
 										.getString("name"), count
 										.getString("description"), count
@@ -1092,7 +1105,7 @@ public class DocumentFragment extends Fragment {
 										.getString("image_content_type"), count
 										.getString("source"), count
 										.getString("phase"), count
-										.getString("created_at"), count
+//										.getString("created_at"), count
 										.getString("user_name"), count
 										.getString("name"), count
 										.getString("description"), count
@@ -1125,7 +1138,8 @@ public class DocumentFragment extends Fragment {
 									.getString("image_file_size"), count
 									.getString("image_content_type"), count
 									.getString("source"), count.getString("phase"),
-							count.getString("created_at"), count
+//							count.getString("created_at"), 
+							count
 									.getString("user_name"), count
 									.getString("name"), count
 									.getString("description"), count
@@ -1160,7 +1174,7 @@ public class DocumentFragment extends Fragment {
 										.getString("image_content_type"), count
 										.getString("source"), count
 										.getString("phase"), count
-										.getString("created_at"), count
+//										.getString("created_at"), count
 										.getString("user_name"), count
 										.getString("name"), count
 										.getString("description"), count
@@ -1204,7 +1218,7 @@ public class DocumentFragment extends Fragment {
 										.getString("image_content_type"), count
 										.getString("source"), count
 										.getString("phase"), count
-										.getString("created_at"), count
+//										.getString("created_at"), count
 										.getString("user_name"), count
 										.getString("name"), count
 										.getString("description"), count
@@ -1223,7 +1237,7 @@ public class DocumentFragment extends Fragment {
 
 						checklistDatesArrayList.add(count.getString("date_string"));
 					} else if (photosListArrayList.get(i).source
-							.equalsIgnoreCase("Worklist")) {
+							.equalsIgnoreCase("Tasklist")) {
 						worklistImgArrayList.add(count.getString("source"));
 						photosList4ArrayList.add(new ProjectPhotos(count.getString("id"),
 								count.getString("url_large"), count
@@ -1234,7 +1248,7 @@ public class DocumentFragment extends Fragment {
 										.getString("image_content_type"), count
 										.getString("source"), count
 										.getString("phase"), count
-										.getString("created_at"), count
+//										.getString("created_at"), count
 										.getString("user_name"), count
 										.getString("name"), count
 										.getString("description"), count
@@ -1263,7 +1277,7 @@ public class DocumentFragment extends Fragment {
 										.getString("image_content_type"), count
 										.getString("source"), count
 										.getString("phase"), count
-										.getString("created_at"), count
+//										.getString("created_at"), count
 										.getString("user_name"), count
 										.getString("name"), count
 										.getString("description"), count

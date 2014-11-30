@@ -72,14 +72,23 @@ import com.buildhawk.utils.ReportPersonnelUser;
 import com.buildhawk.utils.ReportTopics;
 import com.buildhawk.utils.SafetyTopics;
 import com.buildhawk.utils.subcontractors;
+import com.kbeanie.imagechooser.api.ChooserType;
+import com.kbeanie.imagechooser.api.ChosenImage;
+import com.kbeanie.imagechooser.api.ImageChooserListener;
+import com.kbeanie.imagechooser.api.ImageChooserManager;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 //import com.horizontalscrollviewwithpageindicator.R;
 //import com.horizontalscrollviewwithpageindicator.ViewPagerAdapter;
+import com.squareup.picasso.Picasso;
 
-public class ReportItemClick extends Activity {
+public class ReportItemClick extends Activity implements ImageChooserListener{
 
+	
+	public static File mTempFile;
+	
+	public static ImageChooserManager imageChooserManager,imageChooserManager2;
 	String notesValueString = "";
 	public ArrayList<Report> reportDataLocalArrayList;
 	String typesString;
@@ -193,6 +202,17 @@ public class ReportItemClick extends Activity {
 			myPager.setAdapter(adapter);
 
 			myPager.setCurrentItem(Prefrences.ReportPosition);
+			
+			
+		
+			
+			
+			imageChooserManager = new ImageChooserManager(ReportItemClick.this,ChooserType.REQUEST_PICK_PICTURE);
+			imageChooserManager.setImageChooserListener(this);
+			
+			imageChooserManager2 = new ImageChooserManager(ReportItemClick.this,ChooserType.REQUEST_CAPTURE_PICTURE);
+			imageChooserManager2.setImageChooserListener(this);
+			
 
 			textviewType
 					.setText(reportDataLocalArrayList.get(myPager.getCurrentItem()).report_type
@@ -269,6 +289,21 @@ public class ReportItemClick extends Activity {
 						.getCurrentItem()).created_date.toString());
 				reportIDString = reportDataLocalArrayList.get(myPager.getCurrentItem()).report_id
 						.toString();
+			
+				
+//				if(myPager.getCurrentItem()==0)
+//				{
+//				Prefrences.report_body_edited=reportDataLocalArrayList.get(myPager.getCurrentItem()).body;
+//				Log.d("iffffy", "iffffy"+Prefrences.report_body_edited);
+//				}
+//				
+//				else if(myPager.getCurrentItem()>0){
+//					Prefrences.report_body_edited=reportDataLocalArrayList.get(myPager.getCurrentItem()+1).body;
+//					Log.d("iffffy", "iffffy"+Prefrences.report_body_edited);
+//				}
+				
+			
+				
 				// companyID=reportdata_local.get(myPager.getCurrentItem()).companies.get(0).coId.toString();
 				reportTypeString = reportDataLocalArrayList.get(myPager.getCurrentItem()).report_type
 						.toString();
@@ -364,7 +399,7 @@ public class ReportItemClick extends Activity {
 					exception.printStackTrace();
 
 				}
-				Prefrences.PrefillFlag=0;
+//				Prefrences.PrefillFlag=0;
 			
 				// ReportFragment.reportdata=reportdata;
 				reportDataLocalArrayList.clear();
@@ -403,6 +438,7 @@ public class ReportItemClick extends Activity {
 
 				}
 				if (ConnectionDetector.isConnectingToInternet()) {
+					
 					updateReportHit(ReportItemClick.this);
 				} else {
 					Toast.makeText(ReportItemClick.this,
@@ -464,8 +500,9 @@ public class ReportItemClick extends Activity {
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		Prefrences.PrefillFlag=0;
-//		adapter.reportdata = adapter.reportdatTemp;
+//		Prefrences.PrefillFlag=0;
+
+		//		adapter.reportdata = adapter.reportdatTemp;
 //		adapter.reportdata.get(myPager.getCurrentItem()).companies.clear();
 //		adapter.reportdata.get(myPager.getCurrentItem()).companies.addAll(adapter.reportdatTemp.get(myPager.getCurrentItem()).companies);
 //		adapter.reportdata.get(myPager.getCurrentItem()).companies = adapter.reportdatTemp.get(myPager.getCurrentItem()).companies;
@@ -503,100 +540,116 @@ public class ReportItemClick extends Activity {
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		// Prefrences.stopingHit = 1;
-		if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
-				&& null != data) {
-			Uri selectedImage = data.getData();
-			String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-			Cursor cursor = getContentResolver().query(selectedImage,
-					filePathColumn, null, null, null);
-			cursor.moveToFirst();
-
-			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-			picturePathString = cursor.getString(columnIndex);
-			cursor.close();
-			new LongOperation().execute("");
-			// picarray
-
-			// rt
-			// }
-
-			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
-			// WorkListCompleteAdapter.punchlistphoto2.add(new
-			// PunchListsPhotos("", picturePath, picturePath, "", picturePath,
-			// picturePath, "", "", "", "", "", "", "", ""));
-			// photosarrayArrayList.clear();
-			// arr.add(WorkListCompleteAdapter.punchlistphoto2.get(i).urlSmall);
-			// ids.add(WorkListCompleteAdapter.punchlistphoto2.get(i).id);
-			// upload();
-
-			// commentAdd();
-
-		}
-
-		else if (requestCode == TAKE_PICTURE
-				&& resultCode == Activity.RESULT_OK) {
-
-			Uri selectedImage = imageUri;
-
-			picturePathString = getRealPathFromURI(imageUri);
-			getContentResolver().notifyChange(selectedImage, null);
-
-			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
-
-			// Log.d("--------","888888"+DocumentFragment.photosList.size());
-			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
-
-			new LongOperation().execute("");
-			ContentResolver cr = getContentResolver();
-
-			// WorkListCompleteAdapter.punchlistphoto2.add(new
-			// PunchListsPhotos("", selectedImage.toString(),
-			// selectedImage.toString(), "", selectedImage.toString(),
-			// selectedImage.toString(), "", "", "", "", "", "", "", ""));
-			// photosarrayArrayList.clear();
-			// imageView.setImageBitmap(bitmap);
-		} else {
-
-			switch (requestCode) {
-			case COMPANY:
-				if (resultCode == RESULT_OK) {
-					String id = data.getStringExtra("id");
-					String name = data.getStringExtra("name");
-					String hours = data.getStringExtra("hours");
-
-					ArrayList<ReportCompany> reportList = new ArrayList<ReportCompany>();
-					reportList.add(new ReportCompany(id, name,
-							new ArrayList<ReportCompanyUsers>(),
-							new ArrayList<ReportCompanySubcontractors>()));
-					adapter.reportdata.get(myPager.getCurrentItem()).companies
-							.add(new ReportCompanies("", hours, reportList));
-					adapter.notifyDataSetChanged();
-				}
-				break;
-
-			case PERSONNEL:
-				if (resultCode == RESULT_OK) {
-					String id = data.getStringExtra("id");
-					String name = data.getStringExtra("name");
-					String hours = data.getStringExtra("hours");
-
-					ArrayList<ReportPersonnelUser> reportList = new ArrayList<ReportPersonnelUser>();
-					reportList.add(new ReportPersonnelUser(id, name));
-					adapter.reportdata.get(myPager.getCurrentItem()).personnel
-							.add(new ReportPersonnel("", reportList, hours));
-					adapter.notifyDataSetChanged();
-				}
-				break;
-			}
-
-		}
-
-	}
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//		// Prefrences.stopingHit = 1;
+//		if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
+//				&& null != data) {
+//			
+////			myPager.getCurrentItem();
+////			
+////			View v =myPager.getChildAt(myPager.getCurrentItem());
+//			
+//			Log.v("myPager.getCurrentItem()", myPager.getCurrentItem()+"");
+//			
+//			Uri selectedImage = data.getData();
+//			String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//
+//			Cursor cursor = getContentResolver().query(selectedImage,
+//					filePathColumn, null, null, null);
+//			cursor.moveToFirst();
+//
+//			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//			picturePathString = cursor.getString(columnIndex);
+//			cursor.close();
+//			picturePathString=mTempFile.getPath().toString();
+//			Log.d("picturePathString","picturePathString ="+picturePathString);
+//			
+//			if(picturePathString == null)
+//			{
+//				AlertMessage2();
+//			}
+//			else{
+//			new LongOperation().execute("");
+//			}
+//			// picarray
+//
+//			// rt
+//			// }
+//
+//			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
+//			// WorkListCompleteAdapter.punchlistphoto2.add(new
+//			// PunchListsPhotos("", picturePath, picturePath, "", picturePath,
+//			// picturePath, "", "", "", "", "", "", "", ""));
+//			// photosarrayArrayList.clear();
+//			// arr.add(WorkListCompleteAdapter.punchlistphoto2.get(i).urlSmall);
+//			// ids.add(WorkListCompleteAdapter.punchlistphoto2.get(i).id);
+//			// upload();
+//
+//			// commentAdd();
+//
+//		}
+//
+//		else if (requestCode == TAKE_PICTURE
+//				&& resultCode == Activity.RESULT_OK) {
+//
+//			Uri selectedImage = imageUri;
+//
+//			picturePathString = getRealPathFromURI(imageUri);
+//			getContentResolver().notifyChange(selectedImage, null);
+//
+//			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
+//
+//			// Log.d("--------","888888"+DocumentFragment.photosList.size());
+//			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
+//
+//			new LongOperation().execute("");
+//			ContentResolver cr = getContentResolver();
+//
+//			// WorkListCompleteAdapter.punchlistphoto2.add(new
+//			// PunchListsPhotos("", selectedImage.toString(),
+//			// selectedImage.toString(), "", selectedImage.toString(),
+//			// selectedImage.toString(), "", "", "", "", "", "", "", ""));
+//			// photosarrayArrayList.clear();
+//			// imageView.setImageBitmap(bitmap);
+//		} else {
+//
+//			switch (requestCode) {
+//			case COMPANY:
+//				if (resultCode == RESULT_OK) {
+//					String id = data.getStringExtra("id");
+//					String name = data.getStringExtra("name");
+//					String hours = data.getStringExtra("hours");
+//
+//					ArrayList<ReportCompany> reportList = new ArrayList<ReportCompany>();
+//					reportList.add(new ReportCompany(id, name,
+//							new ArrayList<ReportCompanyUsers>(),
+//							new ArrayList<ReportCompanySubcontractors>()));
+//					adapter.reportdata.get(myPager.getCurrentItem()).companies
+//							.add(new ReportCompanies("", hours, reportList));
+//					adapter.notifyDataSetChanged();
+//				}
+//				break;
+//
+//			case PERSONNEL:
+//				if (resultCode == RESULT_OK) {
+//					String id = data.getStringExtra("id");
+//					String name = data.getStringExtra("name");
+//					String hours = data.getStringExtra("hours");
+//
+//					ArrayList<ReportPersonnelUser> reportList = new ArrayList<ReportPersonnelUser>();
+//					reportList.add(new ReportPersonnelUser(id, name));
+//					adapter.reportdata.get(myPager.getCurrentItem()).personnel
+//							.add(new ReportPersonnel("", reportList, hours));
+//					adapter.notifyDataSetChanged();
+//				}
+//				break;
+//			}
+//
+//		}
+//
+//	}
 
 	private String getRealPathFromURI(Uri contentURI) {
 		String result;
@@ -668,7 +721,7 @@ public class ReportItemClick extends Activity {
 			// // // ladder_page2.setImageBitmap(myBitmap);
 			// lin2.addView(ladder_page2);
 			adapter.reportdata.get(myPager.getCurrentItem()).photos
-					.add(new ProjectPhotos(picturePathString, picturePathString, true));
+					.add(new ProjectPhotos("001",picturePathString, picturePathString, true));
 			adapter.notifyDataSetChanged();
 			if(error)
 			{
@@ -751,7 +804,7 @@ public class ReportItemClick extends Activity {
 
 			int intValue) {
 
-				finish();
+//				finish();
 
 				// setting_page = true;
 
@@ -850,6 +903,8 @@ public class ReportItemClick extends Activity {
 
 		System.out.println(responseString);
 
+		
+		
 	}
 
 	private void AlertMessage() {
@@ -894,13 +949,15 @@ public class ReportItemClick extends Activity {
 
 		RequestParams params = new RequestParams();
 		Log.e("myPager.getCurrentItem()", ",, " + myPager.getCurrentItem());
-
+		Log.d("eqwwqrer","qweewqewq"+myPager.getCurrentItem());
+		Prefrences.report_body_edited = reportDataLocalArrayList.get(myPager.getCurrentItem()).body.toString();
+		Log.d("eqwwqrer","qweewqewq"+Prefrences.report_body_edited);
 		notesValueString = Prefrences.report_body_edited;
 		Prefrences.report_body_edited = "";
 
 		Log.i("NOTES", notesValueString);
 		Log.i("Group ",
-				"group  " + myPager.getChildAt(myPager.getCurrentItem() + 1));
+				"group  " + myPager.getChildAt(myPager.getCurrentItem()));
 		Log.i("report id ", "report id  " + reportIDString);
 
 		params.put("user_id", Prefrences.userId);
@@ -1238,8 +1295,8 @@ public class ReportItemClick extends Activity {
 												.getString("source");
 										String phase = photosobj
 												.getString("phase");
-										String photo_created_at = photosobj
-												.getString("created_at");
+//										String photo_created_at = photosobj
+//												.getString("created_at");
 										String user_name = photosobj
 												.getString("user_name");
 										String name = photosobj
@@ -1257,7 +1314,8 @@ public class ReportItemClick extends Activity {
 												photo_url200, url100,
 												image_file_size,
 												image_content_type, source,
-												phase, photo_created_at,
+												phase, 
+//												photo_created_at,
 												user_name, name, desc,
 												photo_created_date,null));
 									}
@@ -1469,16 +1527,16 @@ public class ReportItemClick extends Activity {
 											humidity, author, photo, personArrayList,
 											companiesArrayList, reportTopicsArrayList)));
 								}
-								if(Prefrences.PrefillFlag==1)
-								{
-									Prefrences.stopingHit = 1;
-									Prefrences.PrefillFlag=0;
-									Prefrences.report_bool=false;
-								}
-								else
-								{
+//								if(Prefrences.PrefillFlag==1)
+//								{
+//									Prefrences.stopingHit = 1;
+//									Prefrences.PrefillFlag=0;
+//									Prefrences.report_bool=false;
+//								}
+//								else
+//								{
 									ReportFragment.fromReportItem = true;
-								}
+//								}
 								finish();
 
 							} catch (Exception e) {
@@ -1983,8 +2041,8 @@ public class ReportItemClick extends Activity {
 
 						String source = photosobj.getString("source");
 						String phase = photosobj.getString("phase");
-						String photo_created_at = photosobj
-								.getString("created_at");
+//						String photo_created_at = photosobj
+//								.getString("created_at");
 						String user_name = photosobj.getString("user_name");
 						String name = photosobj.getString("name");
 
@@ -2025,7 +2083,9 @@ public class ReportItemClick extends Activity {
 						photoArrayList.add(new ProjectPhotos(photoid, url_large,
 								original, photo_url200, url100,
 								image_file_size, image_content_type, source,
-								phase, photo_created_at, user_name, name, desc,
+								phase, 
+//								photo_created_at,
+								user_name, name, desc,
 								photo_created_date,null));
 					}
 				}
@@ -2579,4 +2639,90 @@ public class ReportItemClick extends Activity {
 			e.printStackTrace();
 		}
 	}
+
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == RESULT_OK
+				&& (requestCode == ChooserType.REQUEST_PICK_PICTURE ))
+			{
+			imageChooserManager.submit(requestCode, data);
+		}
+		else if(resultCode == RESULT_OK
+						&&requestCode == ChooserType.REQUEST_CAPTURE_PICTURE)
+		{
+			imageChooserManager2.submit(requestCode, data);
+		}
+		else {
+
+			switch (requestCode) {
+			case COMPANY:
+				if (resultCode == RESULT_OK) {
+					String id = data.getStringExtra("id");
+					String name = data.getStringExtra("name");
+					String hours = data.getStringExtra("hours");
+
+					ArrayList<ReportCompany> reportList = new ArrayList<ReportCompany>();
+					reportList.add(new ReportCompany(id, name,
+							new ArrayList<ReportCompanyUsers>(),
+							new ArrayList<ReportCompanySubcontractors>()));
+					adapter.reportdata.get(myPager.getCurrentItem()).companies
+							.add(new ReportCompanies("", hours, reportList));
+					adapter.notifyDataSetChanged();
+				}
+				break;
+
+			case PERSONNEL:
+				if (resultCode == RESULT_OK) {
+					String id = data.getStringExtra("id");
+					String name = data.getStringExtra("name");
+					String hours = data.getStringExtra("hours");
+
+					ArrayList<ReportPersonnelUser> reportList = new ArrayList<ReportPersonnelUser>();
+					reportList.add(new ReportPersonnelUser(id, name));
+					adapter.reportdata.get(myPager.getCurrentItem()).personnel
+							.add(new ReportPersonnel("", reportList, hours));
+					adapter.notifyDataSetChanged();
+				}
+				break;
+			}
+
+		}
+	}
+
+	@Override
+	public void onImageChosen(final ChosenImage image) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (image != null) {
+					// Use the image
+					picturePathString =  image.getFilePathOriginal();
+					Log.d("---------Image Path----------","---------Image Path----------"+picturePathString);
+					if(picturePathString == null)
+					{
+						AlertMessage2();
+					}
+					else{
+					new LongOperation().execute("");
+					}
+					// image.getFileThumbnail();
+					// image.getFileThumbnailSmall();
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onError(final String reason) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				// Show error message
+				Log.d("---------Image Path 2----------","---------Image Path 2 ----------"+picturePathString);
+			}
+		});
+	}
+
+
 }

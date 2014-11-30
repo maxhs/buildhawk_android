@@ -11,14 +11,16 @@ public class SynopsisRecentDocuments {
 	public String imageContentType;
 	public String source;
 	public String phase; 
-	public String createdAt;
+//	public String createdAt;
 	public String userName;
 	public String name;
 	public String createdDate;
 	
 	
 	public SynopsisRecentDocuments(String id,String urlLarge,String original,String urlSmall,String urlThumb,String imageFileSize,
-			String imageContentType, String source, String phase, String createdAt, String userName, String name,String createdDate)
+			String imageContentType, String source, String phase, 
+//			String createdAt, 
+			String userName, String name,String createdDate)
 	{
 		this.id = id;
 		this.urlLarge = urlLarge;
@@ -29,7 +31,7 @@ public class SynopsisRecentDocuments {
 		this.imageContentType = imageContentType;
 		this.source = source;
 		this.phase = phase;
-		this.createdAt = createdAt;
+//		this.createdAt = createdAt;
 		this.userName = userName;
 		this.name = name;
 		this.createdDate = createdDate;		

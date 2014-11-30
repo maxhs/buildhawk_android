@@ -455,27 +455,26 @@ public class ProjectDetail extends Activity {
 												+ Prefrences
 														.getTypeDaily(getApplicationContext()));
 
-								if (!dateFormat
-										.format(date)
-										.toString()
-										.equalsIgnoreCase(
-												Prefrences
-														.getDateDaily(getApplicationContext()))
-										&& Prefrences
-												.getProjectId(
-														getApplicationContext())
-												.equalsIgnoreCase(
-														Prefrences.selectedProId
-																.toString())
-										&& !buttonEmail
-												.getText()
-												.toString()
-												.equalsIgnoreCase(
-														Prefrences
-																.getTypeDaily(getApplicationContext()))) {
-
+//								if (dateFormat
+//										.format(date)
+//										.toString()
+//										.equalsIgnoreCase(
+//												Prefrences
+//														.getDateDaily(getApplicationContext()))
+//										&& Prefrences
+//												.getProjectId(
+//														getApplicationContext())
+//												.equalsIgnoreCase(
+//														Prefrences.selectedProId
+//																.toString())) {
+//
+//									Toast.makeText(
+//											activity,
+//											"Sorry, you can create only one Daily report in a day",
+//											50000).show();
+//									
+//								} else {
 									
-									popup.dismiss();
 
 									// Prefrences.saveDateDaily(dateFormat.format(date).toString(),
 									// getApplicationContext(),email.getText().toString());
@@ -491,14 +490,10 @@ public class ProjectDetail extends Activity {
 									else{
 									Toast.makeText(activity,"No internet connection.", Toast.LENGTH_SHORT).show();
 									}
-								} else {
-									Toast.makeText(
-											activity,
-											"Sorry, you can create only one Daily report in a day",
-											50000).show();
+									popup.dismiss();
 								}
 
-							}
+//							}
 						});
 
 						buttonCall.setOnClickListener(new OnClickListener() {
@@ -522,46 +517,43 @@ public class ProjectDetail extends Activity {
 												+ Prefrences
 														.getTypeSafety(getApplicationContext()));
 
-								if (!dateFormat
-										.format(date)
-										.toString()
-										.equalsIgnoreCase(
-												Prefrences
-														.getDateSafety(getApplicationContext()))
-										&& Prefrences
-												.getProjectId(
-														getApplicationContext())
-												.equalsIgnoreCase(
-														Prefrences.selectedProId
-																.toString())
-										&& !buttonEmail
-												.getText()
-												.toString()
-												.equalsIgnoreCase(
-														Prefrences
-																.getTypeSafety(getApplicationContext()))) {
-									if(ConnectionDetector.isConnectingToInternet()){
-									Prefrences.reportTypeDialog = 2;
-									Intent intent = new Intent(activity,
-											ReportItemCreate.class);
-									startActivity(intent);
-									overridePendingTransition(
-											R.anim.slide_in_right,
-											R.anim.slide_out_left);
+//								if (dateFormat
+//										.format(date)
+//										.toString()
+//										.equalsIgnoreCase(
+//												Prefrences
+//														.getDateSafety(getApplicationContext()))
+//								
+//									&& 	Prefrences
+//												.getProjectId(
+//														getApplicationContext())
+//												.equalsIgnoreCase(
+//														Prefrences.selectedProId
+//																.toString()))
+//										 {
+//									Toast.makeText(
+//											activity,
+//											"Sorry, you can create only one Safety report in a day",
+//											50000).show();
+//									
+//										 } else {
+											 if(ConnectionDetector.isConnectingToInternet()){
+													Prefrences.reportTypeDialog = 2;
+													Intent intent = new Intent(activity,
+															ReportItemCreate.class);
+													startActivity(intent);
+													overridePendingTransition(
+															R.anim.slide_in_right,
+															R.anim.slide_out_left);
+												}
+												else{
+												Toast.makeText(activity,"No internet connection.", Toast.LENGTH_SHORT).show();
+												}
+													// Prefrences.saveDateSafety(dateFormat.format(date).toString(),
+													// getApplicationContext(),call.getText().toString());
+													popup.dismiss();
 								}
-								else{
-								Toast.makeText(activity,"No internet connection.", Toast.LENGTH_SHORT).show();
-								}
-									// Prefrences.saveDateSafety(dateFormat.format(date).toString(),
-									// getApplicationContext(),call.getText().toString());
-									popup.dismiss();
-								} else {
-									Toast.makeText(
-											activity,
-											"Sorry, you can create only one Safety report in a day",
-											50000).show();
-								}
-							}
+//							}
 						});
 
 						buttonText.setOnClickListener(new OnClickListener() {
@@ -585,46 +577,42 @@ public class ProjectDetail extends Activity {
 												+ Prefrences
 														.getTypeWeekly(getApplicationContext()));
 
-								if (!dateFormat
-										.format(date)
-										.toString()
-										.equalsIgnoreCase(
-												Prefrences
-														.getDateWeekly(getApplicationContext()))
-										&& Prefrences
-												.getProjectId(
-														getApplicationContext())
-												.equalsIgnoreCase(
-														Prefrences.selectedProId
-																.toString())
-										&& !buttonText
-												.getText()
-												.toString()
-												.equalsIgnoreCase(
-														Prefrences
-																.getTypeWeekly(getApplicationContext()))) {
-								if(ConnectionDetector.isConnectingToInternet()){	
-									Prefrences.reportTypeDialog = 3;
-									Intent in = new Intent(activity,
-											ReportItemCreate.class);
-									startActivity(in);
-									overridePendingTransition(
-											R.anim.slide_in_right,
-											R.anim.slide_out_left);
+//								if (dateFormat
+//										.format(date)
+//										.toString()
+//										.equalsIgnoreCase(
+//												Prefrences
+//														.getDateWeekly(getApplicationContext()))
+//										&& Prefrences
+//												.getProjectId(
+//														getApplicationContext())
+//												.equalsIgnoreCase(
+//														Prefrences.selectedProId
+//																.toString())) {
+//									
+//									Toast.makeText(
+//											activity,
+//											"Sorry, you can create only one Weekly report in a day",
+//											50000).show();
+//								
+//								} else {
+									if(ConnectionDetector.isConnectingToInternet()){	
+										Prefrences.reportTypeDialog = 3;
+										Intent in = new Intent(activity,
+												ReportItemCreate.class);
+										startActivity(in);
+										overridePendingTransition(
+												R.anim.slide_in_right,
+												R.anim.slide_out_left);
+									}
+									else{
+									Toast.makeText(activity,"No internet connection.", Toast.LENGTH_SHORT).show();
+									}
+										// Prefrences.saveDateWeekly(dateFormat.format(date).toString(),
+										// getApplicationContext(),text.getText().toString());
+										popup.dismiss();
 								}
-								else{
-								Toast.makeText(activity,"No internet connection.", Toast.LENGTH_SHORT).show();
-								}
-									// Prefrences.saveDateWeekly(dateFormat.format(date).toString(),
-									// getApplicationContext(),text.getText().toString());
-									popup.dismiss();
-								} else {
-									Toast.makeText(
-											activity,
-											"Sorry, you can create only one Weekly report in a day",
-											50000).show();
-								}
-							}
+//							}
 						});
 
 						buttonCancel.setOnClickListener(new OnClickListener() {

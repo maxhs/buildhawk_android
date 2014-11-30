@@ -66,6 +66,7 @@ public class ReportListAdapter extends BaseAdapter {
 				reportType, personelOnsite, notes;
 		public ImageView photo;
 		LinearLayout root;
+		public int pos;
 
 	}
 
@@ -113,6 +114,8 @@ public class ReportListAdapter extends BaseAdapter {
 			holder = (ViewHolder) view.getTag();
 		}
 		// Prefrences.posViewpager=position;
+		holder.pos=position;
+		
 		holder.report_date.setTag(holder);
 		holder.reportType.setTag(holder);
 		holder.personnel_value.setTag(holder);
@@ -196,15 +199,20 @@ public class ReportListAdapter extends BaseAdapter {
 			Log.d("if", "----else---");
 
 		}
+		
+		
+		holder.root.setTag(holder);
 		holder.root.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				
+				ViewHolder viewholder = (ViewHolder) v.getTag();
 			if(ConnectionDetector.isConnectingToInternet()){
 				Log.e("CLICK", ",, "+Prefrences.reportlisttypes);
 				Intent intent = new Intent(activity, ReportItemClick.class);
-				intent.putExtra("pos", position);
+				intent.putExtra("pos", viewholder.pos);
 				activity.startActivity(intent);
 				activity.overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);

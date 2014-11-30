@@ -120,6 +120,11 @@ public class WorklistFragment extends Fragment {
 				Prefrences.worklist_s=Prefrences.LastWorklist_s;			
 				Prefrences.worklist_bool = true;
 			}
+			else{
+				if (Prefrences.worklist_s.equalsIgnoreCase("")) {
+					Prefrences.worklist_bool = false;
+				}
+			}
 		}
 		else
 		{
@@ -516,7 +521,7 @@ public class WorklistFragment extends Fragment {
 						if (!count.isNull("assignee")) {
 							JSONObject asigne = count
 									.getJSONObject("assignee");// subcateg
-							Log.i("asigneees", "" + asigne);
+//							Log.i("asigneees", "" + asigne);
 
 							// commnt = new ArrayList<Comments>();
 							JSONObject company = asigne
@@ -565,8 +570,9 @@ public class WorklistFragment extends Fragment {
 									ccount.getString("image_file_size"),
 									ccount.getString("image_content_type"),
 									ccount.getString("source"), ccount
-											.getString("phase"), ccount
-											.getString("created_at"),
+											.getString("phase"), 
+//											ccount
+//											.getString("created_at"),
 									ccount.getString("user_name"),
 									ccount.getString("name"), ccount
 											.getString("description"),
@@ -628,7 +634,7 @@ public class WorklistFragment extends Fragment {
 										.getString("created_at"),
 								commnt, count.getString("epoch_time")));
 
-						if (!count.getString("location").equals("null")) {
+						if (!count.getString("location").equals("null") && !count.getString("location").equals("")) {
 							locs.add(count.getString("location"));
 						}
 						// if(!count.getString("sub_assignee").equals("null"))
@@ -1191,7 +1197,7 @@ public class WorklistFragment extends Fragment {
 
 		Log.d("----------------","---------------"+Prefrences.url + "/worklists/" + Prefrences.selectedProId);
 		AsyncHttpClient client = new AsyncHttpClient();
-
+		client.setTimeout(100000);
 		client.addHeader("Content-type", "application/json");
 		client.addHeader("Accept", "application/json");
 
@@ -1274,7 +1280,7 @@ public class WorklistFragment extends Fragment {
 				if (!count.isNull("assignee")) {
 					JSONObject asigne = count
 							.getJSONObject("assignee");// subcateg
-					Log.i("asigneees", "" + asigne);
+//					Log.i("asigneees", "" + asigne);
 
 					// commnt = new ArrayList<Comments>();
 					JSONObject company = asigne
@@ -1323,8 +1329,9 @@ public class WorklistFragment extends Fragment {
 							ccount.getString("image_file_size"),
 							ccount.getString("image_content_type"),
 							ccount.getString("source"), ccount
-									.getString("phase"), ccount
-									.getString("created_at"),
+									.getString("phase"),
+//									ccount
+//									.getString("created_at"),
 							ccount.getString("user_name"),
 							ccount.getString("name"), ccount
 									.getString("description"),
@@ -1386,7 +1393,7 @@ public class WorklistFragment extends Fragment {
 								.getString("created_at"),
 						commnt, count.getString("epoch_time")));
 
-				if (!count.getString("location").equals("null")) {
+				if (!count.getString("location").equals("null") && !count.getString("location").equals("")) {
 					locs.add(count.getString("location"));
 				}
 				// if(!count.getString("sub_assignee").equals("null"))

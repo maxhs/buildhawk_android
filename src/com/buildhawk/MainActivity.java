@@ -151,7 +151,7 @@ public class MainActivity extends Activity {
 
 		params.put("email", edittextEmail.getText().toString());
 		params.put("password", edittextPass.getText().toString());
-		params.put("device_token", regIdString);
+		params.put("device_token", "devicetoken"+regIdString);
 		Log.d("reg id HITTED ", "" + regIdString);
 		params.put("device_type", "3");
 

@@ -60,7 +60,15 @@ public class LazyAdapter extends BaseAdapter {
 		holder.textviewCoPhone.setTypeface(Prefrences.helveticaNeuelt(activity));
 		holder.textviewCoEmail.setTypeface(Prefrences.helveticaNeuelt(activity));
 		holder.textviewCoName.setText(Prefrences.coworkrName[position]);
-		holder.textviewCoPhone.setText(Prefrences.coworkrForPhone[position]);
+		if(Prefrences.coworkrForPhone[position].equals("null"))
+		{
+			holder.textviewCoPhone.setText("");
+		}
+		else
+		{
+			holder.textviewCoPhone.setText(Prefrences.coworkrForPhone[position]);
+		}
+				
 		holder.textviewCoEmail.setText(Prefrences.coworkrEmail[position]);
 		holder.relativelayout.setLayoutParams(new ListView.LayoutParams(
 				ListView.LayoutParams.MATCH_PARENT, 200));
@@ -73,7 +81,14 @@ public class LazyAdapter extends BaseAdapter {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Prefrences.ContactName = Prefrences.coworkrName[position];
+				if(Prefrences.coworkrForPhone[position].equals("null"))
+				{
+					Prefrences.ContactPhone = "";
+				}
+				else
+				{
 				Prefrences.ContactPhone = Prefrences.coworkrForPhone[position];
+				}
 				Prefrences.ContactMail = Prefrences.coworkrEmail[position];
 				Homepage.popup.show();
 				// activity.overridePendingTransition(R.anim.slide_in_bottom,

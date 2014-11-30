@@ -189,7 +189,7 @@ public class CompanyList extends Activity {
 						// expiry_main.setInAnimation(R.anim.slide_in_from_top);
 						buttonSubmit = (Button) popup.findViewById(R.id.buttonSubmit);
 						edittextHours = (EditText) popup.findViewById(R.id.edittextHours);
-						edittextHours.setHint("Personnel onsite");
+						edittextHours.setHint("Personnel on-site");
 						edittextLocation = (EditText) popup
 								.findViewById(R.id.edittextLocation);
 						edittextLocation.setVisibility(View.GONE);
@@ -199,7 +199,7 @@ public class CompanyList extends Activity {
 										InputMethodManager.HIDE_IMPLICIT_ONLY);
 						buttonCancel = (Button) popup.findViewById(R.id.cancel);
 
-						popup.setTitle("# of counts");
+						popup.setTitle("# of personnel on-site");
 						relativelayoutListOutside = (RelativeLayout) popup
 								.findViewById(R.id.list_outside);
 						new ASSL(CompanyList.this, expiryMain, 1134, 720, false);
@@ -254,7 +254,7 @@ public class CompanyList extends Activity {
 						// expiry_main.setInAnimation(R.anim.slide_in_from_top);
 						buttonSubmit = (Button) popup.findViewById(R.id.buttonSubmit);
 						edittextHours = (EditText) popup.findViewById(R.id.edittextHours);
-						edittextHours.setHint("Personnel onsites");
+						edittextHours.setHint("Personnel on-site");
 						edittextLocation = (EditText) popup
 								.findViewById(R.id.edittextLocation);
 						edittextLocation.setVisibility(View.GONE);
@@ -264,7 +264,7 @@ public class CompanyList extends Activity {
 										InputMethodManager.HIDE_IMPLICIT_ONLY);
 						buttonCancel = (Button) popup.findViewById(R.id.cancel);
 
-						popup.setTitle("# of personnel onsites");
+						popup.setTitle("# of personnel on-site");
 						relativelayoutListOutside = (RelativeLayout) popup
 								.findViewById(R.id.list_outside);
 						new ASSL(CompanyList.this, expiryMain, 1134, 720, false);

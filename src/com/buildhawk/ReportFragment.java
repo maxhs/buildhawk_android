@@ -119,6 +119,11 @@ public class ReportFragment extends Fragment {
 				Prefrences.report_s=Prefrences.LastReport_s;			
 				Prefrences.report_bool = true;
 			}
+			else{
+				if (Prefrences.report_s.equalsIgnoreCase("")) {
+					Prefrences.report_bool = false;
+				}
+			}
 		}
 		else
 		{
@@ -441,27 +446,31 @@ public class ReportFragment extends Fragment {
 						reportdataSafetyArrayList = new ArrayList<Report>();
 						reportdataWeeklyArrayList = new ArrayList<Report>();
 						// photo_url=new ArrayList<String>();
-						Log.d("report Array length", "" + reportArrray.length());
 						for (int i = 0; i < reportArrray.length(); i++) {
-
-							personArrayList = new ArrayList<ReportPersonnel>();
-							companiesArrayList = new ArrayList<ReportCompanies>();
+							companiesArrayList= new ArrayList<ReportCompanies>();
 							reportTopicsArrayList = new ArrayList<ReportTopics>();
-							// Rcompany = new ArrayList<ReportCompany>();
-							coUsersArrayList = new ArrayList<ReportCompanyUsers>();
+							personArrayList= new ArrayList<ReportPersonnel>();
 
+							coUsersArrayList = new ArrayList<ReportCompanyUsers>();
+							
 							coSubsArrayList = new ArrayList<ReportCompanySubcontractors>();
 
-							// possibleTypesArray = new ArrayList<String>();
-							JSONObject reportobj = reportArrray
-									.getJSONObject(i);
+					
+							
+							JSONObject reportobj = reportArrray.getJSONObject(i);
+							
 							String reportId = reportobj.getString("id");
 							Log.d("report_id", "-----------***" + reportId);
+							try{
 							if (reportId.equals("null")) {
 								reportId = "";
 							}
-							String epochTime = reportobj
-									.getString("epoch_time");
+							}catch(Exception e){
+								reportId = "";
+							}
+							
+							
+							String epochTime = reportobj.getString("epoch_time");
 							if (epochTime.equals("null")) {
 								epochTime = "";
 							}
@@ -508,9 +517,15 @@ public class ReportFragment extends Fragment {
 								weathericon = "";
 							}
 							String precip = reportobj.getString("precip");
-							if (precip.equals("null")) {
+							if (precip.equals("null") ||precip.equals("") ) {
 								precip = "";
 							}
+						    else{
+//						    	precip=precip.substring(0, precip.length()-1);
+//						    	Log.d("waaaooooo","waaaaaooo "+precip.toString());
+			//
+//						    	precip=String.format("%.1f", Float.parseFloat(precip))+"%";
+						    	}
 							String temp = reportobj.getString("temp");
 							if (temp.equals("null")) {
 								temp = "";
@@ -519,32 +534,38 @@ public class ReportFragment extends Fragment {
 							if (wind.equals("null")) {
 								wind = "";
 							}
-							String humidity = reportobj.getString("humidity");
-							if (humidity.equals("null")) {
+							String humidity = reportobj
+									.getString("humidity");
+							if (humidity.equals("null") ||humidity.equals("")) {
 								humidity = "";
 							}
+							else{
+//						    	humidity=humidity.substring(0, humidity.length()-1);
+//						    	Log.d("waaaooooo","waaaaaooo "+humidity.toString());
+			//
+//						    	humidity=String.format("%.1f", Float.parseFloat(humidity))+"%";
+						    	}
 
+							
 							/*------- author object-------*/
 							if (!reportobj.isNull("author")) {
 								authorArrayList = new ArrayList<Author>();
-								JSONObject authorobj = reportobj
-										.getJSONObject("author");
+								
+								JSONObject authorobj = reportobj.getJSONObject("author");
+								
 								String authorid = authorobj.getString("id");
 								if (authorid.equals("null")) {
 									authorid = "";
 								}
-								String firstname = authorobj
-										.getString("first_name");
+								String firstname = authorobj.getString("first_name");
 								if (firstname.equals("null")) {
 									firstname = "";
 								}
-								String lastname = authorobj
-										.getString("last_name");
+								String lastname = authorobj.getString("last_name");
 								if (lastname.equals("null")) {
 									lastname = "";
 								}
-								String fullname = authorobj
-										.getString("full_name");
+								String fullname = authorobj.getString("full_name");
 								if (fullname.equals("null")) {
 									fullname = "";
 								}
@@ -557,26 +578,51 @@ public class ReportFragment extends Fragment {
 								if (phonenumber.equals("null")) {
 									phonenumber = "";
 								}
-
+								// Log.d("authorobj",
+								// "-------------authorobj data start---------");
+								// Log.d("authorid", "" + authorid);
+								// Log.d("first_name", "" + first_name);
+								// Log.d("last_name", "" + last_name);
+								// Log.d("full_name", "" + full_name);
+								// Log.d("email", "" + email);
+								//
+								// Log.d("phone_number", "" + phone_number);
+								// Log.d("authorobj",
+								// "-------------authorobj data end---------");
 								authorArrayList.add(new Author(authorid, firstname,
-										lastname, fullname, email, phonenumber));
+										lastname, fullname, email,
+										phonenumber));
 							} else {
 								authorArrayList = new ArrayList<Author>();
-								authorArrayList.add(new Author("", "", "", "", "", ""));
+								authorArrayList.add(new Author("", "", "", "", "",
+										""));
 							}
-							/*------- report_fields array-------*/
-							JSONArray report_fields = reportobj
-									.getJSONArray("report_fields");
-							for (int j = 0; j < report_fields.length(); j++) {
-							}
+//							/*------- report_fields array-------*/
+//							JSONArray report_fields = reportobj
+//									.getJSONArray("report_fields");
+//							for (int j = 0; j < report_fields.length(); j++) {
+//							}
 
-							JSONArray photos = reportobj.getJSONArray("photos");
+							// if (reportobj.isNull("photos")) {
+							// photo = new ArrayList<ProjectPhotos>();
+							// Log.d("if","----photo if--");
+							// photo_url.add("http://3.bp.blogspot.com/-1EULR14bUFc/T8srSY2KZqI/AAAAAAAAEOk/vTI6mnpZ43g/s1600/nature-wallpaper-15.jpg");
+							// Log.d("----photo url---",""+"fake");
+							// photo.add(new ProjectPhotos("", "", "",
+							// "http://3.bp.blogspot.com/-1EULR14bUFc/T8srSY2KZqI/AAAAAAAAEOk/vTI6mnpZ43g/s1600/nature-wallpaper-15.jpg",
+							// "", "", "", "", "", "", "", "", ""));
+							// }
+							// else if (!reportobj.isNull("photos")) {
+							// Log.d("else","----photo else--");
+							//
+							JSONArray photos = reportobj
+									.getJSONArray("photos");
 							if (photos.length() == 0) {
 								photoArrayList = new ArrayList<ProjectPhotos>();
 //								Log.d("if", "----photo if null--");
 //								photo.add(new ProjectPhotos("", "", "",
-//										"drawable", "", "", "", "", "", "", "",
-//										"", "", "",null));
+//										"drawable", "", "", "", "", "", "",
+//										"", "", "", ""));
 								// photo_url.add("http://3.bp.blogspot.com/-1EULR14bUFc/T8srSY2KZqI/AAAAAAAAEOk/vTI6mnpZ43g/s1600/nature-wallpaper-15.jpg");
 							} else {
 								photoArrayList = new ArrayList<ProjectPhotos>();
@@ -584,7 +630,8 @@ public class ReportFragment extends Fragment {
 
 									JSONObject photosobj = photos
 											.getJSONObject(k);
-									String photoid = photosobj.getString("id");
+									String photoid = photosobj
+											.getString("id");
 									String url_large = photosobj
 											.getString("url_large");
 									String original = photosobj
@@ -606,12 +653,14 @@ public class ReportFragment extends Fragment {
 
 									String source = photosobj
 											.getString("source");
-									String phase = photosobj.getString("phase");
-									String photo_created_at = photosobj
-											.getString("created_at");
+									String phase = photosobj
+											.getString("phase");
+//									String photo_created_at = photosobj
+//											.getString("created_at");
 									String user_name = photosobj
 											.getString("user_name");
-									String name = photosobj.getString("name");
+									String name = photosobj
+											.getString("name");
 
 									String desc = photosobj
 											.getString("description");
@@ -647,180 +696,258 @@ public class ReportFragment extends Fragment {
 									// Log.d("photosdata ",
 									// "-----------------photosdata end----------------------");
 									// photo_url.add(photo_url200);
-									Log.d("----photo url---", "" + photo_url200);
+									Log.d("----photo url---", ""
+											+ photo_url200);
 									photoArrayList.add(new ProjectPhotos(photoid,
-											url_large, original, photo_url200,
-											url100, image_file_size,
-											image_content_type, source, phase,
-											photo_created_at, user_name, name,
-											desc, photo_created_date,null));
+											url_large, original,
+											photo_url200, url100,
+											image_file_size,
+											image_content_type, source,
+											phase,
+//											photo_created_at,
+											user_name, name, desc,
+											photo_created_date,null));
 								}
 							}
 
 							/*------- personnel array-------*/
+			//
+//							JSONArray personnel = reportobj
+//									.getJSONArray("personnel");
+//							if (personnel.length() == 0) {
+//								// person.add(new ReportPersonnel("",null,
+//								// ""));
+//							} else {
+//								Log.e("", "how many times" + i);
+			//
+//								for (j = 0; j < personnel.length(); j++) {
+			//
+//									JSONObject count = personnel
+//											.getJSONObject(j);
+//									Log.d("", "count : " + count);
+//									if (count.isNull("user")) {
+//										
+////										JSONObject psubs = count
+////												.getJSONObject("sub");
+			////
+////										Log.d("", "psubs : " + psubs);
+////										psub = new ArrayList<subcontractors>();
+			////
+////										psub.add(new subcontractors(psubs
+////												.getString("id"), psubs
+////												.getString("name"), psubs
+////												.getString("email"), psubs
+////												.getString("phone"), psubs
+////												.getString("count")));
+////										person.add(new ReportPersonnel(
+////												count.getString("id"),
+////												null, null, psub, count
+////														.getString("count")));
+//									} else {
+			//
+//										JSONObject puser = count
+//												.getJSONObject("user");
+			//
+//										Log.d("", "puser : " + puser);
+//										personnelUser = new ArrayList<ReportPersonnelUser>();
+			//
+//										personnelUser
+//												.add(new ReportPersonnelUser(
+//														puser.getString("id"),
+//														puser.getString("first_name"),
+//														puser.getString("last_name"),
+//														puser.getString("full_name"),
+//														puser.getString("email"),
+//														puser.getString("phone")));
+			//
+//										// if(count.isNull("hours"))
+//										// {
+//										// person.add(new
+//										// ReportPersonnel(count.getString("id"),
+//										// psub,count.getString("count")));
+//										// }
+//										// else
+//										person.add(new ReportPersonnel(
+//												count.getString("id"),
+//												personnelUser,
+//												count.getString("hours")
+//												));
+//									}
+//								}
+//							}
+//								Log.d("", "person size=" + person.size());
+								JSONArray reportCompany = reportobj
+										.getJSONArray("report_companies");
+								if (reportCompany.length() == 0) {
+									// person.add(new ReportPersonnel("",null,
+									// ""));
+								} else {
+									Log.e("report companies", "times = " + i);
 
-							JSONArray personnel = reportobj
-									.getJSONArray("personnel");
-							if (personnel.length() == 0) {
-								// person.add(new ReportPersonnel("",null,
-								// ""));
-							} else {
-								Log.e("", "how many times" + i);
-
-								for (j = 0; j < personnel.length(); j++) {
-
-									JSONObject count = personnel
-											.getJSONObject(j);
-									Log.d("", "count : " + count);
-									if (count.isNull("user")) {
-
-									} else {
-
-										JSONObject puser = count
-												.getJSONObject("user");
-
-										Log.d("", "puser : " + puser);
-										JSONObject company = puser
-												.getJSONObject("company");// checkitem
-
-										ArrayList<Company> compny = new ArrayList<Company>();
-										compny.add(new Company(company
-												.getString("id"), company
-												.getString("name")));
-										personnelUserArrayList = new ArrayList<ReportPersonnelUser>();
-
-										personnelUserArrayList
-												.add(new ReportPersonnelUser(
-														puser.getString("id"),
-														puser.getString("first_name"),
-														puser.getString("last_name"),
-														puser.getString("full_name"),
-														puser.getString("email"),
-														puser.getString("phone"),
-														compny));
-
-										personArrayList.add(new ReportPersonnel(count
-												.getString("id"),
-												personnelUserArrayList, count
-														.getString("hours")));
-									}
-								}
-							}
-							Log.d("", "person size=" + personArrayList.size());
-							JSONArray reportCompany = reportobj
-									.getJSONArray("report_companies");
-							if (reportCompany.length() == 0) {
-								// person.add(new ReportPersonnel("",null,
-								// ""));
-							} else {
-								Log.e("report companies", "times = " + i);
-
-								for (j = 0; j < reportCompany.length(); j++) {
-									JSONObject count = reportCompany
-											.getJSONObject(j);
-									Log.e("report companies", "times j = " + j);
-									ArrayList<ReportCompany> Rcompany = new ArrayList<ReportCompany>();
-									if (count.isNull("company")) {
-										Rcompany.add(new ReportCompany("", "",
-												coUsersArrayList, coSubsArrayList));
-									} else {
-										JSONObject company = count
-												.getJSONObject("company");
-
-										// JSONArray cousers =
-										// company.getJSONArray("users");
-										// if(cousers.length()!=0)
-										// {
-										// for(int k=0;k<cousers.length();k++)
-										// {
-										// Log.e("report companies",
-										// "times k = " + k);
-										// JSONObject ccount = cousers
-										// .getJSONObject(k);
-										// coUsers.add(new
-										// ReportCompanyUsers(ccount.getString("id"),
-										// ccount.getString("first_name"),
-										// ccount.getString("last_name"),
-										// ccount.getString("full_name"),
-										// ccount.getString("email"),
-										// ccount.getString("phone")));
-										// }
-										// }
-										// JSONArray cosubs =
-										// company.getJSONArray("subcontractors");
+									for (j = 0; j < reportCompany.length(); j++) {
+										JSONObject count = reportCompany
+												.getJSONObject(j);
+										Log.e("report companies", "times j = " + j);
+										ArrayList<ReportCompany>Rcompany = new ArrayList<ReportCompany>();
+										if(count.isNull("company"))
+										{
+											Rcompany.add(new ReportCompany("", "", coUsersArrayList, coSubsArrayList));
+										}
+										else
+										{
+										JSONObject company = count.
+												getJSONObject("company");
+										
+//										JSONArray cousers = company.getJSONArray("users");
+//										if(cousers.length()!=0)
+//										{
+//											for(int k=0;k<cousers.length();k++)
+//											{
+//												Log.e("report companies", "times k = " + k);
+//												JSONObject ccount = cousers
+//														.getJSONObject(k);
+//												coUsers.add(new ReportCompanyUsers(ccount.getString("id"), ccount.getString("first_name"), 
+//														ccount.getString("last_name"), ccount.getString("full_name"), ccount.getString("email"), 
+//														ccount.getString("phone")));
+//											}
+//										}
+//										JSONArray cosubs = company.getJSONArray("subcontractors");
 										coSubUsersArrayList = new ArrayList<ReportCompanyUsers>();
-										// if(cosubs.length()!=0)
-										// {
-										// for(int k=0;k<cosubs.length();k++)
-										// {
-										// Log.e("report companies",
-										// "times k2 = " + k);
-										// JSONObject ccount = cosubs
-										// .getJSONObject(k);
-										//
-										// JSONArray couser =
-										// ccount.getJSONArray("users");
-										// if(couser.length()!=0)
-										// {
-										// for(int m=0;m<couser.length();m++)
-										// {
-										// Log.e("report companies",
-										// "times m = " + m);
-										// JSONObject cccount =
-										// couser.getJSONObject(m);
-										//
-										// coSubUsers.add(new
-										// ReportCompanyUsers(cccount.getString("id"),
-										// cccount.getString("first_name"),
-										// cccount.getString("last_name"),
-										// cccount.getString("full_name"),
-										// cccount.getString("email"),
-										// cccount.getString("phone")));
-										//
-										// }
-										// coSubs.add(new
-										// ReportCompanySubcontractors(ccount.getString("id"),
-										// ccount.getString("name"),
-										// coSubUsers,
-										// ccount.getString("users_count")));
-										// }
-										// }
-										// }
-
-										Rcompany.add(new ReportCompany(company
-												.getString("id"), company
-												.getString("name"), coUsersArrayList,
-												coSubsArrayList));
-									}
-									companiesArrayList.add(new ReportCompanies(count
-											.getString("id"), count
-											.getString("count"), Rcompany));
-
+//										if(cosubs.length()!=0)
+//										{
+//											for(int k=0;k<cosubs.length();k++)
+//											{
+//												Log.e("report companies", "times k2 = " + k);
+//												JSONObject ccount = cosubs
+//														.getJSONObject(k);
+//												
+//												JSONArray couser = ccount.getJSONArray("users");
+//												if(couser.length()!=0)
+//												{
+//												for(int m=0;m<couser.length();m++)
+//												{
+//													Log.e("report companies", "times m = " + m);
+//													JSONObject cccount = couser.getJSONObject(m);
+//													
+//													coSubUsers.add(new ReportCompanyUsers(cccount.getString("id"), cccount.getString("first_name"), 
+//														cccount.getString("last_name"), cccount.getString("full_name"), cccount.getString("email"), 
+//														cccount.getString("phone")));
+//													
+//												}
+//												coSubs.add(new ReportCompanySubcontractors(ccount.getString("id"), ccount.getString("name"),
+//														coSubUsers, ccount.getString("users_count")));
+//												}
+//											}
+//										}
+										
+										Rcompany.add(new ReportCompany(company.getString("id"), company.getString("name"), coUsersArrayList, coSubsArrayList));
+										}
+										companiesArrayList.add(new ReportCompanies(count.getString("id"), count.getString("count"), Rcompany));
+									
+							
 								}
 							}
-							// ReportTopics = new ArrayList<ReportTopics>();
-							JSONArray report_topics = reportobj
-									.getJSONArray("report_topics");
-							for (j = 0; j < report_topics.length(); j++) {
-								JSONObject obj = report_topics.getJSONObject(j);
-								safeArrayList = new ArrayList<SafetyTopics>();
-								JSONObject safety_topic = obj
-										.getJSONObject("safety_topic");
+								
+								/*------- report_users array-------*/
+								JSONArray report_users = reportobj
+										.getJSONArray("report_users");
+								
+								if (report_users.length() == 0) {
+									// person.add(new ReportPersonnel("",null,
+									// ""));
+								} else {
+									Log.e("", "how many times" + i);
 
-								safeArrayList.add(new SafetyTopics(safety_topic
-										.getString("id"), safety_topic
-										.getString("title"), safety_topic
-										.getString("info")));
+									for (j = 0; j < report_users.length(); j++) {
 
-								reportTopicsArrayList.add(new ReportTopics(obj
-										.getString("id"), obj
-										.getString("report_id"), safeArrayList));
+										JSONObject count = report_users
+												.getJSONObject(j);
+										Log.d("", "count : " + count);
+										if (count.isNull("user")) {
+											
+//											JSONObject psubs = count
+//													.getJSONObject("sub");
+				//
+//											Log.d("", "psubs : " + psubs);
+//											psub = new ArrayList<subcontractors>();
+				//
+//											psub.add(new subcontractors(psubs
+//													.getString("id"), psubs
+//													.getString("name"), psubs
+//													.getString("email"), psubs
+//													.getString("phone"), psubs
+//													.getString("count")));
+//											person.add(new ReportPersonnel(
+//													count.getString("id"),
+//													null, null, psub, count
+//															.getString("count")));
+										} else {
 
-							}
-							Log.d("Safe ", "Size= " + reportTopicsArrayList.size());
+											JSONObject puser = count
+													.getJSONObject("user");
+											
+											JSONObject company = puser
+													.getJSONObject("company");// checkitem
 
-							// companies.get(i).
-							// Log.d("","sizecouser= "+coUsers.size()+"cosubs"+coSubs.size()+"cosubuser"+coSubUsers.size()+"company"+companies.size());
+											ArrayList<Company> compny = new ArrayList<Company>();
+											compny.add(new Company(company
+													.getString("id"), company
+													.getString("name")));
+
+											Log.d("", "puser : " + puser);
+											personnelUserArrayList = new ArrayList<ReportPersonnelUser>();
+
+											personnelUserArrayList
+													.add(new ReportPersonnelUser(
+															puser.getString("id"),
+															puser.getString("first_name"),
+															puser.getString("last_name"),
+															puser.getString("full_name"),
+															puser.getString("email"),
+															puser.getString("phone"),compny));
+
+											// if(count.isNull("hours"))
+											// {
+											// person.add(new
+											// ReportPersonnel(count.getString("id"),
+											// psub,count.getString("count")));
+											// }
+											// else
+											personArrayList.add(new ReportPersonnel(
+													count.getString("id"),
+													personnelUserArrayList,
+													count.getString("hours")
+													));
+										}
+									}
+								}
+								for (j = 0; j < report_users.length(); j++) {
+									
+									
+									
+								}
+								
+								/*------- safety_topics array-------*/
+								
+//								ReportTopics = new ArrayList<ReportTopics>();
+								JSONArray report_topics = reportobj
+										.getJSONArray("report_topics");
+								for (j = 0; j < report_topics.length(); j++) {
+									JSONObject obj = report_topics.getJSONObject(j);
+									safeArrayList = new ArrayList<SafetyTopics>();
+									JSONObject safety_topic = obj.getJSONObject("safety_topic");
+									
+									safeArrayList.add(new SafetyTopics(safety_topic.getString("id"),
+									safety_topic.getString("title"),
+									safety_topic.getString("info")));
+									
+									reportTopicsArrayList.add(new ReportTopics(obj.getString("id"), obj.getString("report_id"), safeArrayList));
+									
+								}
+								Log.d("Safe ","Size= "+reportTopicsArrayList.size());
+								
+//							companies.get(i).
+							//Log.d("","sizecouser= "+coUsers.size()+"cosubs"+coSubs.size()+"cosubuser"+coSubUsers.size()+"company"+companies.size());
 							/*------- possible_types array-------*/
 							JSONArray possible_types = reportobj
 									.getJSONArray("possible_types");
@@ -829,57 +956,494 @@ public class ReportFragment extends Fragment {
 
 								typeString = possible_types.getString(j);
 								// Log.d("possible type", "" + type);
-								// possibleTypesArray.add(type);
+							//	possibleTypesArray.add(type);
 
 							}
 							if (reportType.equals("Daily")) {
 								reportdataDailyArrayList.add((new Report(reportId,
 										epochTime, createdAt, updatedat,
-										createdDate, title, reportType, body,
-										weather, weathericon, precip, temp,
-										wind, humidity, authorArrayList, photoArrayList, personArrayList,
-										companiesArrayList, reportTopicsArrayList)));
+										createdDate, title, reportType,
+										body, weather, weathericon, precip,
+										temp, wind, humidity, authorArrayList,
+										photoArrayList, personArrayList, companiesArrayList,reportTopicsArrayList)));
 							} else if (reportType.equals("Safety")) {
 								reportdataSafetyArrayList.add((new Report(reportId,
 										epochTime, createdAt, updatedat,
-										createdDate, title, reportType, body,
-										weather, weathericon, precip, temp,
-										wind, humidity, authorArrayList, photoArrayList, personArrayList,
-										companiesArrayList, reportTopicsArrayList)));
+										createdDate, title, reportType,
+										body, weather, weathericon, precip,
+										temp, wind, humidity, authorArrayList,
+										photoArrayList, personArrayList, companiesArrayList,reportTopicsArrayList)));
 							} else if (reportType.equals("Weekly")) {
 								reportdataWeeklyArrayList.add((new Report(reportId,
 										epochTime, createdAt, updatedat,
-										createdDate, title, reportType, body,
-										weather, weathericon, precip, temp,
-										wind, humidity, authorArrayList, photoArrayList, personArrayList,
-										companiesArrayList, reportTopicsArrayList)));
+										createdDate, title, reportType,
+										body, weather, weathericon, precip,
+										temp, wind, humidity, authorArrayList,
+										photoArrayList, personArrayList, companiesArrayList,reportTopicsArrayList)));
 							}
 							reportdataArrayList.add(new Report(reportId, epochTime,
-									createdAt, updatedat, createdDate, title,
-									reportType, body, weather, weathericon,
-									precip, temp, wind, humidity, authorArrayList,
-									photoArrayList, personArrayList, companiesArrayList, reportTopicsArrayList));
-
-							// Log.d("",""+reportdata.get(i).author);
+									createdAt, updatedat, createdDate,
+									title, reportType, body, weather,
+									weathericon, precip, temp, wind,
+									humidity, authorArrayList, photoArrayList, personArrayList, companiesArrayList,reportTopicsArrayList));
+							
+//							Log.d("",""+reportdata.get(i).author);
 							/*------- comments array-------*/
 							JSONArray comments = reportobj
 									.getJSONArray("comments");
 							commntArrayList = new ArrayList<Comments>();
+							
 
-							/*------- report_users array-------*/
-							JSONArray report_users = reportobj
-									.getJSONArray("report_users");
-							for (j = 0; j < report_users.length(); j++) {
-							}
-							/*------- safety_topics array-------*/
+							
+							
+//							/*------- report_subs array-------*/
+//							JSONArray report_subs = reportobj
+//									.getJSONArray("report_subs");
+//							for (j = 0; j < report_subs.length(); j++) {
+//							}
 
-							/*------- report_subs array-------*/
-							JSONArray report_subs = reportobj
-									.getJSONArray("report_subs");
-							for (j = 0; j < report_subs.length(); j++) {
-							}
+							
 
 						}
+						Log.d("report Array length", "" + reportArrray.length());
+//						for (int i = 0; i < reportArrray.length(); i++) {
+//
+//							personArrayList = new ArrayList<ReportPersonnel>();
+//							companiesArrayList = new ArrayList<ReportCompanies>();
+//							reportTopicsArrayList = new ArrayList<ReportTopics>();
+//							// Rcompany = new ArrayList<ReportCompany>();
+//							coUsersArrayList = new ArrayList<ReportCompanyUsers>();
+//
+//							coSubsArrayList = new ArrayList<ReportCompanySubcontractors>();
+//
+//							// possibleTypesArray = new ArrayList<String>();
+//							JSONObject reportobj = reportArrray
+//									.getJSONObject(i);
+//							String reportId = reportobj.getString("id");
+//							Log.d("report_id", "-----------***" + reportId);
+//							if (reportId.equals("null")) {
+//								reportId = "";
+//							}
+//							String epochTime = reportobj
+//									.getString("epoch_time");
+//							if (epochTime.equals("null")) {
+//								epochTime = "";
+//							}
+//							String createdAt = reportobj
+//									.getString("created_at");
+//							if (createdAt.equals("null")) {
+//								createdAt = "";
+//							}
+//							String updatedat = reportobj
+//									.getString("updated_at");
+//							if (updatedat.equals("null")) {
+//								updatedat = "";
+//							}
+//							String createdDate = reportobj
+//									.getString("date_string");
+//							if (createdDate.equals("null")) {
+//								createdDate = "";
+//							}
+//							String title = reportobj.getString("title");
+//							if (title.equals("null")) {
+//								title = "";
+//							}
+//							String reportType = reportobj
+//									.getString("report_type");
+//							String body;
+//							if (reportobj.has("body")) {
+//								body = reportobj.getString("body");
+//								// It exists, do your stuff
+//							} else {
+//								body = "N/A";
+//								// It doesn't exist, do nothing
+//							}
+//
+//							if (reportType.equals("null")) {
+//								reportType = "";
+//							}
+//							String weather = reportobj.getString("weather");
+//							if (weather.equals("null")) {
+//								weather = "";
+//							}
+//							String weathericon = reportobj
+//									.getString("weather_icon");
+//							if (weathericon.equals("null")) {
+//								weathericon = "";
+//							}
+//							String precip = reportobj.getString("precip");
+//							if (precip.equals("null")) {
+//								precip = "";
+//							}
+//							String temp = reportobj.getString("temp");
+//							if (temp.equals("null")) {
+//								temp = "";
+//							}
+//							String wind = reportobj.getString("wind");
+//							if (wind.equals("null")) {
+//								wind = "";
+//							}
+//							String humidity = reportobj.getString("humidity");
+//							if (humidity.equals("null")) {
+//								humidity = "";
+//							}
+//
+//							/*------- author object-------*/
+//							if (!reportobj.isNull("author")) {
+//								authorArrayList = new ArrayList<Author>();
+//								JSONObject authorobj = reportobj
+//										.getJSONObject("author");
+//								String authorid = authorobj.getString("id");
+//								if (authorid.equals("null")) {
+//									authorid = "";
+//								}
+//								String firstname = authorobj
+//										.getString("first_name");
+//								if (firstname.equals("null")) {
+//									firstname = "";
+//								}
+//								String lastname = authorobj
+//										.getString("last_name");
+//								if (lastname.equals("null")) {
+//									lastname = "";
+//								}
+//								String fullname = authorobj
+//										.getString("full_name");
+//								if (fullname.equals("null")) {
+//									fullname = "";
+//								}
+//								String email = authorobj.getString("email");
+//								if (email.equals("null")) {
+//									email = "";
+//								}
+//								String phonenumber = authorobj
+//										.getString("phone");
+//								if (phonenumber.equals("null")) {
+//									phonenumber = "";
+//								}
+//
+//								authorArrayList.add(new Author(authorid, firstname,
+//										lastname, fullname, email, phonenumber));
+//							} else {
+//								authorArrayList = new ArrayList<Author>();
+//								authorArrayList.add(new Author("", "", "", "", "", ""));
+//							}
+//							/*------- report_fields array-------*/
+//							JSONArray report_fields = reportobj
+//									.getJSONArray("report_fields");
+//							for (int j = 0; j < report_fields.length(); j++) {
+//							}
+//
+//							JSONArray photos = reportobj.getJSONArray("photos");
+//							if (photos.length() == 0) {
+//								photoArrayList = new ArrayList<ProjectPhotos>();
+////								Log.d("if", "----photo if null--");
+////								photo.add(new ProjectPhotos("", "", "",
+////										"drawable", "", "", "", "", "", "", "",
+////										"", "", "",null));
+//								// photo_url.add("http://3.bp.blogspot.com/-1EULR14bUFc/T8srSY2KZqI/AAAAAAAAEOk/vTI6mnpZ43g/s1600/nature-wallpaper-15.jpg");
+//							} else {
+//								photoArrayList = new ArrayList<ProjectPhotos>();
+//								for (int k = 0; k < photos.length(); k++) {
+//
+//									JSONObject photosobj = photos
+//											.getJSONObject(k);
+//									String photoid = photosobj.getString("id");
+//									String url_large = photosobj
+//											.getString("url_large");
+//									String original = photosobj
+//											.getString("original");
+//									String photo_url200 = photosobj
+//											.getString("url_small");
+//									String url100 = photosobj
+//											.getString("url_thumb");
+//									String photo_epoch_time = photosobj
+//											.getString("epoch_time");
+//									String photo_url_small = photosobj
+//											.getString("url_small");
+//									String photo_url_thumb = photosobj
+//											.getString("url_thumb");
+//									String image_file_size = photosobj
+//											.getString("image_file_size");
+//									String image_content_type = photosobj
+//											.getString("image_content_type");
+//
+//									String source = photosobj
+//											.getString("source");
+//									String phase = photosobj.getString("phase");
+//									String photo_created_at = photosobj
+//											.getString("created_at");
+//									String user_name = photosobj
+//											.getString("user_name");
+//									String name = photosobj.getString("name");
+//
+//									String desc = photosobj
+//											.getString("description");
+//									String photo_created_date = photosobj
+//											.getString("date_string");
+//
+//									// Log.d("photosdata ",
+//									// "------------------photosdata start----------------------");
+//									// Log.d("photoid", ":" + photoid);
+//									// Log.d("url_large", ":" + url_large);
+//									// Log.d("original", ":" + original);
+//									// Log.d("url200", ":" + photo_url200);
+//									// Log.d("url100", ":" + url100);
+//									// Log.d("epoch_time", ":" +
+//									// photo_epoch_time);
+//									// Log.d("url_small", ":" +
+//									// photo_url_small);
+//									// Log.d("url_thumb", ":" +
+//									// photo_url_thumb);
+//									// Log.d("image_file_size", ":"
+//									// + image_file_size);
+//									// Log.d("image_content_type", ":"
+//									// + image_content_type);
+//									// Log.d("source", ":" + source);
+//									// Log.d("phase", ":" + phase);
+//									// Log.d("created_at", ":" +
+//									// photo_created_at);
+//									// Log.d("user_name", ":" + user_name);
+//									// Log.d("name", ":" + name);
+//									// Log.d("created_date", ":"
+//									// + photo_created_date);
+//									//
+//									// Log.d("photosdata ",
+//									// "-----------------photosdata end----------------------");
+//									// photo_url.add(photo_url200);
+//									Log.d("----photo url---", "" + photo_url200);
+//									photoArrayList.add(new ProjectPhotos(photoid,
+//											url_large, original, photo_url200,
+//											url100, image_file_size,
+//											image_content_type, source, phase,
+//											photo_created_at, user_name, name,
+//											desc, photo_created_date,null));
+//								}
+//							}
+//
+//							/*------- personnel array-------*/
+//
+//							JSONArray personnel = reportobj
+//									.getJSONArray("personnel");
+//							if (personnel.length() == 0) {
+//								// person.add(new ReportPersonnel("",null,
+//								// ""));
+//							} else {
+//								Log.e("", "how many times" + i);
+//
+//								for (j = 0; j < personnel.length(); j++) {
+//
+//									JSONObject count = personnel
+//											.getJSONObject(j);
+//									Log.d("", "count : " + count);
+//									if (count.isNull("user")) {
+//
+//									} else {
+//
+//										JSONObject puser = count
+//												.getJSONObject("user");
+//
+//										Log.d("", "puser : " + puser);
+//										JSONObject company = puser
+//												.getJSONObject("company");// checkitem
+//
+//										ArrayList<Company> compny = new ArrayList<Company>();
+//										compny.add(new Company(company
+//												.getString("id"), company
+//												.getString("name")));
+//										personnelUserArrayList = new ArrayList<ReportPersonnelUser>();
+//
+//										personnelUserArrayList
+//												.add(new ReportPersonnelUser(
+//														puser.getString("id"),
+//														puser.getString("first_name"),
+//														puser.getString("last_name"),
+//														puser.getString("full_name"),
+//														puser.getString("email"),
+//														puser.getString("phone"),
+//														compny));
+//
+//										personArrayList.add(new ReportPersonnel(count
+//												.getString("id"),
+//												personnelUserArrayList, count
+//														.getString("hours")));
+//									}
+//								}
+//							}
+//							Log.d("", "person size=" + personArrayList.size());
+//							JSONArray reportCompany = reportobj
+//									.getJSONArray("report_companies");
+//							if (reportCompany.length() == 0) {
+//								// person.add(new ReportPersonnel("",null,
+//								// ""));
+//							} else {
+//								Log.e("report companies", "times = " + i);
+//
+//								for (j = 0; j < reportCompany.length(); j++) {
+//									JSONObject count = reportCompany
+//											.getJSONObject(j);
+//									Log.e("report companies", "times j = " + j);
+//									ArrayList<ReportCompany> Rcompany = new ArrayList<ReportCompany>();
+//									if (count.isNull("company")) {
+//										Rcompany.add(new ReportCompany("", "",
+//												coUsersArrayList, coSubsArrayList));
+//									} else {
+//										JSONObject company = count
+//												.getJSONObject("company");
+//
+//										// JSONArray cousers =
+//										// company.getJSONArray("users");
+//										// if(cousers.length()!=0)
+//										// {
+//										// for(int k=0;k<cousers.length();k++)
+//										// {
+//										// Log.e("report companies",
+//										// "times k = " + k);
+//										// JSONObject ccount = cousers
+//										// .getJSONObject(k);
+//										// coUsers.add(new
+//										// ReportCompanyUsers(ccount.getString("id"),
+//										// ccount.getString("first_name"),
+//										// ccount.getString("last_name"),
+//										// ccount.getString("full_name"),
+//										// ccount.getString("email"),
+//										// ccount.getString("phone")));
+//										// }
+//										// }
+//										// JSONArray cosubs =
+//										// company.getJSONArray("subcontractors");
+//										coSubUsersArrayList = new ArrayList<ReportCompanyUsers>();
+//										// if(cosubs.length()!=0)
+//										// {
+//										// for(int k=0;k<cosubs.length();k++)
+//										// {
+//										// Log.e("report companies",
+//										// "times k2 = " + k);
+//										// JSONObject ccount = cosubs
+//										// .getJSONObject(k);
+//										//
+//										// JSONArray couser =
+//										// ccount.getJSONArray("users");
+//										// if(couser.length()!=0)
+//										// {
+//										// for(int m=0;m<couser.length();m++)
+//										// {
+//										// Log.e("report companies",
+//										// "times m = " + m);
+//										// JSONObject cccount =
+//										// couser.getJSONObject(m);
+//										//
+//										// coSubUsers.add(new
+//										// ReportCompanyUsers(cccount.getString("id"),
+//										// cccount.getString("first_name"),
+//										// cccount.getString("last_name"),
+//										// cccount.getString("full_name"),
+//										// cccount.getString("email"),
+//										// cccount.getString("phone")));
+//										//
+//										// }
+//										// coSubs.add(new
+//										// ReportCompanySubcontractors(ccount.getString("id"),
+//										// ccount.getString("name"),
+//										// coSubUsers,
+//										// ccount.getString("users_count")));
+//										// }
+//										// }
+//										// }
+//
+//										Rcompany.add(new ReportCompany(company
+//												.getString("id"), company
+//												.getString("name"), coUsersArrayList,
+//												coSubsArrayList));
+//									}
+//									companiesArrayList.add(new ReportCompanies(count
+//											.getString("id"), count
+//											.getString("count"), Rcompany));
+//
+//								}
+//							}
+//							// ReportTopics = new ArrayList<ReportTopics>();
+//							JSONArray report_topics = reportobj
+//									.getJSONArray("report_topics");
+//							for (j = 0; j < report_topics.length(); j++) {
+//								JSONObject obj = report_topics.getJSONObject(j);
+//								safeArrayList = new ArrayList<SafetyTopics>();
+//								JSONObject safety_topic = obj
+//										.getJSONObject("safety_topic");
+//
+//								safeArrayList.add(new SafetyTopics(safety_topic
+//										.getString("id"), safety_topic
+//										.getString("title"), safety_topic
+//										.getString("info")));
+//
+//								reportTopicsArrayList.add(new ReportTopics(obj
+//										.getString("id"), obj
+//										.getString("report_id"), safeArrayList));
+//
+//							}
+//							Log.d("Safe ", "Size= " + reportTopicsArrayList.size());
+//
+//							// companies.get(i).
+//							// Log.d("","sizecouser= "+coUsers.size()+"cosubs"+coSubs.size()+"cosubuser"+coSubUsers.size()+"company"+companies.size());
+//							/*------- possible_types array-------*/
+//							JSONArray possible_types = reportobj
+//									.getJSONArray("possible_types");
+//
+//							for (int j = 0; j < possible_types.length(); j++) {
+//
+//								typeString = possible_types.getString(j);
+//								// Log.d("possible type", "" + type);
+//								// possibleTypesArray.add(type);
+//
+//							}
+//							if (reportType.equals("Daily")) {
+//								reportdataDailyArrayList.add((new Report(reportId,
+//										epochTime, createdAt, updatedat,
+//										createdDate, title, reportType, body,
+//										weather, weathericon, precip, temp,
+//										wind, humidity, authorArrayList, photoArrayList, personArrayList,
+//										companiesArrayList, reportTopicsArrayList)));
+//							} else if (reportType.equals("Safety")) {
+//								reportdataSafetyArrayList.add((new Report(reportId,
+//										epochTime, createdAt, updatedat,
+//										createdDate, title, reportType, body,
+//										weather, weathericon, precip, temp,
+//										wind, humidity, authorArrayList, photoArrayList, personArrayList,
+//										companiesArrayList, reportTopicsArrayList)));
+//							} else if (reportType.equals("Weekly")) {
+//								reportdataWeeklyArrayList.add((new Report(reportId,
+//										epochTime, createdAt, updatedat,
+//										createdDate, title, reportType, body,
+//										weather, weathericon, precip, temp,
+//										wind, humidity, authorArrayList, photoArrayList, personArrayList,
+//										companiesArrayList, reportTopicsArrayList)));
+//							}
+//							reportdataArrayList.add(new Report(reportId, epochTime,
+//									createdAt, updatedat, createdDate, title,
+//									reportType, body, weather, weathericon,
+//									precip, temp, wind, humidity, authorArrayList,
+//									photoArrayList, personArrayList, companiesArrayList, reportTopicsArrayList));
+//
+//							// Log.d("",""+reportdata.get(i).author);
+//							/*------- comments array-------*/
+//							JSONArray comments = reportobj
+//									.getJSONArray("comments");
+//							commntArrayList = new ArrayList<Comments>();
+//
+//							/*------- report_users array-------*/
+//							JSONArray report_users = reportobj
+//									.getJSONArray("report_users");
+//							for (j = 0; j < report_users.length(); j++) {
+//							}
+//							/*------- safety_topics array-------*/
+//
+//							/*------- report_subs array-------*/
+//							JSONArray report_subs = reportobj
+//									.getJSONArray("report_subs");
+//							for (j = 0; j < report_subs.length(); j++) {
+//							}
+//
+//						}
 
 						if (Prefrences.reportlisttypes == 0) {
 							reportAdapter = new ReportListAdapter(
@@ -1101,10 +1665,10 @@ public class ReportFragment extends Fragment {
 					precip = "";
 				}
 			    else{
-			    	precip=precip.substring(0, precip.length()-1);
-			    	Log.d("waaaooooo","waaaaaooo "+precip.toString());
-
-			    	precip=String.format("%.1f", Float.parseFloat(precip))+"%";
+//			    	precip=precip.substring(0, precip.length()-1);
+//			    	Log.d("waaaooooo","waaaaaooo "+precip.toString());
+//
+//			    	precip=String.format("%.1f", Float.parseFloat(precip))+"%";
 			    	}
 				String temp = reportobj.getString("temp");
 				if (temp.equals("null")) {
@@ -1120,10 +1684,10 @@ public class ReportFragment extends Fragment {
 					humidity = "";
 				}
 				else{
-			    	humidity=humidity.substring(0, humidity.length()-1);
-			    	Log.d("waaaooooo","waaaaaooo "+humidity.toString());
-
-			    	humidity=String.format("%.1f", Float.parseFloat(humidity))+"%";
+//			    	humidity=humidity.substring(0, humidity.length()-1);
+//			    	Log.d("waaaooooo","waaaaaooo "+humidity.toString());
+//
+//			    	humidity=String.format("%.1f", Float.parseFloat(humidity))+"%";
 			    	}
 
 				
@@ -1177,11 +1741,11 @@ public class ReportFragment extends Fragment {
 					authorArrayList.add(new Author("", "", "", "", "",
 							""));
 				}
-				/*------- report_fields array-------*/
-				JSONArray report_fields = reportobj
-						.getJSONArray("report_fields");
-				for (int j = 0; j < report_fields.length(); j++) {
-				}
+//				/*------- report_fields array-------*/
+//				JSONArray report_fields = reportobj
+//						.getJSONArray("report_fields");
+//				for (int j = 0; j < report_fields.length(); j++) {
+//				}
 
 				// if (reportobj.isNull("photos")) {
 				// photo = new ArrayList<ProjectPhotos>();
@@ -1235,8 +1799,8 @@ public class ReportFragment extends Fragment {
 								.getString("source");
 						String phase = photosobj
 								.getString("phase");
-						String photo_created_at = photosobj
-								.getString("created_at");
+//						String photo_created_at = photosobj
+//								.getString("created_at");
 						String user_name = photosobj
 								.getString("user_name");
 						String name = photosobj
@@ -1283,7 +1847,8 @@ public class ReportFragment extends Fragment {
 								photo_url200, url100,
 								image_file_size,
 								image_content_type, source,
-								phase, photo_created_at,
+								phase, 
+//								photo_created_at,
 								user_name, name, desc,
 								photo_created_date,null));
 					}
@@ -1656,11 +2221,11 @@ public class ReportFragment extends Fragment {
 
 				
 				
-				/*------- report_subs array-------*/
-				JSONArray report_subs = reportobj
-						.getJSONArray("report_subs");
-				for (j = 0; j < report_subs.length(); j++) {
-				}
+//				/*------- report_subs array-------*/
+//				JSONArray report_subs = reportobj
+//						.getJSONArray("report_subs");
+//				for (j = 0; j < report_subs.length(); j++) {
+//				}
 
 				// JSONArray comm =
 				// count.getJSONArray("comments");

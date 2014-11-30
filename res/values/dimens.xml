@@ -6,6 +6,6 @@
     <dimen name="shadow_width">30px</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-      <dimen name="report_list">36px</dimen>
+      <dimen name="report_list">32px</dimen>
 
 </resources>

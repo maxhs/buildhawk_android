@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -27,7 +28,8 @@ public class DocumentImageView extends Activity {
 	private ZoomView zoomView;
 	TextView textviewSelectedImage;
 	RelativeLayout relativeLayoutMain, relativelayoutBack, relativelayoutrootDocImage;
-
+	WebView mWebView;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,12 +38,23 @@ public class DocumentImageView extends Activity {
 		relativelayoutrootDocImage = (RelativeLayout) findViewById(R.id.relativelayoutrootDocImage);
 		new ASSL(this, relativelayoutrootDocImage, 1134, 720, false);
 		
+		
+		mWebView=(WebView)findViewById(R.id.webView1);
 		int position;
 		Intent intent = getIntent();
 		position = intent.getIntExtra("position", 0);
 		relativeLayoutMain = (RelativeLayout) findViewById(R.id.RelLayout);
 		textviewSelectedImage=(TextView)findViewById(R.id.textviewSelectedImage);
-		zoomView = new ZoomView(this);
+		String type=SelectedImage.arraylist.get(position).imageContentType;
+		if(type.toString().equalsIgnoreCase("application/pdf"))
+		{
+			 mWebView.setVisibility(View.VISIBLE);
+	         mWebView.getSettings().setJavaScriptEnabled(true);
+	         mWebView.getSettings().setPluginsEnabled(true);		        
+	         mWebView.loadUrl("https://docs.google.com/gview?embedded=true&url="+""+SelectedImage.arraylist.get(position).original);
+		}
+		else{
+		zoomView = new ZoomView(this);		
 		Log.d("kjhudjklkhdkijlh",
 				"kjhwkhkjgkgjklwhl"
 						+ SelectedImage.arraylist.get(position).urlLarge.toString()
@@ -53,13 +66,13 @@ public class DocumentImageView extends Activity {
 
 		Picasso.with(DocumentImageView.this)
 				.load(SelectedImage.arraylist.get(position).urlLarge.toString())
-				.placeholder(R.drawable.processing_image).into(imageviewSelected);
-		
-		textviewSelectedImage.setText(SelectedImage.arraylist.get(position).name);
-		
-		relativeLayoutMain.addView(zoomView);
-		
+//				.resize((int) (200 * ASSL.Xscale()),(int) (200 * ASSL.Yscale()))
+				.placeholder(R.drawable.processing_image).into(imageviewSelected);		
+		textviewSelectedImage.setText(SelectedImage.arraylist.get(position).name);	
+		relativeLayoutMain.addView(zoomView);		
 		zoomView.addView(imageviewSelected);
+	}
+		
 		relativelayoutBack=(RelativeLayout)findViewById(R.id.relativelayoutBack);
 		relativelayoutBack.setOnClickListener(new OnClickListener() {
 

@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.TimeZone;
@@ -71,23 +72,33 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+
 import com.buildhawk.R.color;
 import com.buildhawk.R.drawable;
+import com.buildhawk.ReportItemCreate.LongOperation;
 import com.buildhawk.utils.Assignee;
 import com.buildhawk.utils.CommentUser;
 import com.buildhawk.utils.Comments;
+import com.buildhawk.utils.CommentsChecklistItem;
+import com.buildhawk.utils.CommentsUserChecklistItem;
 import com.buildhawk.utils.Company;
 import com.buildhawk.utils.DialogBox;
 import com.buildhawk.utils.PunchListsItem;
 import com.buildhawk.utils.PunchListsPhotos;
 import com.buildhawk.utils.Users;
+import com.kbeanie.imagechooser.api.ChooserType;
+import com.kbeanie.imagechooser.api.ChosenImage;
+import com.kbeanie.imagechooser.api.ImageChooserListener;
+import com.kbeanie.imagechooser.api.ImageChooserManager;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 
-public class WorkItemClick extends Activity {
+public class WorkItemClick extends Activity implements ImageChooserListener {
 
+	ImageChooserManager imageChooserManager,imageChooserManager2;
+	
 	private static int RESULT_LOAD_IMAGE = 1;
 	private static int TAKE_PICTURE = 1;
 	private static int PICK_CONTACT = 1;
@@ -100,6 +111,8 @@ public class WorkItemClick extends Activity {
 	ArrayList<String> arr = new ArrayList<String>();
 	ArrayList<String> ids = new ArrayList<String>();
 	ArrayList<String> desc = new ArrayList<String>();
+	ArrayList<String> contenttype = new ArrayList<String>();
+	
 
 	ArrayList<PunchListsItem> array = new ArrayList<PunchListsItem>();
 	ArrayList<String> loc = new ArrayList<String>();
@@ -137,8 +150,9 @@ public class WorkItemClick extends Activity {
 	public  ArrayList<PunchListsPhotos> punchlistphoto2;
 	commentadapter comadap;
 	LinearLayout commentLayout;
-	
-
+	ArrayList<String> picupload = new ArrayList<String>();
+	int count=0;
+	int arrayPhotoFlag=0;
 	SwipeDetector swipeDetecter = new SwipeDetector();
 
 	@Override
@@ -205,6 +219,7 @@ public class WorkItemClick extends Activity {
 				Log.d("ID ", "ID------ " + Prefrences.worklistNotification);
 				Bundle bundle = getIntent().getExtras();
 				id_punchlist_item = bundle.getString("id");
+				Prefrences.punchlist_id= id_punchlist_item;
 				Log.d("ID ", "ID********* " + id_punchlist_item);
 				punchlst_item(id_punchlist_item);
 			} else {
@@ -229,6 +244,7 @@ public class WorkItemClick extends Activity {
 		}
 		}
 		else{
+			arrayPhotoFlag=1;
 			loc.addAll(WorklistFragment.locs);
 			ass.addAll(WorklistFragment.assignees);
 			Log.d("loc", "sizeeee" + loc.size());
@@ -441,9 +457,15 @@ public class WorkItemClick extends Activity {
 				if(ConnectionDetector.isConnectingToInternet()){
 				commentAdd(txt_commentbody.getText().toString());
 				// commentslist.add
+				
+				
+				ArrayList<CommentUser>cuser = new ArrayList<CommentUser>();
+				cuser.add( new CommentUser(Prefrences.userId, Prefrences.firstName, Prefrences.lastName, Prefrences.fullName, Prefrences.email, Prefrences.phoneNumber, "", "", null));
+		
 				commnt2.add(new Comments(id_punchlist_item, txt_commentbody.getText()
-						.toString(), null, "just now"));
+						.toString(), cuser, "just now"));
 				Log.d("*****", "increased size" + commnt2.size());
+//				Collections.reverse(commnt2);
 				commentslist.setAdapter(comadap);
 				comadap.notifyDataSetChanged();
 				setlist(commentslist, comadap, 230);
@@ -465,11 +487,19 @@ public class WorkItemClick extends Activity {
 				// TODO Auto-generated method stub
 				Log.d("", "before" + Prefrences.selectedlocation);
 
+				if(!Prefrences.assignee_str.equals(""))
+				{
+					Prefrences.text = 4;
+				Show_Dialog(v);
+				}
+				else
+				{
 				Intent intent = new Intent(con,CompanyExpandable.class);
 				startActivity(intent);
 				overridePendingTransition(R.anim.slide_in_right,
 						R.anim.slide_out_left);
-//				Prefrences.text = 4;
+				}
+//				
 //				Show_Dialog2(v);
 
 				// btn_assigned.setText(""+Prefrences.selectedlocation);
@@ -495,6 +525,7 @@ public class WorkItemClick extends Activity {
 				// TODO Auto-generated method stub
 				Prefrences.assignee_str="";
 				Prefrences.assigneeID="";
+				Prefrences.location_str="";
 				try {
 
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -558,37 +589,53 @@ public class WorkItemClick extends Activity {
 				// startActivity(i);
 			}
 		});
+		
+		imageChooserManager = new ImageChooserManager(WorkItemClick.this,ChooserType.REQUEST_PICK_PICTURE);
+		imageChooserManager.setImageChooserListener(this);
 
 		img_gallery.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(
-						Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-				startActivityForResult(intent, RESULT_LOAD_IMAGE);
+//				Intent intent = new Intent(
+//						Intent.ACTION_PICK,
+//						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//
+//				startActivityForResult(intent, RESULT_LOAD_IMAGE);
+				try {
+					imageChooserManager.choose();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
-
+		imageChooserManager2 = new ImageChooserManager(WorkItemClick.this,ChooserType.REQUEST_CAPTURE_PICTURE);
+		imageChooserManager2.setImageChooserListener(this);
 		img_camera.setOnClickListener(new OnClickListener() {
 
 			@SuppressLint("SimpleDateFormat")
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
-				String date = sdf.format(Calendar.getInstance().getTime());
-				Log.v("", "" + date);
-				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-				File photo = new File(
-						Environment.getExternalStorageDirectory(), date
-								+ ".jpg");
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
-				imageUri = Uri.fromFile(photo);
-				picturePath = photo.toString();
-				startActivityForResult(intent, TAKE_PICTURE);
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
+//				String date = sdf.format(Calendar.getInstance().getTime());
+//				Log.v("", "" + date);
+//				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//				File photo = new File(
+//						Environment.getExternalStorageDirectory(), date
+//								+ ".jpg");
+//				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+//				imageUri = Uri.fromFile(photo);
+//				picturePath = photo.toString();
+//				startActivityForResult(intent, TAKE_PICTURE);
+				try {
+					imageChooserManager2.choose();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -600,6 +647,7 @@ public class WorkItemClick extends Activity {
 		super.onBackPressed();
 		Prefrences.assignee_str="";
 		Prefrences.assigneeID="";
+		Prefrences.location_str="";
 		ProjectDetail.flag = 0;
 		try {
 
@@ -638,16 +686,29 @@ public class WorkItemClick extends Activity {
 		// {
 
 		// }
+		
+		if (Prefrences.stopingHit == 1) {
+			Prefrences.stopingHit=0;
+			id_punchlist_item = Prefrences.punchlist_id;
+			
+			Log.d("ID ", "ID********* " + id_punchlist_item);
+			punchlst_item(id_punchlist_item);
+		}
 	}
 
 	public void setphotos() {
-
+		lin2.removeAllViews();
+		arr.clear();
+		ids.clear();
+		desc.clear();
+		contenttype.clear();
 		for (int i = 0; i < punchlistphoto2.size(); i++) {
 			if (!punchlistphoto2.get(i).original.equalsIgnoreCase("")) {
 				img_ladder_page2 = new ImageView(WorkItemClick.this);
 				arr.add(punchlistphoto2.get(i).urlLarge);
 				ids.add(punchlistphoto2.get(i).id);
-				desc.add(punchlistphoto2.get(i).description);
+				desc.add(punchlistphoto2.get(i).original);
+				contenttype.add(punchlistphoto2.get(i).imageContentType);
 
 				Log.d("array",
 						"-------array-----"
@@ -679,6 +740,7 @@ public class WorkItemClick extends Activity {
 						intent.putExtra("array", arr);
 						intent.putExtra("ids", ids);
 						intent.putExtra("desc", desc);
+						intent.putExtra("type", contenttype);
 						intent.putExtra("id", punchlistphoto2
 								.get(Prefrences.selectedPic).id);
 						startActivity(intent);
@@ -718,103 +780,109 @@ public class WorkItemClick extends Activity {
 		lv.requestLayout();
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		Prefrences.stopingHit = 1;
-		if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
-				&& null != data) {
-			Uri selectedImage = data.getData();
-			String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-			Cursor cursor = getContentResolver().query(selectedImage,
-					filePathColumn, null, null, null);
-			cursor.moveToFirst();
-
-			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-			picturePath = cursor.getString(columnIndex);
-			cursor.close();
-
-			// picarray
-			ImageView ladder_page2 = null;
-			// Log.d("--------","888888"+DocumentFragment.photosList.size());
-			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
-			ladder_page2 = new ImageView(this);
-
-			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-					(int) (200), (int) (200));
-			lp.setMargins(10, 10, 10, 10);
-			ladder_page2.setLayoutParams(lp);
-			// Picasso.with(CheckItemClick.this).load(picturePath).into(ladder_page2);
-			// // ladder_page2.setImageBitmap(myBitmap);
-			File file = new File(picturePath);
-			Picasso.with(WorkItemClick.this).load(file)
-			.resize((int) (200 * ASSL.Xscale()),
-					(int) (200 * ASSL.Xscale()))
-					.into(ladder_page2);
-			lin2.addView(ladder_page2);
-			
-//			BitmapFactory.Options options = new BitmapFactory.Options();
-//			options.inSampleSize = 6;
-//			options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-			
-
-//			ladder_page2.setImageBitmap(BitmapFactory.decodeFile(picturePath,options));
-			if (ProjectDetail.flag == 0) {
-				new LongOperation().execute("");
-			}
-		}
-
-		else if (requestCode == TAKE_PICTURE
-				&& resultCode == Activity.RESULT_OK) {					
-						
-			Uri selectedImage = imageUri;
-			
-
-			picturePath = getRealPathFromURI(imageUri);
-			getContentResolver().notifyChange(selectedImage, null);
-			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
-			ImageView ladder_page2 = null;
-
-			// Log.d("--------","888888"+DocumentFragment.photosList.size());
-			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
-			ladder_page2 = new ImageView(WorkItemClick.this);
-			// picturePath = selectedImage.toString();
-			ContentResolver cr = getContentResolver();
-			Bitmap bitmap;
-//			picturePath=selectedImage.toString();
-			try {
-				bitmap = android.provider.MediaStore.Images.Media.getBitmap(cr,
-						selectedImage);
-				if (ProjectDetail.flag == 0)
-				{
-					new LongOperation().execute("");
-				}		
-//				else
-//					picturePath=selectedImage.toString();
-				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-						(int) (200), (int) (200));
-				lp.setMargins(10, 10, 10, 10);
-				ladder_page2.setLayoutParams(lp);
-				
-				File file = new File(picturePath);
-				Picasso.with(WorkItemClick.this).load(file)
-						.placeholder(R.drawable.ic_launcher)
-						.resize((int) (200 * ASSL.Xscale()),
-								(int) (200 * ASSL.Xscale()))
-						.centerCrop().into(ladder_page2);
-				// Picasso.with(CheckItemClick.this).load(picturePath).into(ladder_page2);
-				ladder_page2.setImageBitmap(bitmap);
-//				ladder_page2.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-				lin2.addView(ladder_page2);
-				
-			} catch (Exception e) {
-				Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT)
-						.show();
-				Log.e("Camera", e.toString());
-			}
-		}
-	}
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//		Prefrences.stopingHit = 1;
+//		if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
+//				&& null != data) {
+//			Uri selectedImage = data.getData();
+//			String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//
+//			Cursor cursor = getContentResolver().query(selectedImage,
+//					filePathColumn, null, null, null);
+//			cursor.moveToFirst();
+//
+//			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//			picturePath = cursor.getString(columnIndex);
+//			cursor.close();
+//
+//			if(picturePath == null)
+//			{
+//				AlertMessage();
+//			}
+//			else{
+//			// picarray
+//			ImageView ladder_page2 = null;
+//			// Log.d("--------","888888"+DocumentFragment.photosList.size());
+//			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
+//			ladder_page2 = new ImageView(this);
+//
+//			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+//					(int) (200), (int) (200));
+//			lp.setMargins(10, 10, 10, 10);
+//			ladder_page2.setLayoutParams(lp);
+//			// Picasso.with(CheckItemClick.this).load(picturePath).into(ladder_page2);
+//			// // ladder_page2.setImageBitmap(myBitmap);
+//			File file = new File(picturePath);
+//			Picasso.with(WorkItemClick.this).load(file)
+//			.resize((int) (200 * ASSL.Xscale()),
+//					(int) (200 * ASSL.Xscale()))
+//					.into(ladder_page2);
+//			lin2.addView(ladder_page2);
+//			
+////			BitmapFactory.Options options = new BitmapFactory.Options();
+////			options.inSampleSize = 6;
+////			options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//			
+//
+////			ladder_page2.setImageBitmap(BitmapFactory.decodeFile(picturePath,options));
+//			if (ProjectDetail.flag == 0) {
+//				new LongOperation().execute("");
+//			}
+//			}
+//		}
+//
+//		else if (requestCode == TAKE_PICTURE
+//				&& resultCode == Activity.RESULT_OK) {					
+//						
+//			Uri selectedImage = imageUri;
+//			
+//
+//			picturePath = getRealPathFromURI(imageUri);
+//			getContentResolver().notifyChange(selectedImage, null);
+//			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
+//			ImageView ladder_page2 = null;
+//
+//			// Log.d("--------","888888"+DocumentFragment.photosList.size());
+//			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
+//			ladder_page2 = new ImageView(WorkItemClick.this);
+//			// picturePath = selectedImage.toString();
+//			ContentResolver cr = getContentResolver();
+//			Bitmap bitmap;
+////			picturePath=selectedImage.toString();
+//			try {
+//				bitmap = android.provider.MediaStore.Images.Media.getBitmap(cr,
+//						selectedImage);
+//				if (ProjectDetail.flag == 0)
+//				{
+//					new LongOperation().execute("");
+//				}		
+////				else
+////					picturePath=selectedImage.toString();
+//				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+//						(int) (200), (int) (200));
+//				lp.setMargins(10, 10, 10, 10);
+//				ladder_page2.setLayoutParams(lp);
+//				
+//				File file = new File(picturePath);
+//				Picasso.with(WorkItemClick.this).load(file)
+//						.placeholder(R.drawable.ic_launcher)
+//						.resize((int) (200 * ASSL.Xscale()),
+//								(int) (200 * ASSL.Xscale()))
+//						.centerCrop().into(ladder_page2);
+//				// Picasso.with(CheckItemClick.this).load(picturePath).into(ladder_page2);
+//				ladder_page2.setImageBitmap(bitmap);
+////				ladder_page2.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+//				lin2.addView(ladder_page2);
+//				
+//			} catch (Exception e) {
+//				Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT)
+//						.show();
+//				Log.e("Camera", e.toString());
+//			}
+//		}
+//	}
 
 	public void Show_Dialog(View v) {
 		DialogBox cdd = new DialogBox(this);
@@ -964,17 +1032,17 @@ public class WorkItemClick extends Activity {
 			}
 
 			holder.relativelayoutComment.setTag(holder);
-			holder.position = position;
+			holder.position = commnt2.size()-1-position;
 
-			holder.body.setText("" + commnt2.get(position).body.toString());
+			holder.body.setText("" + commnt2.get(commnt2.size()-1-position).body.toString());
 
-			if (commnt2.get(position).cuser == null) {
+			if (commnt2.get(commnt2.size()-1-position).cuser == null) {
 				holder.user.setText("");
 			} else {
 				holder.user.setText(""
-						+ commnt2.get(position).cuser.get(0).fullName.toString());
+						+ commnt2.get(commnt2.size()-1-position).cuser.get(0).fullName.toString());
 			}
-			if (commnt2.get(position).created_at.toString().equals("just now")) {
+			if (commnt2.get(commnt2.size()-1-position).created_at.toString().equals("just now")) {
 				holder.date.setText("just now");
 			} else {
 				
@@ -982,7 +1050,7 @@ public class WorkItemClick extends Activity {
 //						.substring(0, 10);
 //				String time = comm.get(position).created_at.toString()
 //						.substring(11, 19);
-				String date = utcToLocal(commnt2.get(position).created_at.toString());
+				String date = utcToLocal(commnt2.get(commnt2.size()-1-position).created_at.toString());
 //				Log.d("date==", "" + date);
 //				Log.d("time==", "" + time);
 				holder.date.setText(date);
@@ -1177,7 +1245,7 @@ public class WorkItemClick extends Activity {
 			jsonobj.put("body", body);
 			String assigneeId = "";
 			jsonobj.put("user_id", user_id);
-			jsonobj.put("location", location);
+			jsonobj.put("location", location.toString().trim());
 			for (int j = 0; j < ProjectsAdapter.user2ArrayList.size(); j++) {
 				if (ProjectsAdapter.user2ArrayList.get(j).uFullName.toString()
 						.equalsIgnoreCase(Prefrences.assignee_str.toString())) {
@@ -1209,7 +1277,7 @@ public class WorkItemClick extends Activity {
 						public void onSuccess(String response) {
 
 							JSONObject res = null;
-
+							Prefrences.stopingHit=0;
 							/*
 							 * {"punchlist_item":{"photos":[],"id":153,"body":
 							 * "Remove mold","epoch_time":1399707530,"
@@ -1242,14 +1310,35 @@ public class WorkItemClick extends Activity {
 								Log.i("punchlist_item_obj", id);
 								id_punchlist_item = id;
 
-								if (!picturePath.equals("")) {
-//								if(ProjectDetail.flag==1){
-									Log.d("if","if"+picturePath);
-									new LongOperation().execute("");
-								} else {
-									Log.d("else","else");
-									Prefrences.dismissLoadingDialog();
-								}
+								if(picupload.size()==0)
+								 {
+									 Prefrences.dismissLoadingDialog();
+										Log.d("else Picture ","else Picture ");
+//										AlertMessage();
+								 }
+								 else
+								 {
+									if (!picupload.get(count).equals(""))
+									{
+										Log.d("if Picture ","if Picture ");
+										new LongOperation().execute("");
+									} 
+									else 
+									{
+										Prefrences.dismissLoadingDialog();
+										Log.d("else Picture ","else Picture ");
+//										AlertMessage();
+									}
+								 }
+								
+//								if (!picturePath.equals("")) {
+////								if(ProjectDetail.flag==1){
+//									Log.d("if","if"+picturePath);
+//									new LongOperation().execute("");
+//								} else {
+//									Log.d("else","else");
+//									Prefrences.dismissLoadingDialog();
+//								}
 								btn_save.setText("Save");
 								// String body = punchlist_item_obj
 								// .getString("body");
@@ -1406,8 +1495,13 @@ public class WorkItemClick extends Activity {
 								// }
 								ProjectDetail.flag = 0;
 								Prefrences.worklist_bool=false;
-								finish();
-								
+								if(Prefrences.stopingHit!=1)
+								{
+//								if(arrayPhotoFlag!=1 ){
+									
+									finish();
+//								}
+								}
 							}
 
 							catch (Exception e) {
@@ -1618,7 +1712,7 @@ public class WorkItemClick extends Activity {
 							JSONObject res = null;
 							try {
 								res = new JSONObject(response);
-								startservice();
+//								startservice();
 								Log.v("response ---- ",
 										"---*****----" + res.toString(2));
 							} catch (Exception e) {
@@ -1628,6 +1722,7 @@ public class WorkItemClick extends Activity {
 							// WorkListCompleteAdapter.data, pos);
 							Prefrences.assigneeID="";
 							Prefrences.assignee_str="";
+							Prefrences.location_str="";
 							Prefrences.worklist_bool=false;
 							Prefrences.dismissLoadingDialog();
 							finish();
@@ -1691,6 +1786,32 @@ boolean error;
 			{
 				AlertMessage();
 			}
+			else
+			{
+				if(picupload.size()>count)
+				{
+					
+					new LongOperation().execute("");
+				}
+				else
+				{
+					if (Prefrences.stopingHit == 1) {
+						Prefrences.stopingHit=0;
+						if(arrayPhotoFlag==1)
+						{
+							finish();
+							Log.d("asdf","asdf");
+						}
+						else
+						{
+						id_punchlist_item = Prefrences.punchlist_id;						
+						Log.d("ID ", "ID********* " + id_punchlist_item);
+						punchlst_item(id_punchlist_item);
+						}
+					}
+				}
+				
+			}
 //			finish();
 		}
 
@@ -1727,7 +1848,7 @@ boolean error;
 
 			int intValue) {
 
-				finish();
+//				finish();
 
 				// setting_page = true;
 
@@ -1773,7 +1894,7 @@ boolean error;
 
 		Log.v("picturePath", picturePath);
 
-		File file = new File(picturePath);
+		File file = new File(picupload.get(count).toString());
 
 		FileBody cbFile = new FileBody(file, "image/jpg");
 
@@ -1822,6 +1943,8 @@ boolean error;
 		Log.v("res", "," + responseString);
 
 		System.out.println(responseString);
+		Prefrences.stopingHit=1;
+		count++;
 
 	}
 
@@ -2250,9 +2373,10 @@ boolean error;
 
 				ccount.getString("source"), ccount
 
-				.getString("phase"), ccount
-
-				.getString("created_at"),
+				.getString("phase"), 
+//				ccount
+//
+//				.getString("created_at"),
 
 				ccount.getString("user_name"),
 
@@ -2516,6 +2640,7 @@ boolean error;
 				Log.d("-----assigneeID-----","----assigneeID-----"+Prefrences.assigneeID);
 				Log.d("-----location_str-----","----location_str-----"+Prefrences.statusCompleted);
 				comadap = new commentadapter();
+				Collections.reverse(commnt2);
 				commentslist.setAdapter(comadap);
 				setlist(commentslist, comadap, 230);
 				loc.addAll(WorklistFragment.locs);
@@ -2565,6 +2690,79 @@ boolean error;
 			cursor.close();
 		}
 		return result;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == RESULT_OK
+				&& (requestCode == ChooserType.REQUEST_PICK_PICTURE ))
+			{
+			imageChooserManager.submit(requestCode, data);
+		}
+		else if(resultCode == RESULT_OK
+						&&requestCode == ChooserType.REQUEST_CAPTURE_PICTURE)
+		{
+			imageChooserManager2.submit(requestCode, data);
+		}
+	}
+
+	@Override
+	public void onImageChosen(final ChosenImage image) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (image != null) {
+					// Use the image
+					picturePath =  image.getFilePathOriginal();
+				if(picturePath == null)
+				{
+					AlertMessage();
+				}
+				else{
+				// picarray
+					picupload.add(picturePath);
+				ImageView ladder_page2 = null;
+				// Log.d("--------","888888"+DocumentFragment.photosList.size());
+				// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
+				ladder_page2 = new ImageView(WorkItemClick.this);
+
+				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+						(int) (200), (int) (200));
+				lp.setMargins(10, 10, 10, 10);
+				ladder_page2.setLayoutParams(lp);
+				// Picasso.with(CheckItemClick.this).load(picturePath).into(ladder_page2);
+				// // ladder_page2.setImageBitmap(myBitmap);
+				File file = new File(picturePath);
+				Picasso.with(WorkItemClick.this).load(file)
+				.resize((int) (200 * ASSL.Xscale()),
+						(int) (200 * ASSL.Xscale()))
+						.into(ladder_page2);
+				lin2.addView(ladder_page2);
+				
+//				BitmapFactory.Options options = new BitmapFactory.Options();
+//				options.inSampleSize = 6;
+//				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+				
+
+//				ladder_page2.setImageBitmap(BitmapFactory.decodeFile(picturePath,options));
+				if (ProjectDetail.flag == 0) {
+					new LongOperation().execute("");
+				}
+				}
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onError(final String reason) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				// Show error message
+				Log.d("---------Image Path 2----------","---------Image Path 2 ----------"+picturePath);
+			}
+		});
 	}
 	
 	

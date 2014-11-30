@@ -423,7 +423,7 @@ public class AddUser extends Activity {
 									"---*****----" + res.toString(2));
 							
 							 JSONObject connectUser =
-									 res.getJSONObject("connect_user");
+									 res.getJSONObject("user");
 									
 							 		String emailaddress = connectUser.getString("email");
 									 String fullname = connectUser.getString("full_name");

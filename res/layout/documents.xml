@@ -14,6 +14,7 @@
 	    android:layout_marginTop="115px"
 	    android:divider="@color/grey"
         android:dividerHeight="2px"
+        
 	    android:background="#fff" >
         </com.handmark.pulltorefresh.library.PullToRefreshListView>
     

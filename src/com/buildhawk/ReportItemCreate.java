@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParserException;
 
 import rmn.androidscreenlibrary.ASSL;
+import android.R.integer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -76,13 +77,18 @@ import com.buildhawk.ReportItemClick.LongOperation;
 import com.buildhawk.WorklistFragment.adapter;
 import com.buildhawk.utils.PunchListsItem;
 import com.buildhawk.utils.SafetyTopics;
+import com.kbeanie.imagechooser.api.ChooserType;
+import com.kbeanie.imagechooser.api.ChosenImage;
+import com.kbeanie.imagechooser.api.ImageChooserListener;
+import com.kbeanie.imagechooser.api.ImageChooserManager;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 
-public class ReportItemCreate extends Activity {
+public class ReportItemCreate extends Activity implements ImageChooserListener {
 
+	ImageChooserManager imageChooserManager,imageChooserManager2;
 	private static int RESULT_LOAD_IMAGE = 1;
 	private static int TAKE_PICTURE = 1;
 	private static int PICK_CONTACT = 1;
@@ -125,6 +131,8 @@ public class ReportItemCreate extends Activity {
 	LinearLayout linearlayoutPersonel, linearlayoutOnsite, linearlayoutSafetytopic,
 			linearlayoutWeather;
 	ScrollView scrollView;
+	ArrayList<String> picupload= new ArrayList<String>();
+	int count=0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -470,37 +478,53 @@ public class ReportItemCreate extends Activity {
 
 			}
 		});
+		
+		imageChooserManager = new ImageChooserManager(ReportItemCreate.this,ChooserType.REQUEST_PICK_PICTURE);
+		imageChooserManager.setImageChooserListener(this);
 
 		imageviewGallery.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(
-						Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-				startActivityForResult(intent, RESULT_LOAD_IMAGE);
+//				Intent intent = new Intent(
+//						Intent.ACTION_PICK,
+//						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//
+//				startActivityForResult(intent, RESULT_LOAD_IMAGE);
+				try {
+					imageChooserManager.choose();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
-
+		imageChooserManager2 = new ImageChooserManager(ReportItemCreate.this,ChooserType.REQUEST_CAPTURE_PICTURE);
+		imageChooserManager2.setImageChooserListener(this);
 		imageviewCamera.setOnClickListener(new OnClickListener() {
 
 			@SuppressLint("SimpleDateFormat")
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
-				String date = sdf.format(Calendar.getInstance().getTime());
-				Log.v("", "" + date);
-				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-				File photo = new File(
-						Environment.getExternalStorageDirectory(), date
-								+ ".jpg");
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
-				picturePathString = photo.toString();
-				imageUri = Uri.fromFile(photo);
-				startActivityForResult(intent, TAKE_PICTURE);
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
+//				String date = sdf.format(Calendar.getInstance().getTime());
+//				Log.v("", "" + date);
+//				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//				File photo = new File(
+//						Environment.getExternalStorageDirectory(), date
+//								+ ".jpg");
+//				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+//				picturePathString = photo.toString();
+//				imageUri = Uri.fromFile(photo);
+//				startActivityForResult(intent, TAKE_PICTURE);
+				try {
+					imageChooserManager2.choose();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -974,87 +998,91 @@ public class ReportItemCreate extends Activity {
 		listview.requestLayout();
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
-				&& null != data) {
-			Uri selectedImage = data.getData();
-			String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-			Cursor cursor = getContentResolver().query(selectedImage,
-					filePathColumn, null, null, null);
-			cursor.moveToFirst();
-
-			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-			picturePathString = cursor.getString(columnIndex);
-			cursor.close();
-
-			ImageView ladder_page2 = null;
-			// Log.d("--------","888888"+DocumentFragment.photosList.size());
-			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
-			ladder_page2 = new ImageView(this);
-
-			LinearLayout.LayoutParams layoutParam = new LinearLayout.LayoutParams(
-					(int) (200), (int) (200));
-			layoutParam.setMargins(10, 10, 10, 10);
-			ladder_page2.setLayoutParams(layoutParam);
-			File file = new File(picturePathString);
-			 Picasso.with(ReportItemCreate.this).load(file)
-			 .resize((int) (200 * ASSL.Xscale()),
-					 (int) (200 * ASSL.Xscale()))
-			 .into(ladder_page2);
-			// // ladder_page2.setImageBitmap(myBitmap);
-			linearlayoutLin2.addView(ladder_page2);
-			// }
-
-			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
-//			ladder_page2.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-			// upload();
-			// commentAdd();
-
-		}
-
-		else if (requestCode == TAKE_PICTURE
-				&& resultCode == Activity.RESULT_OK) {
-			Uri selectedImage = imageUri;
-			getContentResolver().notifyChange(selectedImage, null);
-			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
-			ImageView ladder_page2 = null;
-
-			ladder_page2 = new ImageView(this);
-
-			ContentResolver cr = getContentResolver();
-			Bitmap bitmap;
-			try {
-				bitmap = android.provider.MediaStore.Images.Media.getBitmap(cr,
-						selectedImage);
-
-				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-						(int) (200), (int) (200));
-				lp.setMargins(10, 10, 10, 10);
-				ladder_page2.setLayoutParams(lp);
-//				picturePath=selectedImage.toString();
-				File file = new File(picturePathString);
-
-				Picasso.with(ReportItemCreate.this)
-						.load(file)
-						.resize((int) (200 * ASSL.Xscale()),
-								(int) (200 * ASSL.Xscale())).centerCrop()
-						.into(ladder_page2);
-				ladder_page2.setImageBitmap(bitmap);
-				linearlayoutLin2.addView(ladder_page2);
-
-				ladder_page2.setImageBitmap(bitmap);
-
-			} catch (Exception e) {
-				Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT)
-						.show();
-				Log.e("Camera", e.toString());
-			}
-		}
-	}
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//
+//		if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK
+//				&& null != data) {
+//			Uri selectedImage = data.getData();
+//			String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//
+//			Cursor cursor = getContentResolver().query(selectedImage,
+//					filePathColumn, null, null, null);
+//			cursor.moveToFirst();
+//
+//			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//			picturePathString = cursor.getString(columnIndex);
+//			cursor.close();
+//			if(picturePathString == null)
+//			{
+//				AlertMessage2();
+//			}
+//			else{
+//			ImageView ladder_page2 = null;
+//			// Log.d("--------","888888"+DocumentFragment.photosList.size());
+//			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
+//			ladder_page2 = new ImageView(this);
+//
+//			LinearLayout.LayoutParams layoutParam = new LinearLayout.LayoutParams(
+//					(int) (200), (int) (200));
+//			layoutParam.setMargins(10, 10, 10, 10);
+//			ladder_page2.setLayoutParams(layoutParam);
+//			File file = new File(picturePathString);
+//			 Picasso.with(ReportItemCreate.this).load(file)
+//			 .resize((int) (200 * ASSL.Xscale()),
+//					 (int) (200 * ASSL.Xscale()))
+//			 .into(ladder_page2);
+//			// // ladder_page2.setImageBitmap(myBitmap);
+//			linearlayoutLin2.addView(ladder_page2);
+//			// }
+//
+//			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
+////			ladder_page2.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+//			// upload();
+//			// commentAdd();
+//			}
+//		}
+//
+//		else if (requestCode == TAKE_PICTURE
+//				&& resultCode == Activity.RESULT_OK) {
+//			Uri selectedImage = imageUri;
+//			getContentResolver().notifyChange(selectedImage, null);
+//			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
+//			ImageView ladder_page2 = null;
+//
+//			ladder_page2 = new ImageView(this);
+//
+//			ContentResolver cr = getContentResolver();
+//			Bitmap bitmap;
+//			try {
+//				bitmap = android.provider.MediaStore.Images.Media.getBitmap(cr,
+//						selectedImage);
+//
+//				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+//						(int) (200), (int) (200));
+//				lp.setMargins(10, 10, 10, 10);
+//				ladder_page2.setLayoutParams(lp);
+////				picturePath=selectedImage.toString();
+//				File file = new File(picturePathString);
+//
+//				Picasso.with(ReportItemCreate.this)
+//						.load(file)
+//						.resize((int) (200 * ASSL.Xscale()),
+//								(int) (200 * ASSL.Xscale())).centerCrop()
+//						.into(ladder_page2);
+//				ladder_page2.setImageBitmap(bitmap);
+//				linearlayoutLin2.addView(ladder_page2);
+//
+//				ladder_page2.setImageBitmap(bitmap);
+//
+//			} catch (Exception e) {
+//				Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT)
+//						.show();
+//				Log.e("Camera", e.toString());
+//			}
+//		}
+//	}
 
 	private DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -1260,11 +1288,12 @@ public class ReportItemCreate extends Activity {
 								{
 									Prefrences.dismissLoadingDialog();
 									Log.d("duplicate","duplicate");
-									Toast.makeText(
-											activity,
-											"Sorry, you can create only one Daily report in a day",
-											50000).show();
-									finish();
+									AlertMessage3();
+//									Toast.makeText(
+//											activity,
+//											"Sorry, you can create only one Daily report in a day",
+//											50000).show();
+//									finish();
 								}
 								else
 								{
@@ -1277,14 +1306,26 @@ public class ReportItemCreate extends Activity {
 								 Prefrences.reportID = "" + reportId;
 								 Log.d("reportID",
 								 "reportID" + reportId.toString());
-								if (!picturePathString.equals("")) {
-									Log.d("if Picture ","if Picture ");
-									new LongOperation().execute("");
-								} else {
-									Prefrences.dismissLoadingDialog();
-									Log.d("else Picture ","else Picture ");
-									AlertMessage();
-								}
+								 if(picupload.size()==0)
+								 {
+									 Prefrences.dismissLoadingDialog();
+										Log.d("else Picture ","else Picture ");
+										AlertMessage();
+								 }
+								 else
+								 {
+									if (!picupload.get(count).equals(""))
+									{
+										Log.d("if Picture ","if Picture ");
+										new LongOperation().execute("");
+									} 
+									else 
+									{
+										Prefrences.dismissLoadingDialog();
+										Log.d("else Picture ","else Picture ");
+										AlertMessage();
+									}
+								 }
 								if (buttonSave.getText().equals("Create")) {
 									buttonSave.setText("Save");
 									DateFormat dateFormat = new SimpleDateFormat(
@@ -1390,15 +1431,17 @@ public class ReportItemCreate extends Activity {
 							precipsString = count.getString("precipProbability");
 							double pre = Double.parseDouble(precipsString);
 							
-							pre = pre * 100;
-							precipsString = Double.toString(pre);
+							 pre = pre * 100;
+							 int prec = (int) pre;
+							precipsString = Integer.toString(prec);
 //							precips= String.format("%.1f", precips);
 							// precips=precips.spl
 
 							humiditysString = count.getString("humidity");
 							double hum = Double.parseDouble(humiditysString);
-							hum = hum * 100;
-							humiditysString = Double.toString(hum);
+							 hum = hum * 100;
+							int humi=(int) hum;
+							humiditysString = Integer.toString(humi);
 //							humiditys= String.format("%.1f", humiditys);
 							// bodys=current.getString("windSpeed");
 							
@@ -1419,10 +1462,10 @@ public class ReportItemCreate extends Activity {
 									+ tempsHighString + (char) 0x00B0);
 							String str = String.format("%.2f",
 									Float.parseFloat(precipsString));
-							textviewPrecip.setText(str + "%");
+							textviewPrecip.setText(precipsString + "%");
 							String str2 = String.format("%.2f",
 									Float.parseFloat(humiditysString));
-							textviewHumidity.setText(str2 + "%");
+							textviewHumidity.setText(humiditysString +"%");
 							textviewWeather.setText(summarysString);
 							if (iconsString.toString().equalsIgnoreCase("clear-day")
 									|| iconsString.toString().equalsIgnoreCase(
@@ -1547,7 +1590,7 @@ public class ReportItemCreate extends Activity {
 	}
 
 	class LongOperation extends AsyncTask<String, Void, String> {
-boolean error;
+		boolean error;
 		@Override
 		protected String doInBackground(String... params) {
 
@@ -1582,16 +1625,25 @@ boolean error;
 
 		@Override
 		protected void onPostExecute(String result) {
-			AlertMessage();
+			
 			if(error)
 			{
 				AlertMessage2();
+			}			
+			if(picupload.size()>count)
+			{
+				
+				new LongOperation().execute("");
+			}
+			else
+			{
+				AlertMessage();
 			}
 		}
 
 		@Override
 		protected void onPreExecute() {
-
+			Prefrences.showLoadingDialog(ReportItemCreate.this, "Uploading...");
 		}
 
 		@Override
@@ -1635,7 +1687,7 @@ boolean error;
 
 		Log.v("picturePath", picturePathString);
 
-		File file = new File(picturePathString);
+		File file = new File(picupload.get(count).toString());
 
 		FileBody cbFile = new FileBody(file, "image/jpg");
 
@@ -1683,6 +1735,7 @@ boolean error;
 		Log.v("res", "," + responseString);
 
 		System.out.println(responseString);
+		count++;
 		Prefrences.dismissLoadingDialog();
 
 	}
@@ -1706,7 +1759,7 @@ boolean error;
 
 			int intValue) {
 
-				finish();
+//				finish();
 
 				// setting_page = true;
 
@@ -2127,5 +2180,106 @@ boolean error;
 			return convertView;
 		}
 
+	}
+	private void AlertMessage3() {
+
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		builder.setTitle("Duplicate Report")
+
+		.setMessage(
+
+		"A report already exists with those parameters.")
+
+		.setCancelable(false)
+
+		.setPositiveButton("OK",
+
+		new DialogInterface.OnClickListener() {
+
+			public void onClick(final DialogInterface dialog,
+
+			int intValue) {
+
+				finish();
+
+				// setting_page = true;
+
+			}
+
+		});
+
+		final AlertDialog alert = builder.create();
+
+		alert.show();
+
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == RESULT_OK
+				&& (requestCode == ChooserType.REQUEST_PICK_PICTURE ))
+			{
+			imageChooserManager.submit(requestCode, data);
+		}
+		else if(resultCode == RESULT_OK
+						&&requestCode == ChooserType.REQUEST_CAPTURE_PICTURE)
+		{
+			imageChooserManager2.submit(requestCode, data);
+		}
+	}
+
+	@Override
+	public void onImageChosen(final ChosenImage image) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (image != null) {
+					// Use the image
+					picturePathString =  image.getFilePathOriginal();
+					if(picturePathString == null)
+					{
+						AlertMessage2();
+					}
+					else{
+						picupload.add(picturePathString);
+					ImageView ladder_page2 = null;
+					// Log.d("--------","888888"+DocumentFragment.photosList.size());
+					// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
+					ladder_page2 = new ImageView(ReportItemCreate.this);
+
+					LinearLayout.LayoutParams layoutParam = new LinearLayout.LayoutParams(
+							(int) (200), (int) (200));
+					layoutParam.setMargins(10, 10, 10, 10);
+					ladder_page2.setLayoutParams(layoutParam);
+					File file = new File(picturePathString);
+					 Picasso.with(ReportItemCreate.this).load(file)
+					 .resize((int) (200 * ASSL.Xscale()),
+							 (int) (200 * ASSL.Xscale()))
+					 .into(ladder_page2);
+					// // ladder_page2.setImageBitmap(myBitmap);
+					linearlayoutLin2.addView(ladder_page2);
+					
+					// }
+
+					// ImageView imageView = (ImageView) findViewById(R.id.imgView);
+//					ladder_page2.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+					// upload();
+					// commentAdd();
+					}
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onError(final String reason) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				// Show error message
+				Log.d("---------Image Path 2----------","---------Image Path 2 ----------"+picturePathString);
+			}
+		});
 	}
 }

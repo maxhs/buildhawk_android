@@ -12,8 +12,10 @@ import com.buildhawk.utils.SafetyTopics;
 import com.buildhawk.utils.Users;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -162,8 +164,7 @@ public class UsersList extends Activity {
 				holder = (viewholder) convertView.getTag();
 			}
 			holder.textview = (TextView) convertView.findViewById(R.id.array);
-			holder.textview.setTypeface(Prefrences
-					.helveticaNeuelt(getApplicationContext()));
+			holder.textview.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
 			holder.textview.setText(body.uFullName.toString());
 			holder.textview.setOnClickListener(new OnClickListener() {
 
@@ -173,9 +174,9 @@ public class UsersList extends Activity {
 					// Intent intent = new Intent(Intent.ACTION_CALL,
 					// Uri.parse(body.uPhone.toString()));
 					// startActivity(intent);
-
+					
 					if (Prefrences.text == 1) {
-						Prefrences.text = 0;
+//						Prefrences.text = 0;
 						Log.v("", "" + body.uEmail.toString());
 						// Intent emailIntent = new Intent(Intent.ACTION_SENDTO,
 						// Uri.fromParts(
@@ -199,18 +200,30 @@ public class UsersList extends Activity {
 									Toast.LENGTH_SHORT).show();
 						}
 					} else if (Prefrences.text == 2) {
-						Prefrences.text = 0;
+//						Prefrences.text = 0;
 						Log.v("", "" + body.uPhone.toString());
+						if(body.uPhone.toString().equals("null"))
+						{
+							AlertMessage();
+						}
+						else{
 						Intent phoneCallIntent = new Intent(Intent.ACTION_CALL);
 						phoneCallIntent.setData(Uri.parse("tel:"
 								+ body.uPhone.toString()));
 						startActivity(phoneCallIntent);
+						}
 					} else if (Prefrences.text == 3) {
-						Prefrences.text = 0;
+//						Prefrences.text = 0;
+						if(body.uPhone.toString().equals("null"))
+						{
+							AlertMessage();
+						}
+						else{
 						startActivity(new Intent(Intent.ACTION_VIEW, Uri
 								.fromParts("sms", body.uPhone.toString(), null)));
+						}
 					} else if(Prefrences.text == 11){
-						Prefrences.text = 0;
+//						Prefrences.text = 0;
 						Prefrences.personelName = body.uFullName.toString();
 
 						popup = new Dialog(UsersList.this,
@@ -303,7 +316,7 @@ public class UsersList extends Activity {
 
 					}
 					else if(Prefrences.text == 12){
-						Prefrences.text = 0;
+//						Prefrences.text = 0;
 						Prefrences.personelName = body.uFullName.toString();
 
 						popup = new Dialog(UsersList.this,
@@ -445,5 +458,38 @@ public class UsersList extends Activity {
 	private static class viewholder {
 		TextView textview;
 		LinearLayout linearlayout;
+	}
+	private void AlertMessage() {
+
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		builder.setTitle("Sorry!")
+
+		.setMessage(
+
+		"The recipient doesn't have a phone number")
+
+		.setCancelable(false)
+
+		.setPositiveButton("OK",
+
+		new DialogInterface.OnClickListener() {
+
+			public void onClick(final DialogInterface dialog,
+
+			int intValue) {
+
+//				finish();
+
+				// setting_page = true;
+
+			}
+
+		});
+
+		final AlertDialog alert = builder.create();
+
+		alert.show();
+
 	}
 }

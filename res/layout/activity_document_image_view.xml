@@ -77,11 +77,19 @@
 
     </RelativeLayout>
 
+    
     <RelativeLayout
         android:id="@+id/RelLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/topBar" >
     </RelativeLayout>
+
+    <WebView
+        android:id="@+id/webView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:visibility="gone"
+        android:layout_below="@+id/topBar"/>
 
 </RelativeLayout>

@@ -19,6 +19,8 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -29,6 +31,7 @@ import android.widget.ViewFlipper;
 
 import com.buildhawk.R.drawable;
 import com.buildhawk.utils.SynopsisRecentDocuments;
+import com.handmark.pulltorefresh.library.internal.FlipLoadingLayout;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.squareup.picasso.Picasso;
@@ -48,13 +51,15 @@ public class SelectedImageView extends Activity {
 	ArrayList<String> pic;
 	ArrayList<String> ids;
 	ArrayList<String> desc;
+	ArrayList<String> type;
 	ImageView imageviewDeletePic;
+	Button button;
 //	ImageView photo;
 	int position, finalposition;
 	// int r;
 	String finalIdString;
 	String idGetString, keyString;
-	TextView textviewDescription;
+//	TextView textviewDescription;
 	RelativeLayout relativeLayoutBack;
 	TextView textviewNum, textviewClickedOn;
 	RelativeLayout relativelayoutRoot;
@@ -63,6 +68,8 @@ public class SelectedImageView extends Activity {
 
 	// ArrayList<String> pic = new ArrayList<String>();
 	int len = 0;
+	 WebView mWebView;
+	 int flagwebview=0;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -74,15 +81,16 @@ public class SelectedImageView extends Activity {
 		new ASSL(this, relativelayoutRoot, 1134, 720, false);
 
 		viewFlipper = (ViewFlipper) findViewById(R.id.relativelayoutReportClickRoot);
-		textviewDescription = (TextView) findViewById(R.id.textviewDescription);
+//		textviewDescription = (TextView) findViewById(R.id.textviewDescription);
 	//	photo=(ImageView)findViewById(R.id.imageView1);
 		
 		relativeLayoutBack = (RelativeLayout) findViewById(R.id.relativeLayoutBack);
 		
 		textviewNum = (TextView) findViewById(R.id.textviewNum);
-		
+		mWebView=(WebView)findViewById(R.id.webView1);
 		textviewNum.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 		textviewClickedOn = (TextView) findViewById(R.id.textviewClickedOn);
+		button=(Button)findViewById(R.id.button1);
 		textviewClickedOn.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
 		swipe = new SwipeDetector();
 		// pic.add(" http://upload.wikimedia.org/wikipedia/commons/a/ab/Caonima_word-150x150.jpg");
@@ -98,6 +106,7 @@ public class SelectedImageView extends Activity {
 		pic = (ArrayList<String>) getIntent().getSerializableExtra("array");
 		ids = (ArrayList<String>) getIntent().getSerializableExtra("ids");
 		desc = (ArrayList<String>) getIntent().getSerializableExtra("desc");
+		type = (ArrayList<String>) getIntent().getSerializableExtra("type");
 		workuser = bundle.getStringArrayList("work");
 		checkuser = bundle.getStringArrayList("check");
 		reportuser = bundle.getStringArrayList("report");
@@ -120,7 +129,7 @@ public class SelectedImageView extends Activity {
 		imageviewDeletePic = (ImageView) findViewById(R.id.deletepic);
 		position = Prefrences.selectedPic;
 		finalposition = ids.size();
-		Log.d("-----", "----" + position);
+		Log.d("--finall---", "--posss--" + position+" ,  "+finalposition);
 
 		// clickedOn.setText(key.toString());
 		textviewNum.setText((position + 1) + " of " + finalposition);
@@ -133,11 +142,48 @@ public class SelectedImageView extends Activity {
 //				tv_description.setText("");
 //				Log.d("log for p", "log for else p ");
 //			}
-			textviewDescription.setMovementMethod(new ScrollingMovementMethod());
+//			textviewDescription.setMovementMethod(new ScrollingMovementMethod());
 		} else {
 			Log.d("-----", "-------------");
 		}
-
+//		button.setVisibility(View.GONE);
+		 mWebView.setVisibility(View.GONE);
+		
+//		 if(type.get(position).toString().equalsIgnoreCase("application/pdf"))
+//	        {
+//				button.setVisibility(View.VISIBLE);
+//				
+//	        }
+//			else
+//			{
+//				button.setVisibility(View.GONE);
+//			}
+		
+		button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(flagwebview==0)
+				{
+				 if(type.get(viewFlipper.getDisplayedChild()).toString().equalsIgnoreCase("application/pdf"))
+		         {
+					 flagwebview=1;
+			     mWebView.setVisibility(View.VISIBLE);
+		         mWebView.getSettings().setJavaScriptEnabled(true);
+		         mWebView.getSettings().setPluginsEnabled(true);		        
+		         mWebView.loadUrl("https://docs.google.com/gview?embedded=true&url="+""+desc.get(viewFlipper.getDisplayedChild()).toString());
+//		         setContentView(mWebView);
+		         }
+				}
+				else{
+					flagwebview=0;
+					mWebView.setVisibility(View.GONE);
+				}
+				
+			}
+		});
+		
 		relativeLayoutBack.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -214,6 +260,9 @@ public class SelectedImageView extends Activity {
 
 										if(ConnectionDetector.isConnectingToInternet())
 										{
+											Log.d("possssiiiiitiooonnn","possssiiiiitiooonnn"+position);
+											Log.d("viewFlipper.getDisplayedChild()","viewFlipper.getDisplayedChild()"+viewFlipper.getDisplayedChild());
+											position=viewFlipper.getDisplayedChild();
 											if ((position == 0 && len == 0) || (position == -1 && len == 0)
 													|| (position == 1 && len == 0)) {
 												position = 0;
@@ -230,8 +279,9 @@ public class SelectedImageView extends Activity {
 
 											} else if (position == len)// || p==len+1)
 											{
-												position = position - 1;
 												viewFlipper.removeViewAt(position);
+												position = position - 1;
+											
 												// viewFlipper.showPrevious();
 											} else if (len == 0) {
 												position = len;
@@ -281,7 +331,7 @@ public class SelectedImageView extends Activity {
 
 														alldates.add(DocumentFragment.photosListArrayList.get(k).createdDate);
 													}
-												} else if (keyString.equals("Report")) {
+												} else if (keyString.equals("Report Pictures")) {
 													for (int l = 0; l < DocumentFragment.photosList5ArrayList.size(); l++) {
 														Log.d("",
 																"000066669999"
@@ -320,7 +370,7 @@ public class SelectedImageView extends Activity {
 
 														reportdate.add(DocumentFragment.photosList5ArrayList.get(k).createdDate);
 													}
-												} else if (keyString.equals("Worklist")) {
+												} else if (keyString.equals("Task Pictures")) {
 													for (int l = 0; l < DocumentFragment.photosList4ArrayList.size(); l++) {
 														Log.d("",
 																"000066669999"
@@ -397,7 +447,7 @@ public class SelectedImageView extends Activity {
 														docdate.add(DocumentFragment.photosList2ArrayList.get(k).createdDate);
 													}
 
-												} else if (keyString.equals("Checklist")) {
+												} else if (keyString.equals("Checklist Pictures")) {
 													for (int l = 0; l < DocumentFragment.photosList3ArrayList.size(); l++) {
 														Log.d("",
 																"000066669999"
@@ -442,18 +492,21 @@ public class SelectedImageView extends Activity {
 												deletePhoto(finalIdString);
 												
 											}
+//										viewFlipper.removeAllViews();
 											ids.remove(position);
 											pic.remove(position);
+											desc.remove(position);
+											type.remove(position);
 											Log.d("------", "size of pics" + pic.size() + "size of ids"
 													+ ids.size());
 											len = pic.size(); // pic=array
-											for (int i = 0; i < len; i++) { //
-												// This will create dynamic image view and add them to
-												// ViewFlipper
-												// Log.i("In", "---------in for loop---------" + len);
-												setFlipperImage(i);
-												// Log.d("","length val= "+i);
-											}
+//											for (int i = 0; i < len; i++) { //
+//												// This will create dynamic image view and add them to
+//												// ViewFlipper
+//												// Log.i("In", "---------in for loop---------" + len);
+//												setFlipperImage(i);
+//												// Log.d("","length val= "+i);
+//											}
 
 											Prefrences.deletePicFlag = 1;
 										}
@@ -546,6 +599,10 @@ public class SelectedImageView extends Activity {
 			intent.putStringArrayListExtra("all_phase", allphase);
 			startActivity(intent);
 		}
+		else
+		{
+
+		}
 
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
@@ -558,9 +615,27 @@ public class SelectedImageView extends Activity {
 		image.setId(res);
 		// description.setId(res);
 		Log.d("pic","pic"+pic.get(res).toString()+"size = "+pic.size());
-		Picasso.with(SelectedImageView.this).load(pic.get(res).toString()).placeholder(drawable.processing_image) //
-				.into(image);
+		
 
+		
+//		 WebView mWebView=new WebView(getApplicationContext());
+//         mWebView.getSettings().setJavaScriptEnabled(true);
+//         mWebView.getSettings().setPluginsEnabled(true);
+//         mWebView.setId(res);
+//         if(type.get(res).toString().equalsIgnoreCase("application/pdf"))
+//         {
+//        	 mWebView.loadUrl("https://docs.google.com/gview?embedded=true&url="+""+desc.get(res).toString());
+//         setContentView(mWebView);
+//         }
+//         else
+//         {
+         Picasso.with(SelectedImageView.this).load(pic.get(res).toString()).placeholder(drawable.processing_image) //
+			.into(image);
+//         }
+         
+         
+		
+		
 		// Log.d("log for res", "log for res" + res + desc.get(res).toString());
 		// viewFlipper.addView(image);
 		zoomView = new ZoomView(this);
@@ -583,24 +658,28 @@ public class SelectedImageView extends Activity {
 						if (viewFlipper.getDisplayedChild() == 0) {
 							// so that it should not show fourth content view
 							position = 1;
-						} else {
+						}
+						else if(viewFlipper.getDisplayedChild() == finalposition){
+							position=finalposition;
+						}
+						else {
 							viewFlipper.showPrevious();
-							if (Prefrences.pageFlag == 1) {
-								if (!desc.get(position).toString()
-										.equals("null")) {
-									textviewDescription.setText(desc.get(position)
-											.toString());
-									Log.d("log for p", "log for p " + position
-											+ desc.get(position).toString());
-								} else {
-									textviewDescription.setText("");
-									Log.d("log for p", "log for else p ");
-								}
-								textviewDescription
-										.setMovementMethod(new ScrollingMovementMethod());
-							} else {
-								Log.d("-----", "-------------");
-							}
+//							if (Prefrences.pageFlag == 1) {
+//								if (!desc.get(position).toString()
+//										.equals("null")) {
+//									textviewDescription.setText(desc.get(position)
+//											.toString());
+//									Log.d("log for p", "log for p " + position
+//											+ desc.get(position).toString());
+//								} else {
+//									textviewDescription.setText("");
+//									Log.d("log for p", "log for else p ");
+//								}
+//								textviewDescription
+//										.setMovementMethod(new ScrollingMovementMethod());
+//							} else {
+//								Log.d("-----", "-------------");
+//							}
 							textviewNum.setText(position + 1 + " of " + finalposition);
 						}
 					} else {
@@ -611,26 +690,26 @@ public class SelectedImageView extends Activity {
 						viewFlipper.setOutAnimation(SelectedImageView.this,
 								R.anim.slide_out_left);
 						if (viewFlipper.getDisplayedChild() == len - 1) {
-							position = finalposition;
+							position = finalposition-1;
 							// so that it should not show first content view
 						} else {
 							viewFlipper.showNext();
-							if (Prefrences.pageFlag == 1) {
-								if (!desc.get(position).toString()
-										.equals("null")) {
-									textviewDescription.setText(desc.get(position)
-											.toString());
-									Log.d("log for p", "log for p " + position
-											+ desc.get(position).toString());
-								} else {
-									textviewDescription.setText("");
-									Log.d("log for p", "log for else p ");
-								}
-								textviewDescription
-										.setMovementMethod(new ScrollingMovementMethod());
-							} else {
-								Log.d("-----", "-------------");
-							}
+//							if (Prefrences.pageFlag == 1) {
+//								if (!desc.get(position).toString()
+//										.equals("null")) {
+//									textviewDescription.setText(desc.get(position)
+//											.toString());
+//									Log.d("log for p", "log for p " + position
+//											+ desc.get(position).toString());
+//								} else {
+//									textviewDescription.setText("");
+//									Log.d("log for p", "log for else p ");
+//								}
+//								textviewDescription
+//										.setMovementMethod(new ScrollingMovementMethod());
+//							} else {
+//								Log.d("-----", "-------------");
+//							}
 							textviewNum.setText(position + 1 + " of " + finalposition);
 						}
 					}
@@ -639,9 +718,21 @@ public class SelectedImageView extends Activity {
 			}
 		});
 //		zoomView.addView(prog);
-		zoomView.addView(image);
-		viewFlipper.setTag(res);
-		viewFlipper.addView(zoomView);
+//		if(type.get(res).toString().equalsIgnoreCase("application/pdf"))
+//		{
+//			zoomView.removeView(image);
+//			zoomView.addView(mWebView);
+//			viewFlipper.setTag(res);
+////			viewFlipper.addView(zoomView);
+//		}
+//		else
+//		{
+//			zoomView.removeView(mWebView);
+			zoomView.addView(image);
+			viewFlipper.setTag(res);
+			viewFlipper.addView(zoomView);
+//		}
+		
 	}
 
 	// ************ API hit for "DELETE Photo/Document" *************//
@@ -674,8 +765,16 @@ public class SelectedImageView extends Activity {
 						}
 						if(finalposition==1)
 							finish();
-						finalposition=finalposition-1;
-						textviewNum.setText((position + 1) + " of " + (finalposition));
+						if(position==finalposition-1)
+						{
+							finalposition=finalposition-1;
+							textviewNum.setText((position) + " of " + (finalposition));
+						}
+						else{
+							finalposition=finalposition-1;
+							textviewNum.setText((position + 1) + " of " + (finalposition));
+						}
+						Log.d("pos","pos"+position);
 						Prefrences.document_bool = false;
 						Prefrences.stopingHit=1;
 						Prefrences.dismissLoadingDialog();

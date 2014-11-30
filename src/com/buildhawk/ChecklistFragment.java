@@ -165,6 +165,11 @@ public class ChecklistFragment extends Fragment {
 				Prefrences.checklist_s=Prefrences.LastChecklist_s;			
 				Prefrences.checklist_bool = true;
 			}
+			else{
+				if (Prefrences.checklist_s.equalsIgnoreCase("")) {
+					Prefrences.checklist_bool = false;
+				}
+			}
 		}
 		else
 		{
@@ -174,6 +179,7 @@ public class ChecklistFragment extends Fragment {
 		}
 		
 		actualExpandableListview = pullToRefreshExpandableListView.getRefreshableView();
+//		actualExpandableListview.addHeaderView(textviewActive);
 
 		progressPullToRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
 
@@ -301,7 +307,12 @@ public class ChecklistFragment extends Fragment {
 //					tv_progress.setTextColor(Color.BLACK);
 //				}
 				relativelayoutsearch.setVisibility(View.GONE);
+				
 				listviewSearch.setVisibility(View.GONE);
+				progressPullToRefreshListView.setVisibility(View.GONE);
+				pullToRefreshExpandableListView.setVisibility(View.VISIBLE);
+//				Log.i("Search ", text);
+//				checkallArrayList.addAll(checkall2ArrayList);
 			}
 		});
 		
@@ -341,6 +352,8 @@ public class ChecklistFragment extends Fragment {
 		  		}
 			}
 		});
+		
+		checkadapter = new CheckAdapter(con);
 
 		edittextSearchcheck.addTextChangedListener(new TextWatcher() {
 
@@ -493,7 +506,7 @@ public class ChecklistFragment extends Fragment {
 			}
 			Prefrences.stopingHit = 0;
 			if(Prefrences.checklist_bool==false){
-				if (isInternetPresentBoolean) {
+				if (connDect.isConnectingToInternet()) {
 					projectDetail(getActivity());
 				} else {
 					String response = sharedpref.getString("checklistfragment", "");
@@ -504,7 +517,8 @@ public class ChecklistFragment extends Fragment {
 					}
 				}
 				
-			}else
+			}
+			else
 			{
 				JSONObject res=null;
 				try {
@@ -1331,11 +1345,15 @@ public class ChecklistFragment extends Fragment {
 					status = body.status.toString();
 					if(ConnectionDetector.isConnectingToInternet()){
 //					showComments(idcheck, status, body);
+						Prefrences.selectedCheckitemSynopsis = 1;
 					 Intent intent = new Intent(getActivity(),CheckItemClick.class);
 					 intent.putExtra("id",idcheck);
 					 intent.putExtra("cat_id", body.getcat_id().toString());
 					 intent.putExtra("subcat_id", body.getsubCat_id().toString());
 					 startActivity(intent);
+					 ((Activity) con).overridePendingTransition(
+								R.anim.slide_in_right,
+								R.anim.slide_out_left);
 					}else{
 //					Log.e("tag", ""+Prefrences.selectedProId+" val "+ check.item_id.toString());
 					Toast.makeText(con, "No internet connection", Toast.LENGTH_LONG).show();
@@ -1434,6 +1452,10 @@ public class ChecklistFragment extends Fragment {
 					Intent intent = new Intent(getActivity(),
 							CheckItemClick.class);
 					
+					
+//					Log.i("Search ", text);
+//					checkallArrayList.addAll(checkall2ArrayList);
+					Prefrences.selectedCheckitemSynopsis = 1;
 					Log.e("val.......",body.getitemid().toString()+" "+ body.getcat_id().toString()+" "+body.getsubCat_id().toString()+" "+ body.item_id);
 //					intent.putExtra("body", body.body.toString());
 //					intent.putExtra("itemtype", body.itemType.toString());
@@ -1442,6 +1464,9 @@ public class ChecklistFragment extends Fragment {
 //					intent.putExtra("cat_id", body.getcat_id().toString());
 //					intent.putExtra("subcat_id", body.getsubCat_id().toString());
 					startActivity(intent);
+					listviewSearch.setVisibility(View.GONE);
+					progressPullToRefreshListView.setVisibility(View.GONE);
+					pullToRefreshExpandableListView.setVisibility(View.VISIBLE);
 					getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 				}else{
 //					Log.e("tag", ""+Prefrences.selectedProId+" val "+ check.item_id.toString());
@@ -1879,6 +1904,7 @@ public class ChecklistFragment extends Fragment {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			
 		}
 	}
 	

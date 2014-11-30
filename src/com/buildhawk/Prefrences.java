@@ -112,11 +112,15 @@ public class Prefrences {
 	public static boolean document_bool=false;
 	public static boolean report_bool=false;
 	public static boolean worklist_bool=false;
+	public static boolean synopsis_bool=false;
 	
 	public static String checklist_s="";
 	public static String document_s="";
 	public static String report_s="";
 	public static String worklist_s="";
+	public static String synopsis_s;
+	
+	
 	public static int statusCompleted=0;
 	public static String report_body_edited="";
 	public static int ReportPosition;
@@ -147,8 +151,17 @@ public class Prefrences {
 	public static String LastReport_s = "";
 	public static  String LastChecklist_s = "";
 	public static  String LastWorklist_s = "";
+	public static  String LastSynopsis_s = "";
 	
-	public static int PrefillFlag=0;
+//	public static int PrefillFlag=0;
+	
+	
+	public static String checkid;
+	public static String subcatid;
+	public static String catid;
+	public static String punchlist_id;
+	
+	
 	
 	
 
@@ -255,7 +268,7 @@ public class Prefrences {
 
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		return pref.getString("typeSafetyWeekly", "");
+		return pref.getString("typeWeekly", "");
 
 	}
 	
@@ -302,6 +315,8 @@ public class Prefrences {
 				android.R.style.Theme_Translucent_NoTitleBar);
 		// pd_st.getWindow().getAttributes().windowAnimations =
 		// R.style.Animations_LoadingDialogFade;
+		progressDial.getWindow().getAttributes().windowAnimations =
+				R.style.Animations_progressFadeInOut;
 		progressDial.show();
 		WindowManager.LayoutParams layoutParams = progressDial.getWindow()
 				.getAttributes();

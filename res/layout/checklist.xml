@@ -16,26 +16,29 @@
         <RelativeLayout
             android:id="@+id/relativelayoutsearch"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10px"
+            android:layout_marginRight="10px"
+            android:layout_marginTop="10px" >
 
             <EditText
                 android:id="@+id/edittextSearchcheck"
                 android:layout_width="520px"
                 android:layout_height="80px"
+                android:layout_toLeftOf="@+id/buttonCancelSearch"
                 android:background="@drawable/edittext_background"
                 android:cursorVisible="true"
                 android:ems="10"
                 android:gravity="center"
                 android:hint="Search"
+                android:padding="10px"
                 android:singleLine="true"
+                android:layout_marginRight="10px"
                 android:textColor="@color/black"
                 android:textCursorDrawable="@drawable/color_cursor"
                 android:textSize="36px"
-                android:visibility="visible"
-           
-                
-                
-                 >
+                android:visibility="visible" >
+
 		<requestFocus />
                 
             </EditText>
@@ -46,6 +49,9 @@
                 android:layout_height="80px"
                 android:layout_alignParentRight="true"
                 android:textSize="28px"
+                android:background="@drawable/login_btn"
+                android:textColor="@color/black"
+          
                 android:text="Cancel" />
 
         </RelativeLayout>
@@ -118,7 +124,8 @@
             android:layout_height="940px"
             android:layout_below="@+id/topBtn"
             android:background="@color/white"
-            android:transcriptMode="disabled" >
+            android:transcriptMode="disabled"
+            android:groupIndicator="@null">
         </com.handmark.pulltorefresh.library.PullToRefreshExpandableListView>
         <!-- <ExpandableListView -->
         <!-- android:id="@+id/expandList" -->
@@ -156,7 +163,7 @@
             android:background="@color/white"
             android:transcriptMode="disabled" 
             android:groupIndicator="@drawable/white_background"
-            android:layout_below="@+id/search_rel">
+            android:layout_below="@+id/relativelayoutsearch">
         </ListView>
     </RelativeLayout>
 

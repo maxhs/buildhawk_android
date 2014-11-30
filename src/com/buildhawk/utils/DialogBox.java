@@ -11,10 +11,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.buildhawk.CompanyExpandable;
 import com.buildhawk.Prefrences;
 import com.buildhawk.R;
 import com.buildhawk.SubsList;
 import com.buildhawk.UsersList;
+import com.buildhawk.WorkItemClick;
 
 	public class DialogBox extends Dialog implements
 	android.view.View.OnClickListener {
@@ -47,6 +49,18 @@ import com.buildhawk.UsersList;
 		btn_users.setOnClickListener(this);
 		btn_sub.setOnClickListener(this);
 		btn_cancel.setOnClickListener(this);
+		
+		if(Prefrences.text==4)
+		{
+			btn_sub.setText("Remove assignee");
+			btn_users.setText("Reassign");
+			who.setText("Assign the task: ");		
+		}
+		else{
+			btn_sub.setText("Subcontractors");
+			btn_users.setText("Users");
+		
+		
 			if(Prefrences.text==1)
 			{
 			who.setText("Who do you want to email?");
@@ -59,6 +73,9 @@ import com.buildhawk.UsersList;
 			{
 				who.setText("Who do you want to message?");
 			}
+			
+		}
+			
 	}
 		
 		@Override
@@ -67,16 +84,33 @@ import com.buildhawk.UsersList;
 		case R.id.btn_user:
 //			array=ProjectsAdapter.
 		 // dismiss();
+			if(Prefrences.text==4){
+				Intent intent = new Intent(c,CompanyExpandable.class);
+				c.startActivity(intent);
+				c.overridePendingTransition(R.anim.slide_in_right,
+						R.anim.slide_out_left);
+			}
+			else
+			{
 			Intent in = new Intent(c,UsersList.class);
 			c.startActivity(in);
 			c.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-			
+			}
 		  break;
 		case R.id.btn_sub:
 		  //dismiss();
+			if(Prefrences.text==4){
+				Prefrences.assignee_str="";
+				Prefrences.assigneeID="";
+				if(Prefrences.assignee_str.equals(""))
+					WorkItemClick.btnS_assigned.setText("Assign task"+Prefrences.assignee_str);
+			}
+			else
+			{
 			Intent i = new Intent(c,SubsList.class);
 			c.startActivity(i);
 			c.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+			}
 		  break;
 		case R.id.cancel:
 			dismiss();

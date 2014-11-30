@@ -55,42 +55,46 @@ import com.buildhawk.utils.Report;
 import com.buildhawk.utils.ReportPersonnel;
 import com.buildhawk.utils.ReportTopics;
 import com.buildhawk.utils.SafetyTopics;
+import com.kbeanie.imagechooser.api.ChooserType;
+import com.kbeanie.imagechooser.api.ChosenImage;
+import com.kbeanie.imagechooser.api.ImageChooserListener;
+import com.kbeanie.imagechooser.api.ImageChooserManager;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 
-public class ViewPagerAdapter extends PagerAdapter {
+public class ViewPagerAdapter extends PagerAdapter implements ImageChooserListener {
 
 	// int pos;
 	Activity activity;
 	Dialog dialog;
 	public ArrayList<SafetyTopics> safetyArray;
+	ImageChooserManager imageChooserManager;
 
 	public ArrayList<SafetyTopics> arraysafety = new ArrayList<SafetyTopics>();
 	TopicListAdapter topicadapter;
-	ArrayList<Report> reportdata,reportdatTemp;
+	ArrayList<Report> reportdata, reportdatTemp;
 	LayoutInflater inflater;
 	private static int RESULT_LOAD_IMAGE = 1;
 	private static int TAKE_PICTURE = 1;
-//	private static int PICK_CONTACT = 1;
+	// private static int PICK_CONTACT = 1;
 	ArrayList<String> arr = new ArrayList<String>();
 	ArrayList<String> ids = new ArrayList<String>();
 	ArrayList<String> desc = new ArrayList<String>();
+	ArrayList<String> contenttype = new ArrayList<String>();
+	
 	Button buttonEmail, buttonText, buttonCall, buttonCancel;
 	TextView textviewExpiryAlert;
 	Dialog popup;
-//	public companyListAdapter companyadapter;
+	// public companyListAdapter companyadapter;
 	RelativeLayout list_outside;
-	
-
-	
 
 	// int poss;
 
 	public ViewPagerAdapter(Activity act, ArrayList<Report> reportdata) {
 		this.reportdata = reportdata;
-		this.reportdatTemp=reportdata;
+		this.reportdatTemp = reportdata;
 		activity = act;
 
 		// ReportItemClick.CompaniesArray = new ArrayList<String>();
@@ -118,7 +122,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 		final ListView listviewCompany;
 		final ListView listviewSafety;
 		ImageView imageviewWeatherIcon;
-		Button buttonType, buttonDate, buttonPersonnel, buttonSafety,buttonPrefill;
+		Button buttonType, buttonDate, buttonPersonnel, buttonSafety, buttonPrefill;
 		LinearLayout linearlayoutPersonel, linearlayoutWeather;
 		final LinearLayout linearlayoutOnsite;
 		ScrollView scrollview;
@@ -131,19 +135,22 @@ public class ViewPagerAdapter extends PagerAdapter {
 		final View rootView = (View) inflater.inflate(
 				R.layout.fragment_screen_slide_page, null);
 
-		linearlayoutReport = (LinearLayout) rootView.findViewById(R.id.reportLayout);
+		linearlayoutReport = (LinearLayout) rootView
+				.findViewById(R.id.reportLayout);
 		linearlayoutSafetyTopic = (LinearLayout) rootView
 				.findViewById(R.id.linearlayoutSafetytopic);
-		imageviewWeatherIcon = (ImageView) rootView.findViewById(R.id.imageviewWeatherIcon);
+		imageviewWeatherIcon = (ImageView) rootView
+				.findViewById(R.id.imageviewWeatherIcon);
 		buttonPersonnel = (Button) rootView.findViewById(R.id.button3);
-		buttonPrefill=(Button)rootView.findViewById(R.id.buttonPrefill);
+		buttonPrefill = (Button) rootView.findViewById(R.id.buttonPrefill);
 		buttonSafety = (Button) rootView.findViewById(R.id.buttonSafetytopic);
 		buttonDate = (Button) rootView.findViewById(R.id.button2);
 		buttonType = (Button) rootView.findViewById(R.id.button1);
 		textviewWind = (TextView) rootView.findViewById(R.id.textviewWind);
 		textviewTemp = (TextView) rootView.findViewById(R.id.textviewTemp);
 		textviewPrecip = (TextView) rootView.findViewById(R.id.textviewPrecip);
-		textviewHumidity = (TextView) rootView.findViewById(R.id.textviewHumidity);
+		textviewHumidity = (TextView) rootView
+				.findViewById(R.id.textviewHumidity);
 		textviewWeather = (TextView) rootView.findViewById(R.id.body);
 		edittextNotes = (EditText) rootView.findViewById(R.id.edittextNotes);
 		listviewPersonel = (ListView) rootView.findViewById(R.id.personellist);
@@ -151,7 +158,8 @@ public class ViewPagerAdapter extends PagerAdapter {
 		listviewSafety = (ListView) rootView.findViewById(R.id.safetylist);
 		linearlayoutPersonelList = (LinearLayout) rootView
 				.findViewById(R.id.linearlayoutPersonel);
-		linearlayoutLin2 = (LinearLayout) rootView.findViewById(R.id.linearlayoutLin2);
+		linearlayoutLin2 = (LinearLayout) rootView
+				.findViewById(R.id.linearlayoutLin2);
 
 		listviewPersonel.setFocusable(false);
 		listviewCompany.setFocusable(false);
@@ -161,7 +169,8 @@ public class ViewPagerAdapter extends PagerAdapter {
 
 		linearlayoutPersonel = (LinearLayout) rootView
 				.findViewById(R.id.linearlayoutPersonel);
-		linearlayoutOnsite = (LinearLayout) rootView.findViewById(R.id.linearlayoutOnsite);
+		linearlayoutOnsite = (LinearLayout) rootView
+				.findViewById(R.id.linearlayoutOnsite);
 
 		linearlayoutWeather = (LinearLayout) rootView
 				.findViewById(R.id.linearlayoutWeather);
@@ -177,7 +186,9 @@ public class ViewPagerAdapter extends PagerAdapter {
 
 		edittextNotes.setTypeface(Prefrences.helveticaNeuelt(activity));
 		edittextNotes.setFocusable(false);
-		scrollview = (ScrollView) rootView.findViewById(R.id.pullToRefreshScrollView);
+		//edittextNotes.setTag(textviewHumidity);
+		scrollview = (ScrollView) rootView
+				.findViewById(R.id.pullToRefreshScrollView);
 		scrollview.smoothScrollTo(0, 0);
 
 		// reportLayout.setVisibility(View.GONE);
@@ -202,38 +213,52 @@ public class ViewPagerAdapter extends PagerAdapter {
 			linearlayoutSafetyTopic.setVisibility(View.GONE);
 			// type.setEnabled(true);
 		}
+
 		edittextNotes.setFocusableInTouchMode(true);
+
 		edittextNotes.addTextChangedListener(new TextWatcher() {
 
 			public void afterTextChanged(Editable s) {
-				Log.e("TEXTVAGASGV", edittextNotes.getText().toString());
-				Prefrences.report_body_edited = edittextNotes.getText().toString();
-				reportdata.get(position).body = Prefrences.report_body_edited;
+
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
+				Prefrences.report_body_edited = edittextNotes.getText().toString();
 			}
 
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-
+				Log.e("TEXTVAGASGV", edittextNotes.getText().toString());
+				Prefrences.report_body_edited = edittextNotes.getText().toString();
+				reportdata.get(position).body = Prefrences.report_body_edited;
+//				reportdata.set(index, object)
 			}
 		});
 
 		// new ASSL(activity, scr1, 1134, 720, false);
-		imageviewPhotogallery = (ImageView) rootView.findViewById(R.id.photogallery);
+		imageviewPhotogallery = (ImageView) rootView
+				.findViewById(R.id.photogallery);
 		imageviewCamera = (ImageView) rootView.findViewById(R.id.camera);
+		
+	
+
 		imageviewPhotogallery.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(
-						Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-				activity.startActivityForResult(intent, RESULT_LOAD_IMAGE);
-				Log.i("BACk to adapter", "BACk to adapter");
+//				Intent intent = new Intent(
+//						Intent.ACTION_PICK,
+//						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//				activity.startActivityForResult(intent, RESULT_LOAD_IMAGE);
+//				Log.i("BACk to adapter", "BACk to adapter");
+				try {
+					ReportItemClick.imageChooserManager.choose();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 			}
 		});
@@ -248,112 +273,126 @@ public class ViewPagerAdapter extends PagerAdapter {
 		});
 
 		buttonPrefill.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(Prefrences.PrefillFlag==1)
-				{}
-				else{
-				if(position!=reportdata.size())
-				{
-					Prefrences.PrefillFlag=1;					
-				Log.d("Prefill from last report","Companies size "+reportdata.get(position+1).companies.size());
-				Log.d("Prefill from last report","Personnel size "+reportdata.get(position+1).personnel.size());
-				
-				ReportItemClick.CompaniesArrayList.clear();
-				ReportItemClick.CompanyIdArrayList.clear();
-				ReportItemClick.OnsiteArrayList.clear();
-				ReportItemClick.personelHoursArrayList.clear();
-				ReportItemClick.personelnamesArrayList.clear();
-				ReportItemClick.personelIdArrayList.clear();
-				ReportItemClick.SafetyIDArrayList.clear();
-				ReportItemClick.SafetyTitleArrayList.clear();
+				// if(Prefrences.PrefillFlag==1)
+				// {}
+				// else{
+				if (position != reportdata.size()) {
+					// Prefrences.PrefillFlag=1;
+					Log.d("Prefill from last report", "Companies size "
+							+ reportdata.get(position + 1).companies.size());
+					Log.d("Prefill from last report", "Personnel size "
+							+ reportdata.get(position + 1).personnel.size());
 
-				for (int i = 0; i < reportdata.get(position+1).personnel.size(); i++) {
-					ReportItemClick.personelnamesArrayList.add(reportdata.get(position+1).personnel.get(i).users.get(0).uFullName
-							.toString());
-					ReportItemClick.personelIdArrayList.add(reportdata.get(position+1).personnel.get(i).users.get(0).uId
-							.toString());
-					ReportItemClick.personelHoursArrayList.add(reportdata.get(position+1).personnel.get(i).hours
-							.toString());
+					ReportItemClick.CompaniesArrayList.clear();
+					ReportItemClick.CompanyIdArrayList.clear();
+					ReportItemClick.OnsiteArrayList.clear();
+					ReportItemClick.personelHoursArrayList.clear();
+					ReportItemClick.personelnamesArrayList.clear();
+					ReportItemClick.personelIdArrayList.clear();
+					ReportItemClick.SafetyIDArrayList.clear();
+					ReportItemClick.SafetyTitleArrayList.clear();
+
+					for (int i = 0; i < reportdata.get(position + 1).personnel
+							.size(); i++) {
+						ReportItemClick.personelnamesArrayList.add(reportdata
+								.get(position + 1).personnel.get(i).users
+								.get(0).uFullName.toString());
+						ReportItemClick.personelIdArrayList.add(reportdata
+								.get(position + 1).personnel.get(i).users
+								.get(0).uId.toString());
+						ReportItemClick.personelHoursArrayList.add(reportdata
+								.get(position + 1).personnel.get(i).hours
+								.toString());
+					}
+
+					for (int i = 0; i < reportdata.get(position + 1).companies
+							.size(); i++) {
+						ReportItemClick.CompaniesArrayList.add(reportdata
+								.get(position + 1).companies.get(i).Rcompany
+								.get(0).coName.toString());
+						ReportItemClick.CompanyIdArrayList.add(reportdata
+								.get(position + 1).companies.get(i).Rcompany
+								.get(0).coId.toString());
+						ReportItemClick.OnsiteArrayList.add(reportdata
+								.get(position + 1).companies.get(i).coCount
+								.toString());
+					}
+
+					// for (int i = 0; i < reportdata_local.get(myPager
+					// .getCurrentItem()).topic.size(); i++) {
+					// SafetyIDArray.add(reportdata_local.get(myPager
+					// .getCurrentItem()).topic.get(i).safety.get(0).Id
+					// .toString());
+					// SafetyTitleArray.add(reportdata_local.get(myPager
+					// .getCurrentItem()).topic.get(i).safety.get(0).Title
+					// .toString());
+					// //
+					// OnsiteArray.add(reportdata_local.get(myPager.getCurrentItem()).companies.get(i).coCount.toString());
+					// }
+					// Prefrences.stopingHit=1;
+
+					reportdata.get(position).companies.clear();
+					reportdata.get(position).personnel.clear();
+					reportdata.get(position).companies = reportdata
+							.get(position + 1).companies;
+					reportdata.get(position).personnel = reportdata
+							.get(position + 1).personnel;
+
+					if (reportdata.get(position + 1).personnel.size() == 0) {
+						// if (ReportItemClick.personelnamesArray.size() == 0) {
+						Log.d("loggy if", "if loggy" + position);
+						linearlayoutPersonelList.setVisibility(View.GONE);
+
+					} else {
+
+						Log.d("loggy else", "else loggy" + position);
+						linearlayoutPersonelList.setVisibility(View.VISIBLE);
+						personelListAdapter personadapter = new personelListAdapter(
+								reportdata.get(position + 1).personnel,
+								position + 1);
+						listviewPersonel.setAdapter(personadapter);
+						setlist(listviewPersonel, personadapter, 100);
+						// personadapter.notifyDataSetChanged();
+					}
+
+					if (reportdata.get(position + 1).companies.size() == 0) {
+						// if (ReportItemClick.CompaniesArray.size() == 0) {
+						Log.d("loggy if", "if loggy" + position);
+						linearlayoutOnsite.setVisibility(View.GONE);
+
+					} else {
+
+						Log.d("loggy else", "else loggy" + position);
+						linearlayoutOnsite.setVisibility(View.VISIBLE);
+						companyListAdapter companyadapter = new companyListAdapter(
+								position + 1);
+						listviewCompany.setAdapter(companyadapter);
+						// companyadapter.notifyDataSetChanged();
+						setlist(listviewCompany, companyadapter, 100);
+					}
+					// if (reportdata.get(position-1).topic.size() == 0) {
+					// // if (ReportItemClick.SafetyIDArray.size() == 0) {
+					// Log.d("loggy if", "if loggy" + position);
+					// safetylist.setVisibility(View.GONE);
+					//
+					// } else {
+					//
+					// Log.d("loggy else", "else loggy" + position);
+					// safetylist.setVisibility(View.VISIBLE);
+					// topicadapter = new TopicListAdapter(position-1);
+					// safetylist.setAdapter(topicadapter);
+					// // companyadapter.notifyDataSetChanged();
+					// setlist(safetylist, topicadapter, 100);
+					// }
 				}
-
-				for (int i = 0; i < reportdata.get(position+1).companies.size(); i++) {
-					ReportItemClick.CompaniesArrayList.add(reportdata.get(position+1).companies.get(i).Rcompany.get(0).coName
-							.toString());
-					ReportItemClick.CompanyIdArrayList.add(reportdata.get(position+1).companies.get(i).Rcompany.get(0).coId
-							.toString());
-					ReportItemClick.OnsiteArrayList.add(reportdata.get(position+1).companies.get(i).coCount
-							.toString());
-				}
-
-//				for (int i = 0; i < reportdata_local.get(myPager
-//						.getCurrentItem()).topic.size(); i++) {
-//					SafetyIDArray.add(reportdata_local.get(myPager
-//							.getCurrentItem()).topic.get(i).safety.get(0).Id
-//							.toString());
-//					SafetyTitleArray.add(reportdata_local.get(myPager
-//							.getCurrentItem()).topic.get(i).safety.get(0).Title
-//							.toString());
-//					// OnsiteArray.add(reportdata_local.get(myPager.getCurrentItem()).companies.get(i).coCount.toString());
-//				}
-//				Prefrences.stopingHit=1;
-				
-				reportdata.get(position).companies.clear();
-				reportdata.get(position).personnel.clear();
-				reportdata.get(position).companies=reportdata.get(position+1).companies;
-				reportdata.get(position).personnel=reportdata.get(position+1).personnel;
-				
-				if (reportdata.get(position+1).personnel.size() == 0) {
-					// if (ReportItemClick.personelnamesArray.size() == 0) {
-					Log.d("loggy if", "if loggy" + position);
-					linearlayoutPersonelList.setVisibility(View.GONE);
-
-				} else {
-
-					Log.d("loggy else", "else loggy" + position);
-					linearlayoutPersonelList.setVisibility(View.VISIBLE);
-					personelListAdapter personadapter = new personelListAdapter(
-							reportdata.get(position+1).personnel, position+1);
-					listviewPersonel.setAdapter(personadapter);
-					setlist(listviewPersonel, personadapter, 100);
-					// personadapter.notifyDataSetChanged();
-				}
-				
-				if (reportdata.get(position+1).companies.size() == 0) {
-					// if (ReportItemClick.CompaniesArray.size() == 0) {
-					Log.d("loggy if", "if loggy" + position);
-					linearlayoutOnsite.setVisibility(View.GONE);
-
-				} else {
-
-					Log.d("loggy else", "else loggy" + position);
-					linearlayoutOnsite.setVisibility(View.VISIBLE);
-					companyListAdapter companyadapter = new companyListAdapter(position+1);
-					listviewCompany.setAdapter(companyadapter);
-					// companyadapter.notifyDataSetChanged();
-					setlist(listviewCompany, companyadapter, 100);
-				}
-//				if (reportdata.get(position-1).topic.size() == 0) {
-//					// if (ReportItemClick.SafetyIDArray.size() == 0) {
-//					Log.d("loggy if", "if loggy" + position);
-//					safetylist.setVisibility(View.GONE);
-//
-//				} else {
-//
-//					Log.d("loggy else", "else loggy" + position);
-//					safetylist.setVisibility(View.VISIBLE);
-//					topicadapter = new TopicListAdapter(position-1);
-//					safetylist.setAdapter(topicadapter);
-//					// companyadapter.notifyDataSetChanged();
-//					setlist(safetylist, topicadapter, 100);
-//				}
-				}
-				}
+				// }
 			}
 		});
-		
+
 		buttonPersonnel.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -374,7 +413,8 @@ public class ViewPagerAdapter extends PagerAdapter {
 				buttonCall = (Button) popup.findViewById(R.id.buttonCall);
 				buttonText = (Button) popup.findViewById(R.id.buttonText);
 				buttonCancel = (Button) popup.findViewById(R.id.buttonCancel);
-				textviewExpiryAlert = (TextView) popup.findViewById(R.id.textviewExpiryAlert);
+				textviewExpiryAlert = (TextView) popup
+						.findViewById(R.id.textviewExpiryAlert);
 				// expiry_alert.setText("Contact "+Prefrences.ContactName.toString());
 				buttonEmail.setTypeface(Prefrences.helveticaNeuelt(activity));
 				buttonText.setTypeface(Prefrences.helveticaNeuelt(activity));
@@ -456,17 +496,23 @@ public class ViewPagerAdapter extends PagerAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
-				String date = sdf.format(Calendar.getInstance().getTime());
-				Log.v("", "" + date);
-				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-				File photo = new File(
-						Environment.getExternalStorageDirectory(), date
-								+ ".jpg");
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
-				ReportItemClick.imageUri = Uri.fromFile(photo);
-				ReportItemClick.picturePathString = photo.toString();
-				activity.startActivityForResult(intent, TAKE_PICTURE);
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
+//				String date = sdf.format(Calendar.getInstance().getTime());
+//				Log.v("", "" + date);
+//				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//				File photo = new File(
+//						Environment.getExternalStorageDirectory(), date
+//								+ ".jpg");
+//				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+//				ReportItemClick.imageUri = Uri.fromFile(photo);
+//				ReportItemClick.picturePathString = photo.toString();
+//				activity.startActivityForResult(intent, TAKE_PICTURE);
+				try {
+					ReportItemClick.imageChooserManager2.choose();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 			}
 		});
@@ -495,19 +541,23 @@ public class ViewPagerAdapter extends PagerAdapter {
 		// .toString() + " - ");
 		// }
 
-		textviewWeather.setText("" + reportdata.get(position).weather.toString());
-		buttonDate.setText("" + reportdata.get(position).created_date.toString());
-		buttonType.setText("" + reportdata.get(position).report_type.toString());
+		textviewWeather.setText(""
+				+ reportdata.get(position).weather.toString());
+		buttonDate.setText(""
+				+ reportdata.get(position).created_date.toString());
+		buttonType
+				.setText("" + reportdata.get(position).report_type.toString());
 
 		textviewWind.setText("" + reportdata.get(position).wind.toString());
 		textviewTemp.setText("" + reportdata.get(position).temp.toString());
-		textviewHumidity.setText("" + reportdata.get(position).humidity.toString());
+		textviewHumidity.setText(""
+				+ reportdata.get(position).humidity.toString());
 		// String temp1[]=reportdata.get(position).precip.toString().split("%");
 		// String s = String.format("%.2f", Float.parseFloat(temp1[0]));
 		// precip.setText(s + "%");
 		textviewPrecip.setText(reportdata.get(position).precip.toString());
 
-		edittextNotes.setText("" + reportdata.get(position).body.toString());
+		 edittextNotes.setText("" + reportdata.get(position).body.toString());
 		if (reportdata.get(position).weather_icon.toString().equalsIgnoreCase(
 				"clear-day")
 				|| reportdata.get(position).weather_icon.toString()
@@ -540,6 +590,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 		arr.clear();
 		ids.clear();
 		desc.clear();
+		contenttype.clear();
 		linearlayoutLin2.setTag(position);
 
 		int idx = -1;
@@ -548,7 +599,8 @@ public class ViewPagerAdapter extends PagerAdapter {
 			Log.d("----------", "position of array" + position);
 			arr.add(photo.urlLarge);
 			ids.add(photo.id);
-			desc.add(photo.description);
+			desc.add(photo.original);
+			contenttype.add(photo.imageContentType);
 
 			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 					(int) (200), (int) (200));
@@ -584,32 +636,39 @@ public class ViewPagerAdapter extends PagerAdapter {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					if (reportdata.get((Integer) linearlayoutLin2.getTag()).photos.size() > 0) {
+					if (reportdata.get((Integer) linearlayoutLin2.getTag()).photos
+							.size() > 0) {
 						Prefrences.selectedPic = (Integer) v.getTag();
 						// poss= (Integer) rootView.getTag();
 						Log.i("Tag Value", "" + Prefrences.selectedPic);
 						arr.clear();
 						ids.clear();
 						desc.clear();
-						for (int i = 0; i < reportdata.get((Integer) linearlayoutLin2
-								.getTag()).photos.size(); i++) {
-							arr.add(reportdata.get((Integer) linearlayoutLin2.getTag()).photos
-									.get(i).urlLarge);
-							ids.add(reportdata.get((Integer) linearlayoutLin2.getTag()).photos
-									.get(i).id);
-							desc.add(reportdata.get((Integer) linearlayoutLin2.getTag()).photos
-									.get(i).description);
+						contenttype.clear();
+						for (int i = 0; i < reportdata
+								.get((Integer) linearlayoutLin2.getTag()).photos
+								.size(); i++) {
+							arr.add(reportdata.get((Integer) linearlayoutLin2
+									.getTag()).photos.get(i).urlLarge);
+							ids.add(reportdata.get((Integer) linearlayoutLin2
+									.getTag()).photos.get(i).id);
+							desc.add(reportdata.get((Integer) linearlayoutLin2
+									.getTag()).photos.get(i).description);
+							contenttype.add(reportdata.get((Integer) linearlayoutLin2
+									.getTag()).photos.get(i).imageContentType);
 						}
 						Intent in = new Intent(activity,
 								SelectedImageView.class);
 						in.putExtra("array", arr);
 						in.putExtra("ids", ids);
 						in.putExtra("desc", desc);
+						in.putExtra("type", contenttype);
 						// Log.d("----","logg value for viewpager"+(Integer)ladder_page2.getTag()+"array ="+arr.size()+"Prefrences.posViewpager"+Prefrences.posViewpager);
 						// in.putExtra("id",
 						// reportdata.get(poss).photos.get(Prefrences.selectedPic).id);
 						in.putExtra("id",
-								reportdata.get((Integer) linearlayoutLin2.getTag()).photos
+								reportdata.get((Integer) linearlayoutLin2
+										.getTag()).photos
 										.get(Prefrences.selectedPic).id);
 						activity.startActivity(in);
 						activity.overridePendingTransition(
@@ -804,7 +863,6 @@ public class ViewPagerAdapter extends PagerAdapter {
 
 					} else {
 						reportdata.get(positionPager).personnel
-						//
 								.get(holder3.position).users.get(0).company
 								.get(0).coId.toString();
 						Prefrences.removeUserID = reportdata.get(positionPager).personnel
@@ -1076,8 +1134,9 @@ public class ViewPagerAdapter extends PagerAdapter {
 													.get(holder3.position).coId
 													.toString().equals("")) {
 
-											} else
+											} else{
 												ReportItemClick.removeUsers();
+											}
 											holder.root.removeView(v);
 											ReportItemClick.CompaniesArrayList
 													.remove(holder3.position);
@@ -1089,7 +1148,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 													.get(positionPager).companies
 													.get(holder3.position));
 											// notifyDataSetChanged();
-
+											
 											ViewPagerAdapter.this
 													.notifyDataSetChanged();
 
@@ -1233,79 +1292,88 @@ public class ViewPagerAdapter extends PagerAdapter {
 			// .get(position).safety.get(0).Id
 			// .toString());
 
-			// holder.root.setOnClickListener(new OnClickListener() {
-			//
-			// @Override
-			// public void onClick(final View v) {
-			// // TODO Auto-generated method stub
-			// final ViewHolder2 holder3 = (ViewHolder2) v.getTag();
-			// Prefrences.removeFlag=3;
-			// Log.d("Remove : ","clicked : ");
-			// Prefrences.removeSafetyID = reportdata.get(positionPager).topic
-			// .get(holder3.position).safety.get(0).Id.toString();
-			// //// Prefrences.removeUserID =
-			// reportdata.get(positionPager).companies
-			// //// .get(holder3.position).Rcompany.get(0).coId.toString();
-			// // Prefrences.removeReportID =
-			// reportdata.get(positionPager).report_id.toString();
-			// Log.d("remooooovveeddd","----"+holder3.position+", "+Prefrences.removeCompanyID+", "+Prefrences.removeUserID+","+Prefrences.removeReportID);
-			//
-			// AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-			// activity);
-			//
-			// // set title
-			// alertDialogBuilder.setTitle("Please confirm");
-			//
-			// // set dialog message
-			// alertDialogBuilder
-			// .setMessage(
-			// "Are you sure you want to remove this safety topic?")
-			// .setCancelable(false)
-			// .setPositiveButton("Yes",
-			// new DialogInterface.OnClickListener() {
-			// public void onClick(
-			// DialogInterface dialog,
-			// int idOnclick) {
-			// // if this button is clicked,
-			// // close
-			// // current activity
-			//
-			//
-			// // holder.root.setLayoutParams(layoutParams2);
-			// ReportItemClick.removeUsers();
-			// holder.root.removeView(v);
-			// ReportItemClick.SafetyIDArray.remove(holder3.position);
-			// ReportItemClick.SafetyTitleArray.remove(holder3.position);
-			// // ReportItemClick.OnsiteArray.remove(holder3.position);
-			// notifyDataSetChanged();
-			// // setlist(safetylist, topicadapter, 100);
-			// }
-			// })
-			// .setNegativeButton("No",
-			// new DialogInterface.OnClickListener() {
-			// public void onClick(
-			// DialogInterface dialog,
-			// int idOnclick) {
-			// // if this button is clicked,
-			// // just close
-			// // the dialog box and do nothing
-			// Log.d("Dialog", "No");
-			// dialog.cancel();
-			// }
-			// });
-			//
-			// // create alert dialog
-			// AlertDialog alertDialog = alertDialogBuilder.create();
-			//
-			// // show it
-			// alertDialog.show();
-			// // ReportItemClick.removeUsers();
-			// }
-			// });
+			holder.root.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(final View v) {
+					// TODO Auto-generated method stub
+					final ViewHolder2 holder3 = (ViewHolder2) v.getTag();
+					Prefrences.removeFlag = 3;
+					Log.d("Remove : ", "clicked : ");
+					Prefrences.removeSafetyID = reportdata.get(positionPager).topic
+							.get(holder3.position).safety.get(0).Id.toString();
+					// // Prefrences.removeUserID =
+					// reportdata.get(positionPager).companies
+					// //
+					// .get(holder3.position).Rcompany.get(0).coId.toString();
+					// Prefrences.removeReportID =
+					reportdata.get(positionPager).report_id.toString();
+					Log.d("remooooovveeddd", "----" + holder3.position + ", "
+							+ Prefrences.removeCompanyID + ", "
+							+ Prefrences.removeUserID + ","
+							+ Prefrences.removeReportID);
+
+					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+							activity);
+
+					// set title
+					alertDialogBuilder.setTitle("Please confirm");
+
+					// set dialog message
+					alertDialogBuilder
+							.setMessage(
+									"Are you sure you want to remove this safety topic?")
+							.setCancelable(false)
+							.setPositiveButton("Yes",
+									new DialogInterface.OnClickListener() {
+										public void onClick(
+												DialogInterface dialog,
+												int idOnclick) {
+											// if this button is clicked,
+											// close
+											// current activity
+
+											// holder.root.setLayoutParams(layoutParams2);
+											// ReportItemClick.removeUsers();
+											reportdata.get(positionPager).topic.remove(reportdata
+													.get(positionPager).topic
+													.get(holder3.position));
+											holder.root.removeView(v);
+											ReportItemClick.SafetyIDArrayList
+													.remove(holder3.position);
+											ReportItemClick.SafetyTitleArrayList
+													.remove(holder3.position);
+											// ReportItemClick.OnsiteArray.remove(holder3.position);
+											ViewPagerAdapter.this.notifyDataSetChanged();
+											// setlist(safetylist, topicadapter,
+											// 100);
+											Prefrences.stopingHit=1;
+										}
+									})
+							.setNegativeButton("No",
+									new DialogInterface.OnClickListener() {
+										public void onClick(
+												DialogInterface dialog,
+												int idOnclick) {
+											// if this button is clicked,
+											// just close
+											// the dialog box and do nothing
+											Log.d("Dialog", "No");
+											dialog.cancel();
+										}
+									});
+
+					// create alert dialog
+					AlertDialog alertDialog = alertDialogBuilder.create();
+
+					// show it
+					alertDialog.show();
+					// ReportItemClick.removeUsers();
+				}
+			});
 
 			return convertView;
 		}
-
 	}
 
 	public void setlist(ListView lv, ListAdapter listAdapter, int size) {
@@ -1529,18 +1597,19 @@ public class ViewPagerAdapter extends PagerAdapter {
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
 
-					
-					String safetyTopicId ="";
-					for (int i = 0; i < reportdata.get(pagerPosition).topic.size(); i++) 
-					{
-						if (array.get(position).Id.toString().equals(reportdata.get(pagerPosition).topic.get(i).safety.get(0).Id.toString()))
-						{
-							Log.d("Safety ID","Safety ID"+array.get(position).Id.toString());
+					String safetyTopicId = "";
+					for (int i = 0; i < reportdata.get(pagerPosition).topic
+							.size(); i++) {
+						if (array.get(position).Id.toString()
+								.equals(reportdata.get(pagerPosition).topic
+										.get(i).safety.get(0).Id.toString())) {
+							Log.d("Safety ID",
+									"Safety ID"
+											+ array.get(position).Id.toString());
 							safetyTopicId = array.get(position).Id.toString();
 						}
 					}
-					if (safetyTopicId.toString().equals("")) 
-					{
+					if (safetyTopicId.toString().equals("")) {
 						arraysafety.add(array.get(position));
 						ArrayList<SafetyTopics> safetyTopics = new ArrayList<SafetyTopics>();
 						safetyTopics.add(new SafetyTopics(
@@ -1553,9 +1622,9 @@ public class ViewPagerAdapter extends PagerAdapter {
 						// Prefrences.stopingHit=1;
 						ReportItemClick.SafetyTitleArrayList.add(array
 								.get(position).Title.toString());
-						ReportItemClick.SafetyIDArrayList.add(array.get(position).Id
-								.toString());
-//						safetylist.setVisibility(View.VISIBLE);
+						ReportItemClick.SafetyIDArrayList.add(array
+								.get(position).Id.toString());
+						// safetylist.setVisibility(View.VISIBLE);
 					}
 					// topicadapter = new TopicListAdapter();
 					// safetyadapter adp = new safetyadapter();
@@ -1581,6 +1650,22 @@ public class ViewPagerAdapter extends PagerAdapter {
 		LinearLayout linear;
 	}
 
+	
+	
+	
+	
+	@Override
+	public void onImageChosen(ChosenImage image) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onError(String reason) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	// public class ViewHolder {
 	// public TextView text;
 	// public CheckBox checkbox;
@@ -1593,4 +1678,20 @@ public class ViewPagerAdapter extends PagerAdapter {
 	//
 	// }
 
+	public void showImagePicker() {
+//		ReportItemClick.mTempFile = activity.getFileStreamPath("yourTempFile");
+//		ReportItemClick.mTempFile.getParentFile().mkdirs();
+//		Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+//		intent.setType("image/*");
+//		intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(ReportItemClick.mTempFile));
+//		intent.putExtra("outputFormat", Bitmap.CompressFormat.PNG.name());
+//		activity.startActivityForResult(intent, 1);
+		try {
+			ReportItemClick.imageChooserManager.choose();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }

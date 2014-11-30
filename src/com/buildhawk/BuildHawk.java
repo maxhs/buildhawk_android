@@ -52,11 +52,8 @@ public class BuildHawk extends Activity {
 		connDect = new ConnectionDetector(getApplicationContext());
 		isInternetPresent = ConnectionDetector.isConnectingToInternet();
 		Log.e("BuildHawk", "msg");
-		
-		
+
 		sharedpref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-		
-	
 		
 		try {
 			if (isInternetPresent) {
@@ -169,6 +166,7 @@ public class BuildHawk extends Activity {
 		regIdString = GCMRegistrar.getRegistrationId(this);
 		if (regIdString.equals("")) {
 			GCMRegistrar.register(this, "149110570482"); // Note: get the sender 149110570482   //981259510888
+			regIdString = GCMRegistrar.getRegistrationId(this);
 			Log.v("reg id1 ", "" + regIdString); // id from 
 			// configuration.
 			Editor editor =  sharedpref.edit();

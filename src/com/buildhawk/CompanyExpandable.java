@@ -16,6 +16,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import android.os.Bundle;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActionBar.LayoutParams;
 import android.content.Context;
@@ -157,17 +158,18 @@ public class CompanyExpandable extends Activity {
 			return childPosition;
 		}
 
+		@SuppressLint("ResourceAsColor")
 		@Override
 		public View getChildView(int groupPosition, final int childPosition,
 				boolean isLastChild, View convertView, ViewGroup parent) {
 			final TextView textView = new TextView(CompanyExpandable.this);
 			
-	        textView.setTextColor(Color.BLACK);
-	        textView.setTextSize(20);
+//	        textView.setTextColor(Color.BLACK);
+	        textView.setTextSize(15);
 	        textView.setPadding(60, 5, 5, 5);
 //	        textView.setBackgroundColor(Color.WHITE);
 	        textView.setLayoutParams(new ListView.LayoutParams(
-	                     LayoutParams.MATCH_PARENT, 150));
+	                     LayoutParams.MATCH_PARENT, 120));
 //	        textView.setPadding(20, 0, 0, 0);
 	        ASSL.DoMagic(textView);
 //	        textView.setTag();
@@ -178,9 +180,10 @@ public class CompanyExpandable extends Activity {
 				textView.setHint("Add a contact");
 				textView.setGravity(Gravity.CENTER);
 				textView.setBackgroundResource(color.child_color);
-				textView.setHintTextColor(Color.BLACK);
+				textView.setHintTextColor(Color.WHITE);
 			}
 			else {
+				textView.setTextColor(Color.WHITE);
 				textView.setGravity(Gravity.CENTER_VERTICAL);
 				 textView.setText("  "+usersArrayList.get(childPosition).uFullName);	
 				 textView.setBackgroundResource(color.subchild_color);
@@ -249,7 +252,7 @@ public class CompanyExpandable extends Activity {
 	        textView.setBackgroundColor(Color.WHITE);
 	        textView.setPadding(20, 7, 7, 7);
 	        textView.setLayoutParams(new ListView.LayoutParams(
-                    LayoutParams.MATCH_PARENT, 150));
+                    LayoutParams.MATCH_PARENT, 120));
 	        textView.setGravity(Gravity.CENTER_VERTICAL);
 
 	        ASSL.DoMagic(textView);
@@ -329,7 +332,13 @@ public class CompanyExpandable extends Activity {
 							ArrayList<String> usrid = new ArrayList<String>();
 							
 							ArrayList<Company> CompaniesArray = new ArrayList<Company>();
+							
+							JSONObject compn = project.getJSONObject("company");
+							Log.d("aayayaa","ayyaaa"+compn.getString("id"));
+							compn.getString("name");
 
+							CompaniesArray.add(new Company(compn.getString("id"), compn.getString("name")));
+							
 							for (int j = 0; j < users.length(); j++) {
 								JSONObject uCount = users.getJSONObject(j);
 								JSONObject uCompany = uCount
@@ -358,33 +367,33 @@ public class CompanyExpandable extends Activity {
 
 							}
 							
-							JSONArray connectUsers = project.getJSONArray("connect_users");
-							for (int j = 0; j < connectUsers.length(); j++) {
-								JSONObject uCount = connectUsers.getJSONObject(j);
-								JSONObject CCompany = uCount
-										.getJSONObject("company");
-
-								conn_user.add(new Users(
-										uCount.getString("id"),
-										uCount.getString("first_name"),
-										uCount.getString("last_name"),
-										uCount.getString("full_name"),
-										uCount.getString("email"),
-										uCount.getString("phone"),
-//										uCount.getString("authentication_token"),
-										"","",
-										new Company(CCompany
-												.getString("id"), CCompany
-												.getString("name"))));
-								// if(!uCount.getString("full_name").equals("null"))
-//								usr.add(uCount.getString("full_name"));
+//							JSONArray connectUsers = project.getJSONArray("project_users");
+//							for (int j = 0; j < connectUsers.length(); j++) {
+//								JSONObject uCount = connectUsers.getJSONObject(j);
+//								JSONObject CCompany = uCount
+//										.getJSONObject("company");
 //
-//								usrid.add(user.get(j).uId.toString());
-								
-								Log.d("USERS", "USERS... "
-										+ conn_user.get(j).uId+"names "+conn_user.get(j).uFullName);
-
-							}
+//								conn_user.add(new Users(
+//										uCount.getString("id"),
+//										uCount.getString("first_name"),
+//										uCount.getString("last_name"),
+//										uCount.getString("full_name"),
+//										uCount.getString("email"),
+//										uCount.getString("phone"),
+////										uCount.getString("authentication_token"),
+//										"","",
+//										new Company(CCompany
+//												.getString("id"), CCompany
+//												.getString("name"))));
+//								// if(!uCount.getString("full_name").equals("null"))
+////								usr.add(uCount.getString("full_name"));
+////
+////								usrid.add(user.get(j).uId.toString());
+//								
+//								Log.d("USERS", "USERS... "
+//										+ conn_user.get(j).uId+"names "+conn_user.get(j).uFullName);
+//
+//							}
 							
 							JSONArray company = project
 									.getJSONArray("companies");

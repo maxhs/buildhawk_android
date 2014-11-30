@@ -55,6 +55,19 @@
           	android:textSize="36px"
             android:text="Add"
             android:textColor="#000" />
+        
+        <Button
+            android:id="@+id/buttonRemoveCLicked"
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+			android:layout_marginRight="10px"
+			android:layout_marginLeft="10px"
+            android:background="@drawable/edittext_background_click"
+          	
+          	android:layout_marginBottom="10px"
+          	android:textSize="36px"
+            android:text="Remove location"
+            android:textColor="#000" />
 
         <Button
             android:id="@+id/buttonCancelClicked"

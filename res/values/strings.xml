@@ -21,5 +21,6 @@
     <string name="title_activity_selected_folder">SelectedFolder</string>
     <string name="title_activity_selected_image">SelectedImage</string>
     <string name="title_activity_document_image_view">DocumentImageView</string>
+    <string name="snc">S&amp;C</string>
 
 </resources>

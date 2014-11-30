@@ -35,7 +35,7 @@ public class DialogBox2 extends Dialog {
 	public Activity activity;
 	LinearLayout linearlayoutRoot;
 	public Dialog dialog;
-	public Button buttonCancelClicked, buttonAddCLicked;
+	public Button buttonCancelClicked, buttonAddCLicked,buttonRemoveCLicked;
 	TextView textviewWho;
 	ArrayList<String> arrayArrayList = new ArrayList<String>();
 	ArrayList<Users> usrsArrayList = new ArrayList<Users>();
@@ -77,8 +77,19 @@ public class DialogBox2 extends Dialog {
 		buttonCancelClicked = (Button) findViewById(R.id.buttonCancelClicked);
 		buttonAddCLicked = (Button) findViewById(R.id.buttonAddCLicked);
 		buttonAddCLicked.setTypeface(Prefrences.helveticaNeuelt(activity));
+		buttonRemoveCLicked = (Button) findViewById(R.id.buttonRemoveCLicked);
+		buttonRemoveCLicked.setTypeface(Prefrences.helveticaNeuelt(activity));
 		buttonCancelClicked.setTypeface(Prefrences.helveticaNeuelt(activity));
 
+		
+		if(Prefrences.location_str.equalsIgnoreCase("") || Prefrences.location_str.equalsIgnoreCase("Selected location"))
+		{
+			buttonRemoveCLicked.setVisibility(View.GONE);
+		}
+		else
+		{
+			buttonRemoveCLicked.setVisibility(View.VISIBLE);
+		}
 		
 		if(Prefrences.text==5)
 		{
@@ -174,6 +185,8 @@ public class DialogBox2 extends Dialog {
 
 				});
 
+				
+				
 				buttonCancel.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
@@ -219,6 +232,19 @@ public class DialogBox2 extends Dialog {
 		});
 	}
 
+		buttonRemoveCLicked.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+				Prefrences.location_str="";
+				WorkItemClick.btnS_location.setText("Selected location"+Prefrences.location_str);
+				dismiss();
+				
+			}
+		});
+		
 		buttonCancelClicked.setOnClickListener(new View.OnClickListener() {
 
 			@Override

@@ -8,18 +8,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashSet;
 
-import org.apache.http.entity.ByteArrayEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import rmn.androidscreenlibrary.ASSL;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,11 +27,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -47,17 +40,14 @@ import com.buildhawk.utils.Company;
 import com.buildhawk.utils.ProjectsFields;
 import com.buildhawk.utils.Users;
 import com.buildhawk.utils.subcontractors;
-import com.flurry.android.FlurryAgent;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
-import com.squareup.picasso.Picasso;
 
 public class Homepage extends SlidingFragmentActivity {
 	Button buttonSliding, buttonLogout, buttonUserName;
@@ -199,10 +189,16 @@ public class Homepage extends SlidingFragmentActivity {
 			@Override
 			public void onClick(View v) {
 				popup.dismiss();
+				if(Prefrences.ContactPhone.equals(""))
+				{
+					AlertMessage();
+				}
+				else{
 				Intent phoneCallIntent = new Intent(Intent.ACTION_CALL);
 				phoneCallIntent.setData(Uri.parse("tel:"
 						+ Prefrences.ContactPhone.toString()));
 				startActivity(phoneCallIntent);
+				}
 			}
 		});
 
@@ -234,8 +230,14 @@ public class Homepage extends SlidingFragmentActivity {
 			@Override
 			public void onClick(View v) {
 				popup.dismiss();
+				if(Prefrences.ContactPhone.equals(""))
+				{
+					AlertMessage();
+				}
+				else{
 				startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts(
 						"sms", Prefrences.ContactPhone.toString(), null)));
+				}
 
 			}
 		});
@@ -645,5 +647,38 @@ public class Homepage extends SlidingFragmentActivity {
 	public void startservice(){
 		Log.d("in service","in service");
 		startService(new Intent(this, ProjectLoadService.class));
+	}
+	private void AlertMessage() {
+
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		builder.setTitle("Sorry!")
+
+		.setMessage(
+
+		"The recipient doesn't have a phone number")
+
+		.setCancelable(false)
+
+		.setPositiveButton("OK",
+
+		new DialogInterface.OnClickListener() {
+
+			public void onClick(final DialogInterface dialog,
+
+			int intValue) {
+
+//				finish();
+
+				// setting_page = true;
+
+			}
+
+		});
+
+		final AlertDialog alert = builder.create();
+
+		alert.show();
+
 	}
 }

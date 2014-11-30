@@ -1,4 +1,5 @@
 package com.buildhawk;
+
 /*
  *  In this it shows the comments, photos, status and description of particular checklist item.
  * 
@@ -11,6 +12,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -23,7 +25,6 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
@@ -39,7 +40,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -55,18 +55,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.CalendarContract.Reminders;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView.LayoutParams;
 import android.widget.BaseAdapter;
@@ -90,14 +86,21 @@ import com.buildhawk.utils.DataCheckListItems;
 import com.buildhawk.utils.DialogBox;
 import com.buildhawk.utils.PhotosCheckListItem;
 import com.buildhawk.utils.SubCategories;
+
+
+import com.kbeanie.imagechooser.api.ChooserType;
+import com.kbeanie.imagechooser.api.ChosenImage;
+import com.kbeanie.imagechooser.api.ImageChooserListener;
+import com.kbeanie.imagechooser.api.ImageChooserManager;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 
-public class CheckItemClick extends Activity {
+public class CheckItemClick extends Activity implements ImageChooserListener{
 
-//	public static Fragment fragment;
+ImageChooserManager imageChooserManager,imageChooserManager2;
+	// public static Fragment fragment;
 	private int resultLoadImage = 1;
 	private int takePicture = 1;
 	private Uri imageUri;
@@ -108,25 +111,27 @@ public class CheckItemClick extends Activity {
 	CustomDateTimePicker custom;
 	// public static ArrayList<PhotosCheckListItem>pho=new
 	// ArrayList<PhotosCheckListItem>();
-	
-	public  ArrayList<CommentsChecklistItem> commentsArrayList = new ArrayList<CommentsChecklistItem>();
-	public  ArrayList<PhotosCheckListItem> photosArrayList = new ArrayList<PhotosCheckListItem>();
-	public  ArrayList<DataCheckListItems> checkListItemDataArrayList = new ArrayList<DataCheckListItems>();
+
+	public ArrayList<CommentsChecklistItem> commentsArrayList = new ArrayList<CommentsChecklistItem>();
+	public ArrayList<PhotosCheckListItem> photosArrayList = new ArrayList<PhotosCheckListItem>();
+	public ArrayList<DataCheckListItems> checkListItemDataArrayList = new ArrayList<DataCheckListItems>();
+	ArrayList<String> remindersArrayList = new ArrayList<String>();
 	commentadapter comadap;
-	
-//	ArrayList<CommentsChecklistItem> comm = new ArrayList<CommentsChecklistItem>();
+
+	// ArrayList<CommentsChecklistItem> comm = new
+	// ArrayList<CommentsChecklistItem>();
 	Button buttonComplete, buttonProgress, buttonNotapp, buttonSave;
-	int completed=0;
+	int completed = 0;
 	String picturePathString;
 	LinearLayout linearlayoutScrollable;
 	int temp, temp2;
-//	LinearLayout lin3;
+	// LinearLayout lin3;
 	SwipeDetector swipeDetector;
 	static String idCheckitemString;
-	String statusCheckitemString="", catidString,subcatidString;
+	String statusCheckitemString = "", catidString, subcatidString;
 	ListView listviewComments;
 	static Context con;
-	static TextView textviewReminder;
+	// static TextView textviewReminder;
 	SwipeDetector swipeDetecter = new SwipeDetector();
 	ScrollView scrollView;
 	ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -144,14 +149,12 @@ public class CheckItemClick extends Activity {
 		new ASSL(this, relativeLayoutRoot, 1134, 720, false);
 		con = CheckItemClick.this;
 		connDect = new ConnectionDetector(con);
-//		isInternetPresent = connDect.isConnectingToInternet();
-		
+		// isInternetPresent = connDect.isConnectingToInternet();
+
 		commentsArrayList.clear();
-//		comments.addAll(comments);
+		// comments.addAll(comments);
 		listviewComments = (ListView) findViewById(R.id.listviewComments);
 
-		
-		
 		ImageView imageviewCamera = (ImageView) findViewById(R.id.imageviewCamera);
 		ImageView imageviewReminder = (ImageView) findViewById(R.id.imageviewReminder);
 		ImageView imageviewGallery = (ImageView) findViewById(R.id.imageviewGallery);
@@ -167,26 +170,34 @@ public class CheckItemClick extends Activity {
 		buttonNotapp = (Button) findViewById(R.id.buttonNotapp);
 		textviewBody = (TextView) findViewById(R.id.textviewBody);
 		textviewType = (TextView) findViewById(R.id.textviewType);
-		textviewReminder= (TextView) findViewById(R.id.textviewReminder);
+		// textviewReminder= (TextView) findViewById(R.id.textviewReminder);
+		
+		linearlayoutScrollable = (LinearLayout) findViewById(R.id.linearlayoutLin2);
 
-		textviewReminder.setTypeface(Prefrences
-				.helveticaNeuelt(getApplicationContext()));
+
+		// textviewReminder.setTypeface(Prefrences
+		// .helveticaNeuelt(getApplicationContext()));
 		buttonComplete.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		textviewBody.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
-		textviewType.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		textviewBody.setTypeface(Prefrences
+				.helveticaNeuelt(getApplicationContext()));
+		textviewType.setTypeface(Prefrences
+				.helveticaNeuelt(getApplicationContext()));
 		buttonProgress.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		buttonNotapp.setTypeface(Prefrences.helveticaNeuelt(getApplicationContext()));
+		buttonNotapp.setTypeface(Prefrences
+				.helveticaNeuelt(getApplicationContext()));
 		edittextCommentbody.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
 		buttonSendcomment.setTypeface(Prefrences
 				.helveticaNeuelt(getApplicationContext()));
-		buttonBack.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
-		buttonSave.setTypeface(Prefrences.helveticaNeuebd(getApplicationContext()));
+		buttonBack.setTypeface(Prefrences
+				.helveticaNeuebd(getApplicationContext()));
+		buttonSave.setTypeface(Prefrences
+				.helveticaNeuebd(getApplicationContext()));
 		scrollView = (ScrollView) findViewById(R.id.scrollView1_checkitem);
 		scrollView.smoothScrollTo(0, 0);
-		
+
 		listviewComments.setFocusable(false);
 		if (ConnectionDetector.isConnectingToInternet()) {
 			if (Prefrences.checklistNotification.equals("")) {
@@ -194,13 +205,16 @@ public class CheckItemClick extends Activity {
 				idCheckitemString = bundle.getString("id");
 				catidString = bundle.getString("cat_id");
 				subcatidString = bundle.getString("subcat_id");
+				Prefrences.checkid = idCheckitemString;
+				Prefrences.catid = catidString;
+				Prefrences.subcatid = subcatidString;
 				Log.d("ID ", "ID********* " + idCheckitemString);
 				showComments(idCheckitemString);
 			} else {
-				Prefrences.comingFrom=4;
-				idCheckitemString=Prefrences.checklistNotification;
+				Prefrences.comingFrom = 4;
+				idCheckitemString = Prefrences.checklistNotification;
 				Log.d("ID ", "ID------- " + idCheckitemString);
-				Prefrences.checklistNotification="";
+				Prefrences.checklistNotification = "";
 				showComments(idCheckitemString);
 			}
 		} else {
@@ -212,98 +226,104 @@ public class CheckItemClick extends Activity {
 				String response = dbObject.get_checkitem(
 						Prefrences.selectedProId, idCheckitemString.toString());
 				dbObject.close();
-				 fillServerDataItem(response);
+				fillServerDataItem(response);
 
 			} else {
 				dbObject.close();
-				Toast.makeText(getApplicationContext(), "No internet connection.",
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(),
+						"No internet connection.", Toast.LENGTH_SHORT).show();
 			}
 		}
-		
+
+
+
 		custom = new CustomDateTimePicker(this,
-	            new CustomDateTimePicker.ICustomDateTimeListener() {
+				new CustomDateTimePicker.ICustomDateTimeListener() {
 
-			@Override
-			public void onSet(Dialog dialog, Calendar calendarSelected,
-					Date dateSelected, int year, String monthFullName,
-					String monthShortName, int monthNumber, int date,
-					String weekDayFullName, String weekDayShortName,
-					int hour24, int hour12, int min, int sec,
-					String AM_PM) {
-				// TODO Auto-generated method stub
-			        	
+					@Override
+					public void onSet(Dialog dialog, Calendar calendarSelected,
+							Date dateSelected, int year, String monthFullName,
+							String monthShortName, int monthNumber, int date,
+							String weekDayFullName, String weekDayShortName,
+							int hour24, int hour12, int min, int sec,
+							String AM_PM) {
+						// TODO Auto-generated method stub
 
-		                           textviewReminder.setText(monthShortName 
-		                                    + " " + calendarSelected
-                                            .get(Calendar.DAY_OF_MONTH) + " " + year
-		                                    + " " + hour24 + ":" + min
-		                                    + ":" + sec);
-		                           String str = textviewReminder.getText().toString()+".454 UTC";
-		                   	    SimpleDateFormat df = new SimpleDateFormat("MMM dd yyyy HH:mm:ss.SSS zzz");
-		                   	    Date date1 = null;
-								try {
-									date1 = df.parse(str);
-								} catch (java.text.ParseException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-		                   	    long epoch = date1.getTime();
-		                   	    System.out.println(epoch); // 1055545912454
-		                           reminderSet(epoch);
-	                }
+						// textviewReminder.setText(monthShortName
+						// + " " + calendarSelected
+						// .get(Calendar.DAY_OF_MONTH) + " " + year
+						// + " " + hour12 + ":" + min +" "+ AM_PM);
+						// // + ":" + sec);
 
-	                @Override
-	                public void onCancel() {
+						String str = monthShortName + " "
+								+ calendarSelected.get(Calendar.DAY_OF_MONTH)
+								+ " " + year + " " + hour24 + ":" + min + ":"
+								+ sec + ".000 UTC";
 
-	                }
+						SimpleDateFormat df = new SimpleDateFormat(
+								"MMM dd yyyy HH:mm:ss.SSS zzz");
+						Date date1 = null;
+						try {
+							date1 = df.parse(str);
+						} catch (java.text.ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						long epoch = date1.getTime();
+						System.out.println(epoch); // 1055545912454
+						Date date2 = new Date(epoch * 1L);
+						SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm a");
+						format.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
+						String formatted = format.format(date2);
+						// textviewReminder.setText(formatted);
+						reminderSet(epoch);
+					}
 
-	            });
+					@Override
+					public void onCancel() {
 
-	  /**
-	    * Pass Directly current time format it will return AM and PM if you set
-	    * false
-	    */
-	    custom.set24HourFormat(false);
-	    /**
-	    * Pass Directly current data and time to show when it pop up
-	    */
-		   custom.setDate(Calendar.getInstance());
+					}
 
+				});
 
-		
-	
-
-		
-
-		
+		/**
+		 * Pass Directly current time format it will return AM and PM if you set
+		 * false
+		 */
+		custom.set24HourFormat(false);
+		/**
+		 * Pass Directly current data and time to show when it pop up
+		 */
+		custom.setDate(Calendar.getInstance());
 
 		buttonComplete.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				if(statusCheckitemString.equalsIgnoreCase("1"))
-				{
+				if (statusCheckitemString.equalsIgnoreCase("1")) {
 					completed = 0;
 					statusCheckitemString = "";
-					buttonComplete.setBackgroundResource(drawable.transparentclick);
+					buttonComplete
+							.setBackgroundResource(drawable.transparentclick);
 					buttonComplete.setTextColor(Color.BLACK);
-					buttonProgress.setBackgroundResource(drawable.transparentclick);
+					buttonProgress
+							.setBackgroundResource(drawable.transparentclick);
 					buttonProgress.setTextColor(Color.BLACK);
-					buttonNotapp.setBackgroundResource(drawable.transparentclick);
+					buttonNotapp
+							.setBackgroundResource(drawable.transparentclick);
 					buttonNotapp.setTextColor(Color.BLACK);
-				}
-				else
-				{
-				completed = 1;
-				statusCheckitemString = "1";
-				buttonComplete.setBackgroundColor(Color.BLACK);
-				buttonComplete.setTextColor(Color.WHITE);
-				buttonProgress.setBackgroundResource(drawable.transparentclick);
-				buttonProgress.setTextColor(Color.BLACK);
-				buttonNotapp.setBackgroundResource(drawable.transparentclick);
-				buttonNotapp.setTextColor(Color.BLACK);
+				} else {
+					completed = 1;
+					statusCheckitemString = "1";
+					buttonComplete.setBackgroundColor(Color.BLACK);
+					buttonComplete.setTextColor(Color.WHITE);
+					buttonProgress
+							.setBackgroundResource(drawable.transparentclick);
+					buttonProgress.setTextColor(Color.BLACK);
+					buttonNotapp
+							.setBackgroundResource(drawable.transparentclick);
+					buttonNotapp.setTextColor(Color.BLACK);
 				}
 			}
 		});
@@ -313,26 +333,28 @@ public class CheckItemClick extends Activity {
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				if(statusCheckitemString.equalsIgnoreCase("0"))
-				{
+				if (statusCheckitemString.equalsIgnoreCase("0")) {
 					statusCheckitemString = "";
-					buttonComplete.setBackgroundResource(drawable.transparentclick);
+					buttonComplete
+							.setBackgroundResource(drawable.transparentclick);
 					buttonComplete.setTextColor(Color.BLACK);
-					buttonProgress.setBackgroundResource(drawable.transparentclick);
+					buttonProgress
+							.setBackgroundResource(drawable.transparentclick);
 					buttonProgress.setTextColor(Color.BLACK);
-					buttonNotapp.setBackgroundResource(drawable.transparentclick);
+					buttonNotapp
+							.setBackgroundResource(drawable.transparentclick);
 					buttonNotapp.setTextColor(Color.BLACK);
-				}
-				else
-				{
-				statusCheckitemString = "0";
-				buttonComplete.setBackgroundResource(drawable.transparentclick);
-				buttonComplete.setTextColor(Color.BLACK);
-				buttonProgress.setBackgroundColor(Color.BLACK);
-				buttonProgress.setTextColor(Color.WHITE);
-				buttonNotapp.setBackgroundResource(drawable.transparentclick);
-				buttonNotapp.setTextColor(Color.BLACK);
-				
+				} else {
+					statusCheckitemString = "0";
+					buttonComplete
+							.setBackgroundResource(drawable.transparentclick);
+					buttonComplete.setTextColor(Color.BLACK);
+					buttonProgress.setBackgroundColor(Color.BLACK);
+					buttonProgress.setTextColor(Color.WHITE);
+					buttonNotapp
+							.setBackgroundResource(drawable.transparentclick);
+					buttonNotapp.setTextColor(Color.BLACK);
+
 				}
 				completed = 0;
 			}
@@ -343,31 +365,32 @@ public class CheckItemClick extends Activity {
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				if(statusCheckitemString.equalsIgnoreCase("-1"))
-				{
+				if (statusCheckitemString.equalsIgnoreCase("-1")) {
 					statusCheckitemString = "";
-					buttonComplete.setBackgroundResource(drawable.transparentclick);
+					buttonComplete
+							.setBackgroundResource(drawable.transparentclick);
 					buttonComplete.setTextColor(Color.BLACK);
-					buttonProgress.setBackgroundResource(drawable.transparentclick);
+					buttonProgress
+							.setBackgroundResource(drawable.transparentclick);
 					buttonProgress.setTextColor(Color.BLACK);
-					buttonNotapp.setBackgroundResource(drawable.transparentclick);
+					buttonNotapp
+							.setBackgroundResource(drawable.transparentclick);
 					buttonNotapp.setTextColor(Color.BLACK);
-				}
-				else
-				{
-				statusCheckitemString = "-1";
-				buttonComplete.setBackgroundResource(drawable.transparentclick);
-				buttonComplete.setTextColor(Color.BLACK);
-				buttonProgress.setBackgroundResource(drawable.transparentclick);
-				buttonProgress.setTextColor(Color.BLACK);
-				buttonNotapp.setBackgroundColor(Color.BLACK);
-				buttonNotapp.setTextColor(Color.WHITE);
+				} else {
+					statusCheckitemString = "-1";
+					buttonComplete
+							.setBackgroundResource(drawable.transparentclick);
+					buttonComplete.setTextColor(Color.BLACK);
+					buttonProgress
+							.setBackgroundResource(drawable.transparentclick);
+					buttonProgress.setTextColor(Color.BLACK);
+					buttonNotapp.setBackgroundColor(Color.BLACK);
+					buttonNotapp.setTextColor(Color.WHITE);
 				}
 				completed = 0;
 			}
 		});
 
-		
 		buttonSave.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -386,28 +409,24 @@ public class CheckItemClick extends Activity {
 					exception.printStackTrace();
 
 				}
-				if(ConnectionDetector.isConnectingToInternet()){
-					
-				
-				updateItem();
-				}
-				else
-				{
-					Toast.makeText(CheckItemClick.this,"No internet connection.", Toast.LENGTH_SHORT).show();
+				if (ConnectionDetector.isConnectingToInternet()) {
+
+					updateItem();
+				} else {
+					Toast.makeText(CheckItemClick.this,
+							"No internet connection.", Toast.LENGTH_SHORT)
+							.show();
 				}
 
 			}
 		});
-		
-		if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ) {
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			edittextCommentbody.setBackground(null);
-		}
-		else {
+		} else {
 			edittextCommentbody.setBackgroundDrawable(null);
 		}
 
-		
-		
 		edittextCommentbody.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -453,24 +472,31 @@ public class CheckItemClick extends Activity {
 					exception.printStackTrace();
 
 				}
-			if(ConnectionDetector.isConnectingToInternet()){
-				commentAdd(edittextCommentbody.getText().toString());
-				// commentslist.add
-				commentsArrayList.add(new CommentsChecklistItem(idCheckitemString, edittextCommentbody
-						.getText().toString(), null, "just now"));
-				Log.d("*****", "increased size" + commentsArrayList.size());
-				listviewComments.setAdapter(comadap);
-				comadap.notifyDataSetChanged();
-				setlist(listviewComments, comadap, 230);
-				edittextCommentbody.setText("");
-				buttonSendcomment.setVisibility(View.GONE);
-			}else{
-				Toast.makeText(CheckItemClick.this,"No internet connection.", Toast.LENGTH_SHORT).show();
-			}
+				if (ConnectionDetector.isConnectingToInternet()) {
+					commentAdd(edittextCommentbody.getText().toString());
+					// commentslist.add
+					ArrayList<CommentsUserChecklistItem> cuser = new ArrayList<CommentsUserChecklistItem>();
+					cuser.add(new CommentsUserChecklistItem(
+							Prefrences.firstName, Prefrences.fullName,
+							Prefrences.email, Prefrences.phoneNumber,
+							Prefrences.userId));
+					commentsArrayList.add(new CommentsChecklistItem(
+							idCheckitemString, edittextCommentbody.getText()
+									.toString(), cuser, "just now"));
+					Log.d("*****", "increased size" + commentsArrayList.size());
+//					Collections.reverse(commentsArrayList);
+					listviewComments.setAdapter(comadap);
+					comadap.notifyDataSetChanged();
+					setlist(listviewComments, comadap, 230);
+					edittextCommentbody.setText("");
+					buttonSendcomment.setVisibility(View.GONE);
+				} else {
+					Toast.makeText(CheckItemClick.this,
+							"No internet connection.", Toast.LENGTH_SHORT)
+							.show();
+				}
 			}
 		});
-
-		
 
 		// Log.d("checkitemclick","hullulullululu");
 		// Log.d("","++++++++++++"+ChecklistFragment.comments.size);
@@ -494,14 +520,16 @@ public class CheckItemClick extends Activity {
 
 			@Override
 			public void onClick(View view) {
-				
-				if(Prefrences.selectedCheckitemSynopsis != 1 || Prefrences.comingFrom==4)
-				{
-				Intent intent = new Intent(CheckItemClick.this,ProjectDetail.class);
-				startActivity(intent);
+
+				if (Prefrences.selectedCheckitemSynopsis != 1
+						|| Prefrences.comingFrom == 4) {
+					Intent intent = new Intent(CheckItemClick.this,
+							ProjectDetail.class);
+					startActivity(intent);
 				}
 				finish();
-				overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+				overridePendingTransition(R.anim.slide_in_left,
+						R.anim.slide_out_right);
 				try {
 
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -547,19 +575,34 @@ public class CheckItemClick extends Activity {
 
 			}
 		});
+		
+		imageChooserManager = new ImageChooserManager(CheckItemClick.this,ChooserType.REQUEST_PICK_PICTURE);
+		imageChooserManager.setImageChooserListener(this);
 
 		imageviewGallery.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(
-						Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-				startActivityForResult(intent, resultLoadImage);
+//				Intent intent = new Intent(
+//						Intent.ACTION_PICK,
+//						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//
+//				startActivityForResult(intent, resultLoadImage);
+//				imageChooserManager = new ImageChooserManager(CheckItemClick.this, ChooserType.REQUEST_PICK_PICTURE);
+				try {
+					imageChooserManager.choose();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			
 			}
 		});
+		
+		imageChooserManager2 = new ImageChooserManager(CheckItemClick.this,ChooserType.REQUEST_CAPTURE_PICTURE);
+		imageChooserManager2.setImageChooserListener(this);
 
 		imageviewCamera.setOnClickListener(new OnClickListener() {
 
@@ -567,46 +610,63 @@ public class CheckItemClick extends Activity {
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-				SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
-				String dateString = sdf.format(Calendar.getInstance().getTime());
-				Log.v("", "" + dateString);
-				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-				File photo = new File(
-						Environment.getExternalStorageDirectory(), dateString
-								+ ".jpg");
-				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
-				imageUri = Uri.fromFile(photo);
-				picturePathString = photo.toString();
-				startActivityForResult(intent, takePicture);
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
+//				String dateString = sdf
+//						.format(Calendar.getInstance().getTime());
+//				Log.v("", "" + dateString);
+//				Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+//				File photo = new File(
+//						Environment.getExternalStorageDirectory(), dateString
+//								+ ".jpg");
+//				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
+//				imageUri = Uri.fromFile(photo);
+//				picturePathString = photo.toString();
+//				startActivityForResult(intent, takePicture);
+//				imageChooserManager = new ImageChooserManager(CheckItemClick.this, ChooserType.REQUEST_PICK_PICTURE);
+				
+				try {
+					imageChooserManager2.choose();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+//				imageChooserManager = new ImageChooserManager(this, ChooserType.REQUEST_CAPTURE_PICTURE);
+//				imageChooserManager.setImageChooserListener(this);
+//				imageChooserManager.choose();
 
 			}
 		});
+
 		
-	
+		
 		
 		imageviewReminder.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				
-//				Toast.makeText(getApplicationContext(), "Reminder Underconstruction...", Toast.LENGTH_LONG).show();
-				
-					
+
+				// Toast.makeText(getApplicationContext(),
+				// "Reminder Underconstruction...", Toast.LENGTH_LONG).show();
+
 				custom.showDialog();
-//				
+				//
 			}
 		});
+		
+		
 	}
 
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		if(Prefrences.selectedCheckitemSynopsis != 1 || Prefrences.comingFrom==4)
-		{
-		Intent intent = new Intent(CheckItemClick.this,ProjectDetail.class);
-		startActivity(intent);
+		if (Prefrences.selectedCheckitemSynopsis != 1
+				|| Prefrences.comingFrom == 4) {
+			Intent intent = new Intent(CheckItemClick.this, ProjectDetail.class);
+			startActivity(intent);
 		}
 		finish();
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
@@ -625,17 +685,33 @@ public class CheckItemClick extends Activity {
 		}
 	}
 
-	public static void main(String[] args) throws Exception
-	{
-	    String str = textviewReminder.getText().toString()+".454 UTC";
-	    SimpleDateFormat df = new SimpleDateFormat("MMM dd yyyy HH:mm:ss.SSS zzz");
-	    Date date = df.parse(str);
-	    long epoch = date.getTime();
-	    System.out.println(epoch); // 1055545912454
-        reminderSet(epoch);
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
 
+		if (Prefrences.stopingHit == 1) {
+			Prefrences.stopingHit = 0;
+			idCheckitemString = Prefrences.checkid;
+			catidString = Prefrences.catid;
+			subcatidString = Prefrences.subcatid;
+			Log.d("ID ", "ID********* " + idCheckitemString);
+			showComments(idCheckitemString);
+		}
 	}
-	
+
+	// public static void main(String[] args) throws Exception
+	// {
+	// String str = textviewReminder.getText().toString()+".454 UTC";
+	// SimpleDateFormat df = new
+	// SimpleDateFormat("MMM dd yyyy hh:mm:ss.SSS zzz");
+	// Date date = df.parse(str);
+	// long epoch = date.getTime();
+	// System.out.println(epoch); // 1055545912454
+	// reminderSet(epoch);
+	//
+	// }
+
 	public void setlist(ListView listview, ListAdapter listAdapter, int size) {
 		int maxHeight = 0;
 		listAdapter = listview.getAdapter();
@@ -664,100 +740,118 @@ public class CheckItemClick extends Activity {
 
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//
+//		if (requestCode == resultLoadImage && resultCode == RESULT_OK
+//				&& null != data) {
+//			Uri selectedImage = data.getData();
+//
+//			String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//
+//			Cursor cursor = getContentResolver().query(selectedImage,
+//					filePathColumn, null, null, null);
+//			cursor.moveToFirst();
+//
+//			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//			picturePathString = cursor.getString(columnIndex);
+//			cursor.close();
+//
+//			// picturePathString=""+getPath(con, selectedImage);
+//			if (picturePathString.equalsIgnoreCase("null")) {
+//				AlertMessage();
+//			} else {
+//				ImageView ladderPageImageView = null;
+//				// Log.d("--------","888888"+DocumentFragment.photosList.size());
+//				// for (int i = 0; i < DocumentFragment.photosList.size(); i++)
+//				// {
+//				ladderPageImageView = new ImageView(CheckItemClick.this);
+//
+//				LinearLayout.LayoutParams layoutParam = new LinearLayout.LayoutParams(
+//						(int) (200), (int) (200));
+//				layoutParam.setMargins(10, 10, 10, 10);
+//				ladderPageImageView.setLayoutParams(layoutParam);
+//				Log.d("picturePathString", "----picturePathString----"
+//						+ picturePathString);
+//				File file = new File(picturePathString);
+//				Picasso.with(CheckItemClick.this)
+//						.load(file)
+//						.placeholder(R.drawable.ic_launcher)
+//						.resize((int) (200 * ASSL.Xscale()),
+//								(int) (200 * ASSL.Xscale()))
+//						.into(ladderPageImageView);
+//				// ladder_page2.setImageBitmap(myBitmap);
+//				linearlayoutScrollable.addView(ladderPageImageView);
+//				// }
+//
+//				// ImageView imageView = (ImageView) findViewById(R.id.imgView);
+//				//
+//				ladderPageImageView.setImageBitmap(BitmapFactory
+//						.decodeFile(picturePathString));
+//
+//				new LongOperation().execute("");
+//				// upload();
+//				// new Updating().execute("");
+//				// post_punchlst_items(picturePath);
+//				// commentAdd();
+//
+//			}
+//		}
+//
+//		else if (requestCode == takePicture && resultCode == Activity.RESULT_OK) {
+//			Uri selectedImage = imageUri;
+//
+//			picturePathString = "" + getRealPathFromURI(imageUri);
+//			getContentResolver().notifyChange(selectedImage, null);
+//
+//			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
+//			ImageView ladderPageImageView = null;
+//			// Log.d("--------","888888"+DocumentFragment.photosList.size());
+//			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
+//			ladderPageImageView = new ImageView(CheckItemClick.this);
+//
+//			ContentResolver contentResolver = getContentResolver();
+//			Bitmap bitmap;
+//			try {
+//				bitmap = android.provider.MediaStore.Images.Media.getBitmap(
+//						contentResolver, selectedImage);
+//				new LongOperation().execute("");
+//				LinearLayout.LayoutParams layoutParam = new LinearLayout.LayoutParams(
+//						(int) (200), (int) (200));
+//				layoutParam.setMargins(10, 10, 10, 10);
+//				ladderPageImageView.setLayoutParams(layoutParam);
+//				File file = new File(picturePathString);
+//
+//				Picasso.with(CheckItemClick.this)
+//						.load(file)
+//						.resize((int) (200 * ASSL.Xscale()),
+//								(int) (200 * ASSL.Xscale())).centerCrop()
+//						.into(ladderPageImageView);
+//				ladderPageImageView.setImageBitmap(bitmap);
+//				linearlayoutScrollable.addView(ladderPageImageView);
+//
+//				// imageView.setImageBitmap(bitmap);
+//				// Toast.makeText(this, selectedImage.toString(),
+//				// Toast.LENGTH_LONG).show();
+//			} catch (Exception e) {
+//				Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT)
+//						.show();
+//				Log.e("Camera", e.toString());
+//			}
+//		}
+//	}
 
-		if (requestCode == resultLoadImage && resultCode == RESULT_OK
-				&& null != data) {
-			Uri selectedImage = data.getData();
-			
-			String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-			Cursor cursor = getContentResolver().query(selectedImage,
-					filePathColumn, null, null, null);
-			cursor.moveToFirst();
-
-			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-			picturePathString = cursor.getString(columnIndex);
-			cursor.close();
-
-			ImageView ladderPageImageView = null;
-			// Log.d("--------","888888"+DocumentFragment.photosList.size());
-			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
-			ladderPageImageView = new ImageView(CheckItemClick.this);
-
-			LinearLayout.LayoutParams layoutParam = new LinearLayout.LayoutParams(
-					(int) (200), (int) (200));
-			layoutParam.setMargins(10, 10, 10, 10);
-			ladderPageImageView.setLayoutParams(layoutParam);
-			File file = new File(picturePathString);
-			Picasso.with(CheckItemClick.this).load(file)
-					.placeholder(R.drawable.ic_launcher)
-					.resize((int) (200 * ASSL.Xscale()),
-					(int) (200 * ASSL.Xscale()))
-					.into(ladderPageImageView);
-			// ladder_page2.setImageBitmap(myBitmap);
-			linearlayoutScrollable.addView(ladderPageImageView);
-			// }
-
-			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
-//			ladderPageImageView.setImageBitmap(BitmapFactory.decodeFile(picturePathString));
-			new LongOperation().execute("");
-			// upload();
-			// new Updating().execute("");
-			// post_punchlst_items(picturePath);
-			// commentAdd();
-
-		}
-
-		else if (requestCode == takePicture && resultCode == Activity.RESULT_OK) {
-			Uri selectedImage = imageUri;
-			
-			
-			picturePathString = ""+getRealPathFromURI(imageUri);
-			getContentResolver().notifyChange(selectedImage, null);
-		
-			// ImageView imageView = (ImageView) findViewById(R.id.imgView);
-			ImageView ladderPageImageView = null;
-			// Log.d("--------","888888"+DocumentFragment.photosList.size());
-			// for (int i = 0; i < DocumentFragment.photosList.size(); i++) {
-			ladderPageImageView = new ImageView(CheckItemClick.this);
-
-			ContentResolver contentResolver = getContentResolver();
-			Bitmap bitmap;
-			try {
-				bitmap = android.provider.MediaStore.Images.Media.getBitmap(
-						contentResolver, selectedImage);
-				new LongOperation().execute("");
-				LinearLayout.LayoutParams layoutParam = new LinearLayout.LayoutParams(
-						(int) (200), (int) (200));
-				layoutParam.setMargins(10, 10, 10, 10);
-				ladderPageImageView.setLayoutParams(layoutParam);
-				File file = new File(picturePathString);
-
-				Picasso.with(CheckItemClick.this)
-						.load(file)
-						.resize((int) (200 * ASSL.Xscale()),
-								(int) (200 * ASSL.Xscale())).centerCrop()
-						.into(ladderPageImageView);
-				ladderPageImageView.setImageBitmap(bitmap);
-				linearlayoutScrollable.addView(ladderPageImageView);
-
-				// imageView.setImageBitmap(bitmap);
-				// Toast.makeText(this, selectedImage.toString(),
-				// Toast.LENGTH_LONG).show();
-			} catch (Exception e) {
-				Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT)
-						.show();
-				Log.e("Camera", e.toString());
-			}
-		}
-	}
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		if (resultCode == RESULT_OK
+//				&& (requestCode == ChooserType.REQUEST_PICK_PICTURE || requestCode == ChooserType.REQUEST_CAPTURE_PICTURE)) {
+//			imageChooserManager.submit(requestCode, data);
+//		}
+//	}
 
 	public void showDialog(View view) {
 
-	
 		DialogBox cdd = new DialogBox(CheckItemClick.this);
 		cdd.requestWindowFeature(android.R.style.Theme_Translucent_NoTitleBar);
 		// Window window = cdd.getWindow();
@@ -770,7 +864,7 @@ public class CheckItemClick extends Activity {
 		cdd.show();
 
 	}
-	
+
 	// ************ API for Add Comments. *************//
 
 	public void commentAdd(String body) {
@@ -815,8 +909,6 @@ public class CheckItemClick extends Activity {
 					}
 				});
 	}
-
-	
 
 	// ************ API hit for "Post A Worklist Photo." *************//
 
@@ -940,17 +1032,21 @@ public class CheckItemClick extends Activity {
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = infalInflater.inflate(R.layout.commentslistitem,
 						null);
-				holder.textviewbody = (TextView) convertView.findViewById(R.id.comBody);
-				holder.textviewUser = (TextView) convertView.findViewById(R.id.comUser);
-				holder.textviewDate = (TextView) convertView.findViewById(R.id.comDate);
+				holder.textviewbody = (TextView) convertView
+						.findViewById(R.id.comBody);
+				holder.textviewUser = (TextView) convertView
+						.findViewById(R.id.comUser);
+				holder.textviewDate = (TextView) convertView
+						.findViewById(R.id.comDate);
 				// holder.delete=(Button)convertView.findViewById(R.id.DeleteSwipe);
 				holder.relativelayoutComment = (RelativeLayout) convertView
 						.findViewById(R.id.relativelayoutComment);
 				holder.linearlayoutRoot = (LinearLayout) convertView
 						.findViewById(R.id.linearlayoutRoot);
 
-				holder.linearlayoutRoot.setLayoutParams(new ListView.LayoutParams(
-						ListView.LayoutParams.MATCH_PARENT, 200));
+				holder.linearlayoutRoot
+						.setLayoutParams(new ListView.LayoutParams(
+								ListView.LayoutParams.MATCH_PARENT, 200));
 				ASSL.DoMagic(holder.linearlayoutRoot);
 
 				convertView.setTag(holder);
@@ -959,7 +1055,7 @@ public class CheckItemClick extends Activity {
 			}
 
 			holder.relativelayoutComment.setTag(holder);
-			holder.position = position;
+			holder.position = commentsArrayList.size()-1-position;
 
 			holder.textviewbody.setTypeface(Prefrences
 					.helveticaNeuelt(getApplicationContext()));
@@ -967,18 +1063,22 @@ public class CheckItemClick extends Activity {
 					.helveticaNeuelt(getApplicationContext()));
 			holder.textviewUser.setTypeface(Prefrences
 					.helveticaNeuelt(getApplicationContext()));
-			holder.textviewbody.setText("" + commentsArrayList.get(position).body.toString());
-			if (commentsArrayList.get(position).cuser == null) {
+			holder.textviewbody.setText(""
+					+ commentsArrayList.get(commentsArrayList.size()-1-position).body.toString());
+			if (commentsArrayList.get(commentsArrayList.size()-1-position).cuser == null) {
 				holder.textviewUser.setText("");
 			} else {
 				holder.textviewUser.setText(""
-						+ commentsArrayList.get(position).cuser.get(0).fullName.toString());
+						+ commentsArrayList.get(commentsArrayList.size()-1-position).cuser.get(0).fullName
+								.toString());
 			}
 
-			if (commentsArrayList.get(position).created_at.toString().equals("just now")) {
+			if (commentsArrayList.get(commentsArrayList.size()-1-position).created_at.toString().equals(
+					"just now")) {
 				holder.textviewDate.setText("just now");
 			} else {
-				String date = utcToLocal(commentsArrayList.get(position).created_at.toString());
+				String date = utcToLocal(commentsArrayList.get(commentsArrayList.size()-1-position).created_at
+						.toString());
 				Log.d("date==", "" + date);
 				holder.textviewDate.setText("" + date);
 			}
@@ -997,76 +1097,89 @@ public class CheckItemClick extends Activity {
 					((int) (200.0f * ASSL.Yscale())));
 
 			layoutParams2.setMargins(0, 0, 0, 0);
-			
 
-			holder.relativelayoutComment.setOnLongClickListener(new View.OnLongClickListener() {
+			holder.relativelayoutComment
+					.setOnLongClickListener(new View.OnLongClickListener() {
 
-				@Override
-				public boolean onLongClick(final View view) {
-					// TODO Auto-generated method stub
+						@Override
+						public boolean onLongClick(final View view) {
+							// TODO Auto-generated method stub
 
-					// holder.delete.setVisibility(View.VISIBLE);
-					ViewHolder holder2 = (ViewHolder) view.getTag();
+							// holder.delete.setVisibility(View.VISIBLE);
+							ViewHolder holder2 = (ViewHolder) view.getTag();
 
-					if (commentsArrayList.get(holder2.position).cuser.get(0).id.toString()
-							.equalsIgnoreCase(Prefrences.userId.toString())) {
-						final String ids = commentsArrayList.get(holder2.position).id
-								.toString();
-						Log.d("", "id===" + ids);
-						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-								con);
+							if (commentsArrayList.get(holder2.position).cuser
+									.get(0).id.toString().equalsIgnoreCase(
+									Prefrences.userId.toString())) {
+								final String ids = commentsArrayList
+										.get(holder2.position).id.toString();
+								Log.d("", "id===" + ids);
+								AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+										con);
 
-						// set title
-						alertDialogBuilder.setTitle("Please confirm");
+								// set title
+								alertDialogBuilder.setTitle("Please confirm");
 
-						// set dialog message
-						alertDialogBuilder
-								.setMessage(
-										"Are you sure you want to delete this comment?")
-								.setCancelable(false)
-								.setPositiveButton("Yes",
-										new DialogInterface.OnClickListener() {
-											public void onClick(
-													DialogInterface dialog,
-													int idOnclick) {
-												// if this button is clicked,
-												// close
-												// current activity
-												Log.d("Dialog", "Delete");
-												deleteComments(ids);
-												commentsArrayList.remove(position);
-												Log.d("", "" + position);
-												Log.d("", "" + commentsArrayList.size());
-												holder.relativelayoutComment
-														.setLayoutParams(layoutParams2);
-												holder.relativelayoutComment.removeView(view);
-												notifyDataSetChanged();
+								// set dialog message
+								alertDialogBuilder
+										.setMessage(
+												"Are you sure you want to delete this comment?")
+										.setCancelable(false)
+										.setPositiveButton(
+												"Yes",
+												new DialogInterface.OnClickListener() {
+													public void onClick(
+															DialogInterface dialog,
+															int idOnclick) {
+														// if this button is
+														// clicked,
+														// close
+														// current activity
+														Log.d("Dialog",
+																"Delete");
+														deleteComments(ids);
+														commentsArrayList
+																.remove(position);
+														Log.d("", "" + position);
+														Log.d("",
+																""
+																		+ commentsArrayList
+																				.size());
+														holder.relativelayoutComment
+																.setLayoutParams(layoutParams2);
+														holder.relativelayoutComment
+																.removeView(view);
+														notifyDataSetChanged();
 
-												// CheckItemClick.this.finish();
-											}
-										})
-								.setNegativeButton("No",
-										new DialogInterface.OnClickListener() {
-											public void onClick(
-													DialogInterface dialog,
-													int idOnclick) {
-												// if this button is clicked,
-												// just close
-												// the dialog box and do nothing
-												Log.d("Dialog", "No");
-												dialog.cancel();
-											}
-										});
+														// CheckItemClick.this.finish();
+													}
+												})
+										.setNegativeButton(
+												"No",
+												new DialogInterface.OnClickListener() {
+													public void onClick(
+															DialogInterface dialog,
+															int idOnclick) {
+														// if this button is
+														// clicked,
+														// just close
+														// the dialog box and do
+														// nothing
+														Log.d("Dialog", "No");
+														dialog.cancel();
+													}
+												});
 
-						// create alert dialog
-						AlertDialog alertDialog = alertDialogBuilder.create();
+								// create alert dialog
+								AlertDialog alertDialog = alertDialogBuilder
+										.create();
 
-						// show it
-						alertDialog.show();
-					}
-					return true;
-				}
-			});
+								// show it
+								alertDialog.show();
+							}
+							return true;
+						}
+					});
 
 			// holder.lin4.setOnTouchListener(swipeDetecter);
 			// holder.lin4.setOnClickListener(new OnClickListener() {
@@ -1325,252 +1438,276 @@ public class CheckItemClick extends Activity {
 	void updateItem() {
 
 		Prefrences.showLoadingDialog(CheckItemClick.this, "Loading...");
-//		JSONObject json = new JSONObject();
-		 RequestParams params = new RequestParams();
+		// JSONObject json = new JSONObject();
+		RequestParams params = new RequestParams();
 
-	
-		 		params.put("id", idCheckitemString);
-		 		params.put("user_id", Prefrences.userId);
-		 		params.put("checklist_item[state]", statusCheckitemString);
-		 		if(statusCheckitemString.equalsIgnoreCase("1"))
-		 			params.put("checklist_item[completed_by_user_id]", Prefrences.userId);
-		 				
-		
-				
-//			 params.put("checklist_item[state]", "0");
-//				Log.e("State", "---      0");
-//			}else if(statusCheckitem.equalsIgnoreCase("Completed")){
-//				params.put("checklist_item[state]", "1");
-//				Log.e("State", "---      1");
-//			}else if(statusCheckitem.equalsIgnoreCase("-1")){
-//				params.put("checklist_item[state]", "-1");
-//				Log.e("State", "---     -1");
-//			}else{
-//				params.put("checklist_item[state]", "nil");
-//				Log.e("State", "---      null");
-//			}
-//		 params.put("checklist_item[completed_by_user_id]", Prefrences.userId);
-//		try {
-//			json.put("id", idCheckitem);
-//			json.put("user_id", Prefrences.userId);
-//			if(completed==1)
-//			json.put("completed_by_user_id", Prefrences.userId);
-//			//json.put("status", statusCheckitem);
-//			if(statusCheckitem.equalsIgnoreCase("In-Progress")){
-//				
-//				json.put("checklist_item[state]", "0");
-//				Log.e("State", "---      0");
-//			}else if(statusCheckitem.equalsIgnoreCase("Completed")){
-//				json.put("checklist_item[state]", "1");
-//				Log.e("State", "---      1");
-//			}else if(statusCheckitem.equalsIgnoreCase("Not Applicable")){
-//				json.put("checklist_item[state]", "-1");
-//				Log.e("State", "---     -1");
-//			}else{
-//				json.put("checklist_item[state]", null);
-//				Log.e("State", "---      null");
-//			}
-//			
-//			
-//			
-//				json.put("completed", completed);
-//			Log.v("value chk ---- ",Prefrences.userId+" "+statusCheckitem+" "+idCheckitem);
-//
-//		} catch (Exception e1) {
-//			e1.printStackTrace();
-//		}
+		params.put("id", idCheckitemString);
+		params.put("user_id", Prefrences.userId);
+		params.put("checklist_item[state]", statusCheckitemString);
+		if (statusCheckitemString.equalsIgnoreCase("1"))
+			params.put("checklist_item[completed_by_user_id]",
+					Prefrences.userId);
+
+		// params.put("checklist_item[state]", "0");
+		// Log.e("State", "---      0");
+		// }else if(statusCheckitem.equalsIgnoreCase("Completed")){
+		// params.put("checklist_item[state]", "1");
+		// Log.e("State", "---      1");
+		// }else if(statusCheckitem.equalsIgnoreCase("-1")){
+		// params.put("checklist_item[state]", "-1");
+		// Log.e("State", "---     -1");
+		// }else{
+		// params.put("checklist_item[state]", "nil");
+		// Log.e("State", "---      null");
+		// }
+		// params.put("checklist_item[completed_by_user_id]",
+		// Prefrences.userId);
+		// try {
+		// json.put("id", idCheckitem);
+		// json.put("user_id", Prefrences.userId);
+		// if(completed==1)
+		// json.put("completed_by_user_id", Prefrences.userId);
+		// //json.put("status", statusCheckitem);
+		// if(statusCheckitem.equalsIgnoreCase("In-Progress")){
+		//
+		// json.put("checklist_item[state]", "0");
+		// Log.e("State", "---      0");
+		// }else if(statusCheckitem.equalsIgnoreCase("Completed")){
+		// json.put("checklist_item[state]", "1");
+		// Log.e("State", "---      1");
+		// }else if(statusCheckitem.equalsIgnoreCase("Not Applicable")){
+		// json.put("checklist_item[state]", "-1");
+		// Log.e("State", "---     -1");
+		// }else{
+		// json.put("checklist_item[state]", null);
+		// Log.e("State", "---      null");
+		// }
+		//
+		//
+		//
+		// json.put("completed", completed);
+		// Log.v("value chk ---- ",Prefrences.userId+" "+statusCheckitem+" "+idCheckitem);
+		//
+		// } catch (Exception e1) {
+		// e1.printStackTrace();
+		// }
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.addHeader("Content-type", "application/json");
 		client.addHeader("Accept", "application/json");
-//		ByteArrayEntity entity = null;
-//		try {
-////			entity = new ByteArrayEntity(json.toString().getBytes("UTF-8"));
-//		} catch (UnsupportedEncodingException e1) {
-//			e1.printStackTrace();
-//		}
-		client.put(this, Prefrences.url + "/checklist_items/" + idCheckitemString,
-				params, new AsyncHttpResponseHandler() {
+		// ByteArrayEntity entity = null;
+		// try {
+		// // entity = new ByteArrayEntity(json.toString().getBytes("UTF-8"));
+		// } catch (UnsupportedEncodingException e1) {
+		// e1.printStackTrace();
+		// }
+		client.put(this, Prefrences.url + "/checklist_items/"
+				+ idCheckitemString, params, new AsyncHttpResponseHandler() {
 
-					@Override
-					public void onSuccess(String response) {
-						JSONObject res = null;
-						call_service();
-					
-						try {
-							
-							res = new JSONObject(response);
-							Log.v("response ---- ",
-									"---*****----" + res.toString(2));
-							
-							for(int i=0;i<ChecklistFragment.categArrayList.size();i++){
-								if(ChecklistFragment.categArrayList.get(i).getid().equalsIgnoreCase(catidString)){
-									ArrayList<SubCategories> list_val = ChecklistFragment.categArrayList.get(i).getsubcat_array();
-									for(int j=0;j<list_val.size();j++){
-										if(list_val.get(j).getsub_id().equalsIgnoreCase(subcatidString)){
-											 ArrayList<CheckItems> checklist =  list_val.get(j).getcheckItems();
-											 for(int k=0;k<checklist.size();k++){
-												 Log.e("k val123", k+".. ");
-												 if(checklist.get(k).getitemid().equalsIgnoreCase(idCheckitemString)){
-												
-													 JSONObject cCount = res.getJSONObject("checklist_item");
-													 Log.e("check123", k+" "+cCount.getString("body"));
-													 Log.e("check123", k+" "+cCount.getString("state"));
-													 
-													 ChecklistFragment.categArrayList.get(i).getsubcat_array().get(j).getcheckItems().set(k, new CheckItems(catidString, subcatidString,
-													idCheckitemString,
-													cCount.getString("body"),
-													cCount.getString("state"),
-													cCount.getString("item_type"),
-													cCount.getString("photos_count"),
-													cCount.getString("comments_count")));
-													 
-													break; 
-													 
-												 }
-												 
-											 }
-											
+			@Override
+			public void onSuccess(String response) {
+				JSONObject res = null;
+				call_service();
+
+				try {
+
+					res = new JSONObject(response);
+					Log.v("response ---- ", "---*****----" + res.toString(2));
+
+					for (int i = 0; i < ChecklistFragment.categArrayList.size(); i++) {
+						if (ChecklistFragment.categArrayList.get(i).getid()
+								.equalsIgnoreCase(catidString)) {
+							ArrayList<SubCategories> list_val = ChecklistFragment.categArrayList
+									.get(i).getsubcat_array();
+							for (int j = 0; j < list_val.size(); j++) {
+								if (list_val.get(j).getsub_id()
+										.equalsIgnoreCase(subcatidString)) {
+									ArrayList<CheckItems> checklist = list_val
+											.get(j).getcheckItems();
+									for (int k = 0; k < checklist.size(); k++) {
+										Log.e("k val123", k + ".. ");
+										if (checklist
+												.get(k)
+												.getitemid()
+												.equalsIgnoreCase(
+														idCheckitemString)) {
+
+											JSONObject cCount = res
+													.getJSONObject("checklist_item");
+											Log.e("check123",
+													k
+															+ " "
+															+ cCount.getString("body"));
+											Log.e("check123",
+													k
+															+ " "
+															+ cCount.getString("state"));
+
+											ChecklistFragment.categArrayList
+													.get(i)
+													.getsubcat_array()
+													.get(j)
+													.getcheckItems()
+													.set(k,
+															new CheckItems(
+																	catidString,
+																	subcatidString,
+																	idCheckitemString,
+																	cCount.getString("body"),
+																	cCount.getString("state"),
+																	cCount.getString("item_type"),
+																	cCount.getString("photos_count"),
+																	cCount.getString("comments_count")));
+
+											break;
+
 										}
+
 									}
-									
+
 								}
-								
 							}
-							
-							
-							
-							
-							ChecklistFragment.activeArrayList.clear();
-							ChecklistFragment.completeArrayList.clear();
-							ChecklistFragment.pcategArrayList.clear();
-							
-							ChecklistFragment.progressArrayList2.clear();
-							ChecklistFragment.checkallArrayList.clear();
-							
-							for(int i=0;i<ChecklistFragment.categArrayList.size();i++){
-								
-								ChecklistFragment.psubCatArrayList = new ArrayList<SubCategories>();
-								ChecklistFragment.activeSubCatArrayList = new ArrayList<SubCategories>();
-								ChecklistFragment.completeSubCatArrayList = new ArrayList<SubCategories>();
-								
-									ArrayList<SubCategories> list_val = ChecklistFragment.categArrayList.get(i).getsubcat_array();
-									
-									for(int j=0;j<list_val.size();j++){
-										
-										ArrayList<CheckItems> activeCheckItemList = new ArrayList<CheckItems>();
-										ArrayList<CheckItems> completeCheckItemList = new ArrayList<CheckItems>();
-										ArrayList<CheckItems> progressList = new ArrayList<CheckItems>();
-										
-										ArrayList<CheckItems> checklist =  list_val.get(j).getcheckItems();
-											 
-											 for(int k=0;k<checklist.size();k++){
-													if (!checklist.get(k).status
-															.equals("1")
-															&& !checklist.get(k).status
-																	.equals("-1")) {
-																activeCheckItemList.add(checklist.get(k));
-													}
 
-													if (checklist.get(k).status
-															.equals("1")) {
-														Log.e("complete", ",,"+ k);
-														completeCheckItemList.add(checklist.get(k));
-													}
-
-													if (checklist.get(k).status.equals("0")) {
-														progressList.add(checklist.get(k));
-														Log.e("Progress",",,"+ k);
-													//	progressList.add(ChecklistFragment.categList.get(i).getsubcat_array().get(j).getcheckItems().get(k));
-														
-													}
-												 
-											 }
-											 
-											ChecklistFragment.checkallArrayList.addAll(checklist);
-											 ChecklistFragment.progressArrayList2.addAll(progressList);
-											 
-												if (activeCheckItemList.size() > 0) {
-												
-												ChecklistFragment.activeSubCatArrayList.add(new SubCategories( list_val.get(j).getsub_id(),
-														list_val.get(j).name,
-														list_val.get(j).completedDate,
-														list_val.get(j).milestoneDate,
-														list_val.get(j).progPerc,
-														activeCheckItemList));
-											}
-											 
-											 
-
-												if (completeCheckItemList.size() > 0) {
-												
-													ChecklistFragment.completeSubCatArrayList.add(new SubCategories( list_val.get(j).getsub_id(),
-															list_val.get(j).name,
-															list_val.get(j).completedDate,
-															list_val.get(j).milestoneDate,
-															list_val.get(j).progPerc,
-															 completeCheckItemList));
-
-												
-												if (progressList.size() > 0) {
-
-													ChecklistFragment.psubCatArrayList.add(new SubCategories( list_val.get(j).getsub_id(),
-															list_val.get(j).name,
-															list_val.get(j).completedDate,
-															list_val.get(j).milestoneDate,
-															list_val.get(j).progPerc,
-														 progressList));
-												}
-												}
-											
-										}
-									
-									
-									
-									
-									if (ChecklistFragment.psubCatArrayList.size() > 0) {
-									ChecklistFragment.pcategArrayList.add(new Categories(ChecklistFragment.categArrayList.get(i).id,ChecklistFragment.categArrayList.get(i).name,
-											ChecklistFragment.categArrayList.get(i).completedDate, ChecklistFragment.categArrayList.get(i).milestoneDate, ChecklistFragment.categArrayList.get(i).progPerc,
-											ChecklistFragment.psubCatArrayList));
-									}
-
-									if (ChecklistFragment.activeSubCatArrayList.size() > 0) {
-										ChecklistFragment.activeArrayList.add(new Categories(ChecklistFragment.categArrayList.get(i).id,ChecklistFragment.categArrayList.get(i).name,
-												ChecklistFragment.categArrayList.get(i).completedDate, ChecklistFragment.categArrayList.get(i).milestoneDate, ChecklistFragment.categArrayList.get(i).progPerc,
-												ChecklistFragment.activeSubCatArrayList));
-
-									}
-
-									if (ChecklistFragment.completeSubCatArrayList.size() > 0) {
-										ChecklistFragment.completeArrayList.add(new Categories(ChecklistFragment.categArrayList.get(i).id,ChecklistFragment.categArrayList.get(i).name,
-												ChecklistFragment.categArrayList.get(i).completedDate, ChecklistFragment.categArrayList.get(i).milestoneDate, ChecklistFragment.categArrayList.get(i).progPerc,
-												ChecklistFragment.completeSubCatArrayList));
-									}
-								}
-									
-								
-								
-							
-							
-
-							
-							
-							
-							Prefrences.CheckItemClickFlag =true;
-							finish();
-							
-						} catch (Exception e) {
-							e.printStackTrace();
 						}
-						Prefrences.dismissLoadingDialog();
-						
+
 					}
 
-					@Override
-					public void onFailure(Throwable arg0) {
-						Log.e("request fail", arg0.toString());
-						Prefrences.dismissLoadingDialog();
+					ChecklistFragment.activeArrayList.clear();
+					ChecklistFragment.completeArrayList.clear();
+					ChecklistFragment.pcategArrayList.clear();
+
+					ChecklistFragment.progressArrayList2.clear();
+					ChecklistFragment.checkallArrayList.clear();
+
+					for (int i = 0; i < ChecklistFragment.categArrayList.size(); i++) {
+
+						ChecklistFragment.psubCatArrayList = new ArrayList<SubCategories>();
+						ChecklistFragment.activeSubCatArrayList = new ArrayList<SubCategories>();
+						ChecklistFragment.completeSubCatArrayList = new ArrayList<SubCategories>();
+
+						ArrayList<SubCategories> list_val = ChecklistFragment.categArrayList
+								.get(i).getsubcat_array();
+
+						for (int j = 0; j < list_val.size(); j++) {
+
+							ArrayList<CheckItems> activeCheckItemList = new ArrayList<CheckItems>();
+							ArrayList<CheckItems> completeCheckItemList = new ArrayList<CheckItems>();
+							ArrayList<CheckItems> progressList = new ArrayList<CheckItems>();
+
+							ArrayList<CheckItems> checklist = list_val.get(j)
+									.getcheckItems();
+
+							for (int k = 0; k < checklist.size(); k++) {
+								if (!checklist.get(k).status.equals("1")
+										&& !checklist.get(k).status
+												.equals("-1")) {
+									activeCheckItemList.add(checklist.get(k));
+								}
+
+								if (checklist.get(k).status.equals("1")) {
+									Log.e("complete", ",," + k);
+									completeCheckItemList.add(checklist.get(k));
+								}
+
+								if (checklist.get(k).status.equals("0")) {
+									progressList.add(checklist.get(k));
+									Log.e("Progress", ",," + k);
+									// progressList.add(ChecklistFragment.categList.get(i).getsubcat_array().get(j).getcheckItems().get(k));
+
+								}
+
+							}
+
+							ChecklistFragment.checkallArrayList
+									.addAll(checklist);
+							ChecklistFragment.progressArrayList2
+									.addAll(progressList);
+
+							if (activeCheckItemList.size() > 0) {
+
+								ChecklistFragment.activeSubCatArrayList
+										.add(new SubCategories(list_val.get(j)
+												.getsub_id(),
+												list_val.get(j).name, list_val
+														.get(j).completedDate,
+												list_val.get(j).milestoneDate,
+												list_val.get(j).progPerc,
+												activeCheckItemList));
+							}
+
+							if (completeCheckItemList.size() > 0) {
+
+								ChecklistFragment.completeSubCatArrayList
+										.add(new SubCategories(list_val.get(j)
+												.getsub_id(),
+												list_val.get(j).name, list_val
+														.get(j).completedDate,
+												list_val.get(j).milestoneDate,
+												list_val.get(j).progPerc,
+												completeCheckItemList));
+
+								if (progressList.size() > 0) {
+
+									ChecklistFragment.psubCatArrayList
+											.add(new SubCategories(
+													list_val.get(j).getsub_id(),
+													list_val.get(j).name,
+													list_val.get(j).completedDate,
+													list_val.get(j).milestoneDate,
+													list_val.get(j).progPerc,
+													progressList));
+								}
+							}
+
+						}
+
+						if (ChecklistFragment.psubCatArrayList.size() > 0) {
+							ChecklistFragment.pcategArrayList.add(new Categories(
+									ChecklistFragment.categArrayList.get(i).id,
+									ChecklistFragment.categArrayList.get(i).name,
+									ChecklistFragment.categArrayList.get(i).completedDate,
+									ChecklistFragment.categArrayList.get(i).milestoneDate,
+									ChecklistFragment.categArrayList.get(i).progPerc,
+									ChecklistFragment.psubCatArrayList));
+						}
+
+						if (ChecklistFragment.activeSubCatArrayList.size() > 0) {
+							ChecklistFragment.activeArrayList.add(new Categories(
+									ChecklistFragment.categArrayList.get(i).id,
+									ChecklistFragment.categArrayList.get(i).name,
+									ChecklistFragment.categArrayList.get(i).completedDate,
+									ChecklistFragment.categArrayList.get(i).milestoneDate,
+									ChecklistFragment.categArrayList.get(i).progPerc,
+									ChecklistFragment.activeSubCatArrayList));
+
+						}
+
+						if (ChecklistFragment.completeSubCatArrayList.size() > 0) {
+							ChecklistFragment.completeArrayList.add(new Categories(
+									ChecklistFragment.categArrayList.get(i).id,
+									ChecklistFragment.categArrayList.get(i).name,
+									ChecklistFragment.categArrayList.get(i).completedDate,
+									ChecklistFragment.categArrayList.get(i).milestoneDate,
+									ChecklistFragment.categArrayList.get(i).progPerc,
+									ChecklistFragment.completeSubCatArrayList));
+						}
 					}
-				});
+
+					Prefrences.CheckItemClickFlag = true;
+					finish();
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Prefrences.dismissLoadingDialog();
+
+			}
+
+			@Override
+			public void onFailure(Throwable arg0) {
+				Log.e("request fail", arg0.toString());
+				Prefrences.dismissLoadingDialog();
+			}
+		});
 	}
 
 	// @Override
@@ -1598,19 +1735,19 @@ public class CheckItemClick extends Activity {
 	// }
 
 	private class LongOperation extends AsyncTask<String, Void, String> {
-		
+
 		boolean error;
 
 		@Override
 		protected String doInBackground(String... params) {
 
 			try {
-//				if(picturePathString.isEmpty()){
+				// if(picturePathString.isEmpty()){
 				postPicture();
-//				}
-//				else{
-					
-//				}
+				// }
+				// else{
+
+				// }
 
 			} catch (ParseException e) {
 
@@ -1619,27 +1756,29 @@ public class CheckItemClick extends Activity {
 				e.printStackTrace();
 
 			}
-//			catch (IOException e) {
-//
-//				// TODO Auto-generated catch block
-//
-//				e.printStackTrace();
-//
-//			}
-//			catch (XmlPullParserException e) {
-//
-//				// TODO Auto-generated catch block
-//
-//				e.printStackTrace();
-//
-//			}
+			// catch (IOException e) {
+			//
+			// // TODO Auto-generated catch block
+			//
+			// e.printStackTrace();
+			//
+			// }
+			// catch (XmlPullParserException e) {
+			//
+			// // TODO Auto-generated catch block
+			//
+			// e.printStackTrace();
+			//
+			// }
 			catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
-				
+
 				error = true;
-//				Toast.makeText(CheckItemClick.this, "Failed to load", Toast.LENGTH_SHORT).show();
-//				Toast.makeText(getApplicationContext(), "Not a valid Photo", Toast.LENGTH_SHORT).show();
+				// Toast.makeText(CheckItemClick.this, "Failed to load",
+				// Toast.LENGTH_SHORT).show();
+				// Toast.makeText(getApplicationContext(), "Not a valid Photo",
+				// Toast.LENGTH_SHORT).show();
 			}
 
 			return null;
@@ -1649,10 +1788,19 @@ public class CheckItemClick extends Activity {
 		@Override
 		protected void onPostExecute(String result) {
 			Prefrences.dismissLoadingDialog();
-			if(error)
-			{
+			if (error) {
 				AlertMessage();
+			} else {
+				if (Prefrences.stopingHit == 1) {
+					Prefrences.stopingHit = 0;
+					idCheckitemString = Prefrences.checkid;
+					catidString = Prefrences.catid;
+					subcatidString = Prefrences.subcatid;
+					Log.d("ID ", "ID********* " + idCheckitemString);
+					showComments(idCheckitemString);
+				}
 			}
+
 		}
 
 		@Override
@@ -1666,6 +1814,7 @@ public class CheckItemClick extends Activity {
 		}
 
 	}
+
 	private void AlertMessage() {
 
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -1686,7 +1835,7 @@ public class CheckItemClick extends Activity {
 
 			int intValue) {
 
-				finish();
+				// finish();
 
 				// setting_page = true;
 
@@ -1729,8 +1878,6 @@ public class CheckItemClick extends Activity {
 
 		+ BOUNDARY);
 
-		
-			
 		Log.v("picturePath", picturePathString);
 
 		File file = new File(picturePathString);
@@ -1739,8 +1886,8 @@ public class CheckItemClick extends Activity {
 
 		cbFile.getMediaType();
 
-		mpEntity.addPart("photo[checklist_item_id]",
-				new StringBody(idCheckitemString));
+		mpEntity.addPart("photo[checklist_item_id]", new StringBody(
+				idCheckitemString));
 
 		mpEntity.addPart("photo[mobile]", new StringBody("1"));
 
@@ -1785,26 +1932,28 @@ public class CheckItemClick extends Activity {
 
 		System.out.println(responseString);
 
+		Prefrences.stopingHit = 1;
+
 	}
-	
+
 	// ************ API for setting Reminder. *************//
-	
+
 	public static void reminderSet(long epoch) {
 		Prefrences.showLoadingDialog(con, "Loading...");
-//		JSONObject json = new JSONObject();
+		// JSONObject json = new JSONObject();
 		RequestParams params = new RequestParams();
-		
-		params.put("reminder[checklist_item_id]",idCheckitemString );
+
+		params.put("reminder[checklist_item_id]", idCheckitemString);
 		params.put("reminder[user_id]", Prefrences.userId);
-		params.put("reminder[project_id]",Prefrences.selectedProId );
-		params.put("date",""+epoch);
+		params.put("reminder[project_id]", Prefrences.selectedProId);
+		params.put("date", "" + epoch);
 
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.addHeader("Content-type", "application/json");
 		client.addHeader("Accept", "application/json");
-		
+
 		client.post(con, Prefrences.url + "/reminders", params,
-				 new AsyncHttpResponseHandler() {
+				new AsyncHttpResponseHandler() {
 					@Override
 					public void onSuccess(String response) {
 						JSONObject res = null;
@@ -1825,30 +1974,31 @@ public class CheckItemClick extends Activity {
 					}
 				});
 	}
-	
-	public void call_service(){
+
+	public void call_service() {
 		Log.e("Inside service call", "fgbvtxsh");
 		startService(new Intent(this, MyService.class));
 	}
 
 	public static String utcToLocal(String utcTime) {
 
-	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy, hh:mm a");
-	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-	simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-	try {
-	Date myDate = simpleDateFormat.parse(utcTime);
-	String localDateString = sdf.format(myDate);
-	Log.d("date ","hiii date "+localDateString.toString());
-	return localDateString;
-	} catch (Exception e1) {
-	Log.e("e1","="+e1);
-	return utcTime;
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy, hh:mm a");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+				"yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		try {
+			Date myDate = simpleDateFormat.parse(utcTime);
+			String localDateString = sdf.format(myDate);
+			Log.d("date ", "hiii date " + localDateString.toString());
+			return localDateString;
+		} catch (Exception e1) {
+			Log.e("e1", "=" + e1);
+			return utcTime;
+		}
 	}
-	}
-	
+
 	// ************ API for selected checklist item. *************//
-	
+
 	public void showComments(final String idCheck) {
 
 		Prefrences.showLoadingDialog(con, "Loading...");
@@ -1856,7 +2006,7 @@ public class CheckItemClick extends Activity {
 		RequestParams params = new RequestParams();
 
 		params.put("id", idCheck);
-//		params.put("status", status);
+		// params.put("status", status);
 		// Log.e("json:", json1.toString());
 		AsyncHttpClient client = new AsyncHttpClient();
 		client.setTimeout(1000000);
@@ -1871,11 +2021,14 @@ public class CheckItemClick extends Activity {
 					public void onSuccess(String response) {
 						DatabaseClass dbObject = new DatabaseClass(con);
 						dbObject.open();
-						Log.e("CHKITEMResponse", "msg: "+response);
-						if(dbObject.exists_checkitem(Prefrences.selectedProId, idCheck)){
-							dbObject.update_checkitem(Prefrences.selectedProId, idCheck, response);
-						}else{
-							dbObject.CreateChkItem(Prefrences.selectedProId, idCheck, response);
+						Log.e("CHKITEMResponse", "msg: " + response);
+						if (dbObject.exists_checkitem(Prefrences.selectedProId,
+								idCheck)) {
+							dbObject.update_checkitem(Prefrences.selectedProId,
+									idCheck, response);
+						} else {
+							dbObject.CreateChkItem(Prefrences.selectedProId,
+									idCheck, response);
 						}
 						dbObject.close();
 						fillServerDataItem(response);
@@ -1892,44 +2045,48 @@ public class CheckItemClick extends Activity {
 		// Log.d("", "lalalala"+CheckItemClick.comm.size());
 
 	}
-	
-	
-	public void fillServerDataItem(String response){
+
+	public void fillServerDataItem(String response) {
 		JSONObject res = null;
 
 		try {
-			Log.e("response", "msg: "+response);
+			Log.e("response", "msg: " + response);
 			checkListItemDataArrayList.clear();
 			commentsArrayList.clear();
 			photosArrayList.clear();
+			remindersArrayList.clear();
 			res = new JSONObject(response);
 			Log.v("response ", "" + res.toString(2));
-			JSONObject punchlists = res
-					.getJSONObject("checklist_item");// chexklist
+			JSONObject punchlists = res.getJSONObject("checklist_item");// chexklist
 
 			JSONArray phot = punchlists.getJSONArray("photos");// categ
 
-			JSONArray personel = punchlists
-					.getJSONArray("comments");
+			JSONArray personel = punchlists.getJSONArray("comments");
+
+			JSONArray reminders = punchlists.getJSONArray("reminders");
+
+			for (int i = 0; i < reminders.length(); i++) {
+				JSONObject count = reminders.getJSONObject(i);
+
+				remindersArrayList.add(count.getString("reminder_date"));
+			}
 
 			for (int j = 0; j < phot.length(); j++) {
 				JSONObject ccount = phot.getJSONObject(j);
 
 				photosArrayList.add(new PhotosCheckListItem(ccount
-						.getString("id"), ccount
-						.getString("url_large"), ccount
-						.getString("original"), ccount
-						.getString("url_small"), ccount
-						.getString("url_thumb"), ccount
-						.getString("image_file_size"), ccount
-						.getString("image_content_type"),
-						ccount.getString("source"), ccount
-								.getString("phase"), ccount
-								.getString("created_at"),
-						ccount.getString("user_name"), ccount
+						.getString("id"), ccount.getString("url_large"), ccount
+						.getString("original"), ccount.getString("url_small"),
+						ccount.getString("url_thumb"), ccount
+								.getString("image_file_size"), ccount
+								.getString("image_content_type"), ccount
+								.getString("source"),
+						ccount.getString("phase"), ccount
+//								.getString("created_at"), ccount
+								.getString("user_name"), ccount
 								.getString("name"), ccount
-								.getString("description"),
-						ccount.getString("created_date")));
+								.getString("description"), ccount
+								.getString("created_date")));
 
 			}
 			// Prefrences.pho.addAll(photos);
@@ -1944,15 +2101,13 @@ public class CheckItemClick extends Activity {
 
 				ArrayList<CommentsUserChecklistItem> cuser = new ArrayList<CommentsUserChecklistItem>();
 				cuser.add(new CommentsUserChecklistItem(cmpny
-						.getString("first_name"), cmpny
-						.getString("full_name"), cmpny
-						.getString("email"), cmpny
-						.getString("formatted_phone"), cmpny
-						.getString("id")));
+						.getString("first_name"), cmpny.getString("full_name"),
+						cmpny.getString("email"), cmpny
+								.getString("formatted_phone"), cmpny
+								.getString("id")));
 
 				commentsArrayList.add(new CommentsChecklistItem(count
-						.getString("id"), count
-						.getString("body"), cuser, count
+						.getString("id"), count.getString("body"), cuser, count
 						.getString("created_at")));
 
 			}
@@ -1965,149 +2120,175 @@ public class CheckItemClick extends Activity {
 			// Log.v("%%%%%%%%%","photooooooossss sssiizzee "+CheckItemClick.comm.size());
 			Log.d("comments", "Size" + commentsArrayList.size());
 			// Log.d("","commentbody "+comments.get(0).body.toString());
-//			"id": 38246,
-//			"body": "Construction docs/direction should have: Full Set of Working Drawings - Permit Application",
-//			"status": "Not Applicable",
-//			"item_type": "S&C",
-//			"photos_count": 1,
-//			"comments_count": 2,
-//			"activities": [],
-//			"reminders": [],
-//			"project_id": 37
-			
-			
-			checkListItemDataArrayList.add(new DataCheckListItems(
-					punchlists.getString("id"), punchlists
-							.getString("body"), punchlists
-							.getString("state"), punchlists
-							.getString("item_type"), punchlists
-							.getString("photos_count"),
-					punchlists.getString("comments_count"),
-					photosArrayList, commentsArrayList, 
-					punchlists
-							.getString("phase_name"),
-					punchlists.getString("project_id")));
+			// "id": 38246,
+			// "body":
+			// "Construction docs/direction should have: Full Set of Working Drawings - Permit Application",
+			// "status": "Not Applicable",
+			// "item_type": "S&C",
+			// "photos_count": 1,
+			// "comments_count": 2,
+			// "activities": [],
+			// "reminders": [],
+			// "project_id": 37
+
+			checkListItemDataArrayList.add(new DataCheckListItems(punchlists
+					.getString("id"), punchlists.getString("body"), punchlists
+					.getString("state"), punchlists.getString("item_type"),
+					punchlists.getString("photos_count"), punchlists
+							.getString("comments_count"), photosArrayList,
+					commentsArrayList,
+//					punchlists.getString("phase_name"),
+					punchlists.getString("project_id"), remindersArrayList));
 
 			// Log.d("checklistfragment ",
 			// "lalalala"+CheckItemClick.comm.size());
 
-//			Intent intent = new Intent(con,
-//					CheckItemClick.class);
-			
+			// Intent intent = new Intent(con,
+			// CheckItemClick.class);
+			if (remindersArrayList.size() == 0) {
+
+			} else {
+				if (remindersArrayList.get(0).length() > 10) {
+					Date date = new Date(Long.parseLong(remindersArrayList.get(
+							0).toString()) * 1L);
+					SimpleDateFormat format = new SimpleDateFormat(
+							"yyyy-MM-dd hh:mm a");
+					format.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
+					String formatted = format.format(date);
+					// textviewReminder.setText(formatted);
+				} else {
+					Date date = new Date(Long.parseLong(remindersArrayList.get(
+							0).toString()) * 1000L);
+					SimpleDateFormat format = new SimpleDateFormat(
+							"yyyy-MM-dd hh:mm a");
+					format.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
+					String formatted = format.format(date);
+					// textviewReminder.setText(formatted);
+				}
+
+			}
 			textviewBody.setText(punchlists.getString("body"));
 			textviewType.setText(punchlists.getString("item_type"));
-	
-//				idCheckitem = bundle.getString("item_id");
-				statusCheckitemString = punchlists.getString("state");
-				
-				if (statusCheckitemString.equalsIgnoreCase("1")) {
-					completed=1;
-					buttonComplete.setBackgroundColor(Color.BLACK);
-					buttonComplete.setTextColor(Color.WHITE);
-					buttonProgress.setBackgroundResource(drawable.transparentclick);
-					buttonProgress.setTextColor(Color.BLACK);
-					buttonNotapp.setBackgroundResource(drawable.transparentclick);
-					buttonNotapp.setTextColor(Color.BLACK);
 
-				} else if (statusCheckitemString.equalsIgnoreCase("0")) {
-					buttonComplete.setBackgroundResource(drawable.transparentclick);
-					buttonComplete.setTextColor(Color.BLACK);
-					buttonProgress.setBackgroundColor(Color.BLACK);
-					buttonProgress.setTextColor(Color.WHITE);
-					buttonNotapp.setBackgroundResource(drawable.transparentclick);
-					buttonNotapp.setTextColor(Color.BLACK);
+			// idCheckitem = bundle.getString("item_id");
+			statusCheckitemString = punchlists.getString("state");
 
-				} else if (statusCheckitemString.equalsIgnoreCase("-1")) {
-					buttonComplete.setBackgroundResource(drawable.transparentclick);
-					buttonComplete.setTextColor(Color.BLACK);
-					buttonProgress.setBackgroundResource(drawable.transparentclick);
-					buttonProgress.setTextColor(Color.BLACK);
-					buttonNotapp.setBackgroundColor(Color.BLACK);
-					buttonNotapp.setTextColor(Color.WHITE);
-				} else {
-					Log.d("***********&&&&&&&&&&&&&","--------------############   "+statusCheckitemString);
-					statusCheckitemString = "";
-					buttonComplete.setBackgroundResource(drawable.transparentclick);
-					buttonComplete.setTextColor(Color.BLACK);
-					buttonProgress.setBackgroundResource(drawable.transparentclick);
-					buttonProgress.setTextColor(Color.BLACK);
-					buttonNotapp.setBackgroundResource(drawable.transparentclick);
-					buttonNotapp.setTextColor(Color.BLACK);
-				}
-				   comadap = new commentadapter();
-					listviewComments.setAdapter(comadap);
+			if (statusCheckitemString.equalsIgnoreCase("1")) {
+				completed = 1;
+				buttonComplete.setBackgroundColor(Color.BLACK);
+				buttonComplete.setTextColor(Color.WHITE);
+				buttonProgress.setBackgroundResource(drawable.transparentclick);
+				buttonProgress.setTextColor(Color.BLACK);
+				buttonNotapp.setBackgroundResource(drawable.transparentclick);
+				buttonNotapp.setTextColor(Color.BLACK);
 
-					setlist(listviewComments, comadap, 230);
-					
-					final ArrayList<String> arr = new ArrayList<String>();
-					final ArrayList<String> ids = new ArrayList<String>();
-					final ArrayList<String> desc = new ArrayList<String>();
-					// Log.d("",""+comm.get(0).body.toString());
-					linearlayoutScrollable = (LinearLayout) findViewById(R.id.linearlayoutLin2);
+			} else if (statusCheckitemString.equalsIgnoreCase("0")) {
+				buttonComplete.setBackgroundResource(drawable.transparentclick);
+				buttonComplete.setTextColor(Color.BLACK);
+				buttonProgress.setBackgroundColor(Color.BLACK);
+				buttonProgress.setTextColor(Color.WHITE);
+				buttonNotapp.setBackgroundResource(drawable.transparentclick);
+				buttonNotapp.setTextColor(Color.BLACK);
 
-					ImageView ladderPage2 = null;
-					// Log.d("--------","888888"+DocumentFragment.photosList.size());
-					for (int i = 0; i < photosArrayList.size(); i++) {
-						ladderPage2 = new ImageView(CheckItemClick.this);
-						arr.add(photosArrayList.get(i).urlLarge);
-						ids.add(photosArrayList.get(i).id);
-						desc.add(photosArrayList.get(i).description);
-						LinearLayout.LayoutParams layouParam = new LinearLayout.LayoutParams(
-								(int) (200), (int) (200));
-						layouParam.setMargins(10, 10, 10, 10);
-						ladderPage2.setTag(i);
-						ladderPage2.setLayoutParams(layouParam);
-						// Picasso.with(con).load(arr.get(i).toString()).into(ladder_page2);
+			} else if (statusCheckitemString.equalsIgnoreCase("-1")) {
+				buttonComplete.setBackgroundResource(drawable.transparentclick);
+				buttonComplete.setTextColor(Color.BLACK);
+				buttonProgress.setBackgroundResource(drawable.transparentclick);
+				buttonProgress.setTextColor(Color.BLACK);
+				buttonNotapp.setBackgroundColor(Color.BLACK);
+				buttonNotapp.setTextColor(Color.WHITE);
+			} else {
+				Log.d("***********&&&&&&&&&&&&&",
+						"--------------############   " + statusCheckitemString);
+				statusCheckitemString = "";
+				buttonComplete.setBackgroundResource(drawable.transparentclick);
+				buttonComplete.setTextColor(Color.BLACK);
+				buttonProgress.setBackgroundResource(drawable.transparentclick);
+				buttonProgress.setTextColor(Color.BLACK);
+				buttonNotapp.setBackgroundResource(drawable.transparentclick);
+				buttonNotapp.setTextColor(Color.BLACK);
+			}
+			comadap = new commentadapter();
+			Collections.reverse(commentsArrayList);
+			listviewComments.setAdapter(comadap);
 
-						Picasso.with(CheckItemClick.this)
-								.load(arr.get(i).toString())
-								.resize((int) (200 * ASSL.Xscale()),
-										(int) (200 * ASSL.Xscale())).centerCrop()
-								.into(ladderPage2);
-						// // ladder_page2.setImageBitmap(myBitmap);
-						linearlayoutScrollable.addView(ladderPage2);
+			setlist(listviewComments, comadap, 230);
 
-						ladderPage2.setOnClickListener(new OnClickListener() {
+			final ArrayList<String> arr = new ArrayList<String>();
+			final ArrayList<String> ids = new ArrayList<String>();
+			final ArrayList<String> desc = new ArrayList<String>();
+			final ArrayList<String> contentype = new ArrayList<String>();
+			// Log.d("",""+comm.get(0).body.toString());
+			
+			linearlayoutScrollable.removeAllViews();
 
-							@Override
-							public void onClick(View view) {
-								Log.i("Tag Value", "" + Prefrences.selectedPic);
-								Prefrences.selectedPic = (Integer) view.getTag();
-								Log.i("Tag Value", "" + Prefrences.selectedPic);
+			ImageView ladderPage2 = null;
+			// Log.d("--------","888888"+DocumentFragment.photosList.size());
+			for (int i = 0; i < photosArrayList.size(); i++) {
+				ladderPage2 = new ImageView(CheckItemClick.this);
+				arr.add(photosArrayList.get(i).urlLarge);
+				ids.add(photosArrayList.get(i).id);
+				desc.add(photosArrayList.get(i).original);
+				contentype.add(photosArrayList.get(i).imageContentType);
+				LinearLayout.LayoutParams layouParam = new LinearLayout.LayoutParams(
+						(int) (200), (int) (200));
+				layouParam.setMargins(10, 10, 10, 10);
+				ladderPage2.setTag(i);
+				ladderPage2.setLayoutParams(layouParam);
+				// Picasso.with(con).load(arr.get(i).toString()).into(ladder_page2);
 
-								Intent intent = new Intent(con, SelectedImageView.class);
-								intent.putExtra("array", arr);
-								intent.putExtra("ids", ids);
-								intent.putExtra("desc", desc);
-								intent.putExtra("id", photosArrayList
-										.get(Prefrences.selectedPic).id);
-								startActivity(intent);
-								overridePendingTransition(R.anim.slide_in_right,
-										R.anim.slide_out_left);
-								// finish();
-							}
-						});
+				Picasso.with(CheckItemClick.this)
+						.load(arr.get(i).toString())
+						.resize((int) (200 * ASSL.Xscale()),
+								(int) (200 * ASSL.Xscale())).centerCrop()
+						.into(ladderPage2);
+				// // ladder_page2.setImageBitmap(myBitmap);
+				linearlayoutScrollable.addView(ladderPage2);
 
+				ladderPage2.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View view) {
+						Log.i("Tag Value", "" + Prefrences.selectedPic);
+						Prefrences.selectedPic = (Integer) view.getTag();
+						Log.i("Tag Value", "" + Prefrences.selectedPic);
+
+						Intent intent = new Intent(con, SelectedImageView.class);
+						intent.putExtra("array", arr);
+						intent.putExtra("ids", ids);
+						intent.putExtra("desc", desc);
+						intent.putExtra("type", contentype);
+						intent.putExtra("id",
+								photosArrayList.get(Prefrences.selectedPic).id);
+						startActivity(intent);
+						overridePendingTransition(R.anim.slide_in_right,
+								R.anim.slide_out_left);
+						// finish();
 					}
-//				catid = check.getcat_id().toString();
-//				subcatid = check.getsubCat_id().toString();
-				
-//			intent.putExtra("body", punchlists.getString("body"));
-//			intent.putExtra("itemtype", punchlists.getString("item_type"));
-//			intent.putExtra("status", punchlists.getString("state"));
-//			intent.putExtra("item_id", punchlists.getString("id"));
-//			intent.putExtra("cat_id", check.getcat_id().toString());
-//			intent.putExtra("subcat_id", check.getsubCat_id().toString());
-//			// Log.d("111111","********----------"+childPosition+groupPosition);
-//			con.startActivity(intent);
-//			((Activity) con).overridePendingTransition(
-//					R.anim.slide_in_right,
-//					R.anim.slide_out_left);
+				});
+
+			}
+			// catid = check.getcat_id().toString();
+			// subcatid = check.getsubCat_id().toString();
+
+			// intent.putExtra("body", punchlists.getString("body"));
+			// intent.putExtra("itemtype", punchlists.getString("item_type"));
+			// intent.putExtra("status", punchlists.getString("state"));
+			// intent.putExtra("item_id", punchlists.getString("id"));
+			// intent.putExtra("cat_id", check.getcat_id().toString());
+			// intent.putExtra("subcat_id", check.getsubCat_id().toString());
+			// //
+			// Log.d("111111","********----------"+childPosition+groupPosition);
+			// con.startActivity(intent);
+			// ((Activity) con).overridePendingTransition(
+			// R.anim.slide_in_right,
+			// R.anim.slide_out_left);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
 	private String getRealPathFromURI(Uri contentURI) {
 		String result;
 		Cursor cursor = getContentResolver().query(contentURI, null, null,
@@ -2124,4 +2305,86 @@ public class CheckItemClick extends Activity {
 		}
 		return result;
 	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == RESULT_OK
+				&& (requestCode == ChooserType.REQUEST_PICK_PICTURE ))
+			{
+			imageChooserManager.submit(requestCode, data);
+		}
+		else if(resultCode == RESULT_OK
+						&&requestCode == ChooserType.REQUEST_CAPTURE_PICTURE)
+		{
+			imageChooserManager2.submit(requestCode, data);
+		}
+	}
+
+	@Override
+	public void onImageChosen(final ChosenImage image) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (image != null) {
+					// Use the image
+					picturePathString =  image.getFilePathOriginal();
+					Log.d("---------Image Path----------","---------Image Path----------"+picturePathString);
+					if (picturePathString.equalsIgnoreCase("null")) {
+						AlertMessage();
+					} else {
+						ImageView ladderPageImageView = null;
+						// Log.d("--------","888888"+DocumentFragment.photosList.size());
+						// for (int i = 0; i < DocumentFragment.photosList.size(); i++)
+						// {
+						ladderPageImageView = new ImageView(CheckItemClick.this);
+
+						LinearLayout.LayoutParams layoutParam = new LinearLayout.LayoutParams(
+								(int) (200), (int) (200));
+						layoutParam.setMargins(10, 10, 10, 10);
+						ladderPageImageView.setLayoutParams(layoutParam);
+						Log.d("picturePathString", "----picturePathString----"
+								+ picturePathString);
+						File file = new File(picturePathString);
+						Picasso.with(CheckItemClick.this)
+								.load(file)
+								.placeholder(R.drawable.ic_launcher)
+								.resize((int) (200 * ASSL.Xscale()),
+										(int) (200 * ASSL.Xscale()))
+								.into(ladderPageImageView);
+						// ladder_page2.setImageBitmap(myBitmap);
+						linearlayoutScrollable.addView(ladderPageImageView);
+						// }
+
+						// ImageView imageView = (ImageView) findViewById(R.id.imgView);
+						//
+						ladderPageImageView.setImageBitmap(BitmapFactory
+								.decodeFile(picturePathString));
+
+						new LongOperation().execute("");
+						// upload();
+						// new Updating().execute("");
+						// post_punchlst_items(picturePath);
+						// commentAdd();
+
+					}
+					// image.getFileThumbnail();
+					// image.getFileThumbnailSmall();
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onError(final String reason) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				// Show error message
+				Log.d("---------Image Path 2----------","---------Image Path 2 ----------"+picturePathString);
+			}
+		});
+	}
+
+	
+
 }

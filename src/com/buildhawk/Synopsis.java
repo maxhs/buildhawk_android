@@ -71,6 +71,8 @@ public class Synopsis extends Activity {
 
 	ArrayList<String> arr = new ArrayList<String>();
 	ArrayList<String> ids = new ArrayList<String>();
+	ArrayList<String> desc = new ArrayList<String>();
+	ArrayList<String> contenttype = new ArrayList<String>();
 	Boolean pull = false;
 	// ArrayList<SynopsisCategories> synopcat;
 	// ArrayList<SynopsisUpcomingItems> synoupitem;
@@ -228,30 +230,45 @@ public class Synopsis extends Activity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		Prefrences.pageFlag = 0;
-		connDect = new ConnectionDetector(Synopsis.this);
-		isInternetPresentBoolean = connDect.isConnectingToInternet();
+//		connDect = new ConnectionDetector(Synopsis.this);
+//		isInternetPresentBoolean = connDect.isConnectingToInternet();
 
 		if (Prefrences.stopingHit == 1) {
 			Prefrences.stopingHit = 0;
 			if (!Prefrences.LastSelectedProId
 					.equalsIgnoreCase(Prefrences.selectedProId)) {
-				if (isInternetPresentBoolean) {
+					
+				if (connDect.isConnectingToInternet()) {
+					
+					Prefrences.LastDocument_s="";
+					Prefrences.LastReport_s = "";
+					Prefrences.LastWorklist_s = "";
+					Prefrences.LastChecklist_s = "";
+					Prefrences.document_s="";
+					Prefrences.report_s = "";
+					Prefrences.worklist_s = "";
+					Prefrences.checklist_s = "";
 					synopsisHit();
+					
 				}
 			} else {
-//				if (isInternetPresent) {
-//					synopsisHit();
-//				} else {
-					String response;
-					response = sharedpref.getString("projectSynopsis", "");
-					if (response.equalsIgnoreCase("")) {
+				// if (isInternetPresent) {
+				// synopsisHit();
+				// } else {
+				String response;
+				response = sharedpref.getString("projectSynopsis", "");
+				if (response.equalsIgnoreCase("")) {
+					if (connDect.isConnectingToInternet()) {
+						synopsisHit();
+					} else {
 						Toast.makeText(Synopsis.this,
 								"No internet connection.", Toast.LENGTH_SHORT)
 								.show();
-					} else {
-						fillServerData(response);
 					}
-//				}
+				} else {
+					fillServerData(response);
+				}
+				// }
 			}
 
 		}
@@ -682,7 +699,7 @@ public class Synopsis extends Activity {
 			Log.v("Synopsis value", project.toString());
 
 			JSONArray Syncategories = project
-					.getJSONArray("categories");
+					.getJSONArray("phases");
 			JSONArray Syncompl = project
 					.getJSONArray("recently_completed");
 			JSONArray Syndocs = project
@@ -727,7 +744,7 @@ public class Synopsis extends Activity {
 						.getString("image_content_type"), count
 						.getString("source"), count
 						.getString("phase"), count
-						.getString("created_at"), count
+//						.getString("created_at"), count
 						.getString("user_name"), count
 						.getString("name"), count
 						.getString("created_date")));
@@ -775,6 +792,14 @@ public class Synopsis extends Activity {
 			adapter adp = new adapter(con, synCategArrayList);
 			listviewSyncat.setAdapter(adp);
 
+			if(synItemsArrayList.size()==0)
+			{
+				textviewHeaderUpcomingItems.setVisibility(View.GONE);
+			}
+			else
+			{
+				textviewHeaderUpcomingItems.setVisibility(View.VISIBLE);
+			}
 			adapter2 adp2 = new adapter2(con, synItemsArrayList);
 			listviewSynupItem.setAdapter(adp2);
 
@@ -786,12 +811,16 @@ public class Synopsis extends Activity {
 
 			arr.clear();
 			ids.clear();
+			desc.clear();
+			contenttype.clear();
 			linearlayoutHorizontal.removeAllViews();
 			linearlayoutHorizontal = (LinearLayout) findViewById(R.id.linearlayoutHorizontal);
 			for (int i = 0; i < synDocArrayList.size(); i++) {
 
 				arr.add(synDocArrayList.get(i).urlLarge);
 				ids.add(synDocArrayList.get(i).id);
+				desc.add(synDocArrayList.get(i).original);
+				contenttype.add(synDocArrayList.get(i).imageContentType);
 				imageviewLadderPage2 = new ImageView(Synopsis.this);
 
 				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -826,9 +855,9 @@ public class Synopsis extends Activity {
 										SelectedImageView.class);
 								intent.putExtra("array", arr);
 								intent.putExtra("ids", ids);
-								intent.putExtra(
-										"id",
-										synDocArrayList.get(Prefrences.selectedPic).id);
+								intent.putExtra("desc", desc);
+								intent.putExtra("type", contenttype);
+								intent.putExtra("id", synDocArrayList.get(Prefrences.selectedPic).id);
 								startActivity(intent);
 								overridePendingTransition(
 										R.anim.slide_in_right,

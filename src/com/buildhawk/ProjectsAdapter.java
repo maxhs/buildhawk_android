@@ -374,6 +374,13 @@ public class ProjectsAdapter extends BaseAdapter {
 							
 							ArrayList<Company> CompaniesArray = new ArrayList<Company>();
 
+							JSONObject compn = project.getJSONObject("company");
+							Log.d("aayayaa","ayyaaa"+compn.getString("id"));
+							compn.getString("name");
+
+							CompaniesArray.add(new Company(compn.getString("id"), compn.getString("name")));
+							
+							
 							for (int j = 0; j < users.length(); j++) {
 								JSONObject uCount = users.getJSONObject(j);
 								JSONObject uCompany = uCount

@@ -10,8 +10,10 @@ import com.buildhawk.utils.subcontractors;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -156,7 +158,7 @@ public class SubsList extends Activity {
 					// startActivity(intent);
 
 					if (Prefrences.text == 1) {
-						Prefrences.text = 0;
+//						Prefrences.text = 0;
 						Log.v("", "" + body.uEmail.toString());
 						// Intent emailIntent = new Intent(Intent.ACTION_SENDTO,
 						// Uri.fromParts(
@@ -180,16 +182,28 @@ public class SubsList extends Activity {
 									Toast.LENGTH_SHORT).show();
 						}
 					} else if (Prefrences.text == 2) {
-						Prefrences.text = 0;
+//						Prefrences.text = 0;
 						Log.v("", "" + body.uPhone.toString());
+						if(body.uPhone.toString().equals("null"))
+						{
+							AlertMessage();
+						}
+						else{
 						Intent phoneCallIntent = new Intent(Intent.ACTION_CALL);
 						phoneCallIntent.setData(Uri.parse("tel:"
 								+ body.uPhone.toString()));
 						startActivity(phoneCallIntent);
+						}
 					} else if (Prefrences.text == 3) {
-						Prefrences.text = 0;
+//						Prefrences.text = 0;
+						if(body.uPhone.toString().equals("null"))
+						{
+							AlertMessage();
+						}
+						else{
 						startActivity(new Intent(Intent.ACTION_VIEW, Uri
 								.fromParts("sms", body.uPhone.toString(), null)));
+						}
 					}
 					// else
 					// {
@@ -324,5 +338,39 @@ public class SubsList extends Activity {
 	private static class viewholder {
 		TextView txtview;
 		LinearLayout linearLay;
+	}
+	
+	private void AlertMessage() {
+
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		builder.setTitle("Sorry!")
+
+		.setMessage(
+
+		"The recipient doesn't have a phone number")
+
+		.setCancelable(false)
+
+		.setPositiveButton("OK",
+
+		new DialogInterface.OnClickListener() {
+
+			public void onClick(final DialogInterface dialog,
+
+			int intValue) {
+
+//				finish();
+
+				// setting_page = true;
+
+			}
+
+		});
+
+		final AlertDialog alert = builder.create();
+
+		alert.show();
+
 	}
 }
